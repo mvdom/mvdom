@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: Events</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./test.js"></script>
+
+		<link href="./test.css" rel="stylesheet">
+
+		<script>
+		var d = mvdom;
+		var outs = [];
+
+		var tests = {
+			_before: function(){
+				var el = d.first(".MainView");
+
+				var doClickListener = function(evt){
+					outs.push("MainView click");
+				};
+
+				d.on(el, "click", doClickListener);
+
+				var doSaveListener = function(evt){
+					outs.push(".do-save click");
+					d.trigger(evt.target, "DOSAVE",{detail:"some stuff"});
+				};
+
+				d.on(el, "click", ".do-save", doSaveListener);
+
+				d.on(el, "click", ".do-unbind-save", function(evt){
+					outs.push(".do-unbind-save click");
+					d.off(el, "click", ".do-save");
+				});				
+				
+				d.on(el, "click", ".do-ns-1",function(evt){
+					outs.push(".do-ns-1");
+				}, {ns:"namespaceA"});
+
+				d.on(el, "click", ".do-ns-2",function(evt){
+					outs.push(".do-ns-2");
+				}, {ns:"namespaceA"});
+
+				d.on(el, "click", ".do-unbind-ns", function(evt){
+					outs.push(".do-unbind-ns");
+					d.off(el,{ns:"namespaceA"});
+				});
+
+				d.on(el, "click", ".do-other", function(evt){
+					outs.push(".do-other");
+				});
+
+				d.on(el, "DOSAVE", function(evt){
+					outs.push("DOSAVE");
+				});
+
+	
+			},
+
+			_beforeEach: function(){
+				outs = [];
+			}, 
+
+			clickOnDoSave: function(){
+				d.first(".do-save").click();
+				// check size and last
+				assertEqual(["MainView click", ".do-save click", "DOSAVE"],outs);
+			}, 
+
+			clickOnDoUnbindSave: function(){
+				d.first(".do-unbind-save").click();
+				// check size and last
+				assertEqual(["MainView click", ".do-unbind-save click"],outs);
+			}, 
+
+			clickOnDoSaveAfterUnbind: function(){				
+				d.first(".do-save").click();
+				// check size and last
+				assertEqual(["MainView click"],outs);				
+			}, 
+
+			clickOnDoUnbindNS: function(){
+				d.first(".do-ns-1").click();
+				d.first(".do-ns-2").click();
+				d.first(".do-unbind-ns").click();
+				// check size and last
+				assertEqual(["MainView click", ".do-ns-1", 
+					"MainView click", ".do-ns-2", 
+					"MainView click", ".do-unbind-ns"],outs);				
+			},
+
+			clickOnDoNs: function(){
+				d.first(".do-ns-1").click();
+				d.first(".do-ns-2").click();
+				d.first(".do-other").click();
+				assertEqual(["MainView click", "MainView click", "MainView click", ".do-other"],outs);
+			}
+
+		};		
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>Events Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content">
+			<div class="MainView">
+				<div class="but do-save">.do-save</div>
+				<div class="but do-unbind-save">.do-unbind-save</div>
+				<div class="but do-ns-1">.do-ns-1</div>
+				<div class="but do-ns-2">.do-ns-2</div>
+				<div class="but do-unbind-ns">.do-unbind-ns</div>
+				<div class="but do-other">.do-other</div>
+			</div>
+		</div>		
+	</body>
+</html>

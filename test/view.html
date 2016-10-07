@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: View</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./test.js"></script>
+
+		<link href="./test.css" rel="stylesheet">
+
+		<script>
+		var d = mvdom;
+		var outs = [];
+
+		d.register("MainView",{
+			create: function(){
+				outs.push("MainView.create");
+				return `<div class='MainView'>Main View ${this.id} 
+									<div class="but but-1">.but-1</div>
+									<div class="rect items">
+										<div class="rect sm item item-1">Item 1</div>
+										<div class="rect sm item item-2">Item 2</div>
+									<div>
+								</div>`;
+			},
+
+			postDisplay: function(){
+				outs.push("MainView.postDisplay");
+			},
+
+			events: {
+				"click; .but": function(evt){
+					outs.push("click.but-1");
+				},
+
+				"click; .item": function(evt){
+					outs.push("click.item");
+				},
+
+				"click": function(evt){
+					outs.push("click.MainView");
+				}
+			}, 
+
+			docEvents: {
+				"CUSTOM-1": function(evt){
+					outs.push("CUSTOM-1 " + this.id);
+				}
+			}, 
+
+			winEvents: {
+
+			}, 
+
+			parentEvents: {
+				"TopView; click": function(evt){
+
+				}
+			}, 
+
+			closestEvents: {
+				".container; click": function(evt){
+					
+				}
+			}
+		});
+
+		d.hook("willCreate", view => {
+			outs.push("hook.willCreate");
+		});
+
+		var view2;
+
+		var tests = {
+			_before: function(){
+			},
+
+			_beforeEach: function(){
+				outs = [];
+			}, 
+
+			testSimpleMainViewAndHook: function(){
+				return d.display("MainView",d.first(".test-content")).then(function(){
+					assertEqual(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+				});				
+			}, 
+
+			testClickBut1: function(){
+				d.first(".but-1").click();
+				assertEqual(["click.but-1", "click.MainView"], outs);
+			},
+
+			testClickItem1: function(){
+				d.first(".item-1").click();
+
+				assertEqual(["click.item", "click.MainView"], outs);
+			},
+
+			testClickMainView: function(){
+				d.first(".MainView").click();
+				assertEqual(["click.MainView"], outs);
+			}, 
+
+			testCustomDocEvent: function(){
+				d.trigger(document,"CUSTOM-1");
+				assertEqual(["CUSTOM-1 0"], outs);
+			}, 
+
+			testAddMainView: function(){
+				return d.display("MainView", d.first(".test-content")).then(function(view){
+					view2 = view;
+					assertEqual(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+				});
+			},
+
+			testRemoveSecondMainView: function(){
+				// TODO: need to check that the docEvents binding was off
+				d.remove(d.all(".d-view.MainView")[1]);
+				outs = [];
+				d.first(view2.el, ".but-1").click();
+				console.log(outs);
+			}	
+		};
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>Simple View Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content">
+		</div>						
+	</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "mvdom",
+  "version": "0.2.0",
+  "description": "DOM Centric MVC micro library (zero dependency, < 10kb min, < 5kb gzip)",
+  "main": "src/index.js",
+
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mvdom/mvdom.git"
+  },
+
+  "dependencies": {
+  },
+
+  "devDependencies": {
+    "browserify": "^13.0.1",
+    "fs-extra": "^0.30.0",    
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "*",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+
+  "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
+  "license": "MIT"
+}

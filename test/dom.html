@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: DOM</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./test.js"></script>
+
+		<link href="./test.css" rel="stylesheet">
+
+		<script>
+		var d = mvdom;
+
+		var tests = {
+			testFirst: function(){
+				assertEqual("A", d.first(".el-a").innerHTML);
+			},
+
+			testAll: function(){
+				console.log();
+				// should have 3 Ds
+				assertEqual(4, d.all(".el-d").length);
+				// 3 sub el-d.el-d
+				assertEqual(3, d.all(d.first(".el-d"),".el-d").length);
+				// the el-d.el-d.fo0
+				assertEqual(2, d.all(d.first(".el-d"),".el-d.foo").length);
+				assertEqual("D.foo 1", d.first(d.first(".el-d"),".el-d.foo").textContent);
+			}, 
+
+			testClosest: function(){
+				var barEl = d.first(".bar");
+
+				// should be same node
+				assertEqual(barEl,d.closest(barEl,".el-d"));
+
+				// should be the first container from this node the D container
+				assertEqual("D",d.closest(barEl,".container").childNodes[0].textContent.trim());
+			}
+
+		};		
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>Doms Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content container">
+			<div class="rect el-a">A</div>
+			<div class="rect el-b">B 1</div>
+			<div class="rect el-b">B 2</div>
+			<div class="rect el-c">C 1</div>
+			<div class="rect el-c">C 2</div>
+			<div class="rect el-c">C 3</div>
+			<div class="rect el-d container">
+			D
+				<div class="rect sm el-d foo">D.foo 1</div>
+				<div class="rect sm el-d foo">D.foo 2</div>
+				<div class="rect sm el-d bar">D.bar 3</div>
+			</div>
+		</div>		
+	</body>
+</html>
