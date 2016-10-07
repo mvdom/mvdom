@@ -6,18 +6,18 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Over componentization is as bad as under componentization.
 - Black magic always come with a hidden cost.
 - Frameworks comes and go, languages and runtimes stay.
-- Size is a factor of complexity.
+- Size is a factor of complexity and starting simple will always scale better.
 
-**Conclusion**: For maximum mileage, abstract/componentize only as needed, embrace the runtime, and keep things small and simple as possible. 
+**Conclusion**: For maximum mileage, start simple and minimalistic, abstract/componentize only as needed, and embrace runtimes rather than fighting them by abstracting too much.
 
 
 ## Characteristics
 
 - Zero dependency, micro libary (< 10kb min, < 5kb gzip).
-- Template agnostic (string template engine friend, e.g., Handlebars)
+- Template agnostic (string templating friendly, e.g., Handlebars)
 - Dead simple APIs (e.g. d.register(name, controller), d.display(name, parent))
 - Async Lifecycle management (hookable)
-- Enhanced DOM eventing (i.e., on/off/trigger a la jquery, without wrappers)
+- Enhanced DOM eventing (i.e., d.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
 
 Coming soon:
 - Simple but performant DOM data exchange (push/pull). 
