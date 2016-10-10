@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: DX</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./test.js"></script>
+
+		<link href="./test.css" rel="stylesheet">
+
+		<style>
+		.test-content{
+			display: flex;
+			flex-direction: row;
+		}
+		.form{
+			width: 500px;
+			font-size: 16px;
+			flex-grow: 1;
+			margin-right: 16px;
+		}
+		.field{
+			display: flex;
+			flex-direction: row;
+			margin-bottom: 16px;
+		}
+		.field label{
+			width: 200px;
+		}
+		.field .ctrl{
+			flex: 1 0 0;
+		}
+
+		</style>
+		<script>
+		var d = mvdom;
+		var outs = [];
+
+		var expectedStringify = '{"a":"a-val","b":"b-val","c1":"c1-val","c3":["c3-val-a","c3-val-b"],' + 
+														'"c4":"c4-val-a","c5":true,"r1":"r1-val-a","r2":"r2-val-a","d":"d-val","e":"e-val"}';
+
+		var tests = {
+
+			_before: function(){
+			},
+
+			_beforeEach: function(){
+				outs = [];
+			}, 
+
+			pull: function(){
+				var data = d.pull(d.first(".form.test-pull"));
+
+				assertEqual(expectedStringify, JSON.stringify(data));
+			},
+
+			push: function(){			
+				var formEl = d.first(".form");
+				var data = d.pull(formEl);
+
+				// clean the form
+				d.all(".form .dx").forEach(function(el){
+					if (el.matches("input[type='checkbox'], input[type='radio']")){
+						el.checked = null;
+					}else if (el.matches("input")){
+						el.value = null;
+					}else {
+						el.innerHTML = "";
+					}
+				});
+
+				// pull the empty form, and change it matches.
+				var dataEmpty = d.pull(formEl);
+				var expectedEmptyFormStringify = '{"a":"","b":"","d":"","e":""}';
+				assertEqual(expectedEmptyFormStringify, JSON.stringify(d.pull(formEl)));
+
+				// push the orginal data, and then, pull and make sure it matches
+				d.push(formEl, data);
+				assertEqual(expectedStringify, JSON.stringify(d.pull(formEl)));
+			}
+
+		};		
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>Dx Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content">
+			<div class="form test-pull">
+				<div class="field">
+					<label>input a</label>
+					<input name="a" class="ctrl dx" value="a-val">
+				</div>
+
+				<div class="field">
+					<label>input.dx-b</label>
+					<input class="ctrl dx dx-b" value="b-val">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c1 (checked)</label>
+					<input type="checkbox" class="ctrl dx dx-c1" value="c1-val" checked="checked">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c2</label>
+					<input type="checkbox" class="ctrl dx dx-c2" value="c2-val">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c3 (checked)</label>
+					<input type="checkbox" class="ctrl dx dx-c3" value="c3-val-a" checked="checked">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c3 (checked)</label>
+					<input type="checkbox" class="ctrl dx dx-c3" value="c3-val-b" checked="checked">
+				</div>
+
+
+				<div class="field">
+					<label>input[checkbox].dx-c4 (checked)</label>
+					<input type="checkbox" class="ctrl dx dx-c4" value="c4-val-a" checked="checked">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c4</label>
+					<input type="checkbox" class="ctrl dx dx-c4" value="c4-val-b">
+				</div>
+
+				<div class="field">
+					<label>input[checkbox].dx-c5 (checked)</label>
+					<input type="checkbox" class="ctrl dx dx-c5" checked="checked">
+				</div>				
+
+				<div class="field">
+					<label>input[radio].dx-r1 (checked)</label>
+					<input type="radio" class="ctrl dx dx-r1" value="r1-val-a" checked="checked">
+				</div>
+
+				<div class="field">
+					<label>input[radio].dx-r2 (checked)</label>
+					<input name="r2" type="radio" class="ctrl dx" value="r2-val-a" checked="checked">
+				</div>
+				<div class="field">
+					<label>input[radio].dx-r2</label>
+					<input name="r2" type="radio" class="ctrl dx" value="r2-val-b">
+				</div>
+				<div class="field">
+					<label>div.dx-d</label>
+					<div class="ctrl dx dx-d">d-val</div>
+				</div>
+				<div class="field">
+					<label>div[data-dx="e"]</label>
+					<div class="ctrl dx" data-dx="e">e-val</div>
+				</div>
+			</div> <!-- /.test-pull -->
+		</div>		
+	</body>
+</html>

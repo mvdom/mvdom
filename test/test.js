@@ -44,6 +44,7 @@
 					} catch (ex){
 						failEx = label(name) + " FAILED " + ex;
 						itemEl.classList.add("fail");
+						console.log(ex);
 					}
 
 					// always resolve (to allow to continue to next test) and show appropriate message
@@ -84,7 +85,7 @@ function assertEqual(expected, actual){
 			return;
 		}
 
-		// if it is not an array, then just compare
+		// if it is not an array, then just compare the reference
 		if (expected !== actual){
 			throw "";
 		}

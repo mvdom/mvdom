@@ -2,14 +2,14 @@
 
 mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it. 
 
-- The DOM is your friend (e.g, DOM eventing scheme is a powerful UI component communication bus)
+- The DOM is your friend, don't fight it, embrace it. 
+- Used right, the DOM can be a great foundation for a simple and scalable MVC model.
 - Over componentization is as bad as under componentization.
 - Black magic always come with a hidden cost.
-- Frameworks comes and go, languages and runtimes stay.
+- Frameworks come and go, languages and runtimes stay.
 - Size is a factor of complexity and starting simple will always scale better.
 
-**Conclusion**: For maximum mileage, start simple and minimalistic, abstract/componentize only as needed, and embrace runtimes rather than fighting them by abstracting too much.
-
+**Conclusion**: For maximum mileage, start simple and minimalistic, embrace the DOM, add only what is strictly need to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
 ## Characteristics
 
@@ -18,9 +18,9 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Dead simple APIs (e.g. d.register(name, controller), d.display(name, parent))
 - Async Lifecycle management (hookable)
 - Enhanced DOM eventing (i.e., d.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
+- Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
 
 Coming soon:
-- Simple but performant DOM data exchange (push/pull). 
 - Hookable routing
 
 ## Installation
