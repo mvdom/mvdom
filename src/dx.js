@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require("./utils.js");
+var dom = require("./dom.js");
 
 
 module.exports = {
@@ -85,7 +86,7 @@ function puller(selector,func){
 }
 
 function push(el, data) {
-	var dxEls = d.all(el, ".dx");
+	var dxEls = dom.all(el, ".dx");
 
 	dxEls.forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
@@ -124,7 +125,7 @@ function push(el, data) {
 
 function pull(el){
 	var obj = {};
-	var dxEls = d.all(el, ".dx");
+	var dxEls = dom.all(el, ".dx");
 
 	dxEls.forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
