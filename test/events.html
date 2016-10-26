@@ -14,7 +14,7 @@
 		var outs = [];
 
 		var tests = {
-			_before: function(){
+			_init: function(){
 				var el = d.first(".MainView");
 
 				var doClickListener = function(evt){
@@ -66,19 +66,19 @@
 			clickOnDoSave: function(){
 				d.first(".do-save").click();
 				// check size and last
-				assertEqual(["MainView click", ".do-save click", "DOSAVE"],outs);
+				assertEquals(["MainView click", ".do-save click", "DOSAVE"],outs);
 			}, 
 
 			clickOnDoUnbindSave: function(){
 				d.first(".do-unbind-save").click();
 				// check size and last
-				assertEqual(["MainView click", ".do-unbind-save click"],outs);
+				assertEquals(["MainView click", ".do-unbind-save click"],outs);
 			}, 
 
 			clickOnDoSaveAfterUnbind: function(){				
 				d.first(".do-save").click();
 				// check size and last
-				assertEqual(["MainView click"],outs);				
+				assertEquals(["MainView click"],outs);				
 			}, 
 
 			clickOnDoUnbindNS: function(){
@@ -86,7 +86,7 @@
 				d.first(".do-ns-2").click();
 				d.first(".do-unbind-ns").click();
 				// check size and last
-				assertEqual(["MainView click", ".do-ns-1", 
+				assertEquals(["MainView click", ".do-ns-1", 
 					"MainView click", ".do-ns-2", 
 					"MainView click", ".do-unbind-ns"],outs);				
 			},
@@ -95,7 +95,7 @@
 				d.first(".do-ns-1").click();
 				d.first(".do-ns-2").click();
 				d.first(".do-other").click();
-				assertEqual(["MainView click", "MainView click", "MainView click", ".do-other"],outs);
+				assertEquals(["MainView click", "MainView click", "MainView click", ".do-other"],outs);
 			}
 
 		};		

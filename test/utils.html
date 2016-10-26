@@ -13,7 +13,7 @@
 		var d = mvdom;
 
 		var tests = {
-			_before: function(){
+			_init: function(){
 			},
 
 			_beforeEach: function(){
@@ -23,8 +23,8 @@
 			testValGet: function(){
 				var v = "YEAH!";
 				var obj = { foo: { bar: { name: v}}};
-				assertEqual(v, d.val(obj,"foo.bar.name"));
-				assertEqual(v, d.val(obj,["foo","bar","name"]));
+				assertEquals(v, d.val(obj,"foo.bar.name"));
+				assertEquals(v, d.val(obj,["foo","bar","name"]));
 			}, 
 
 			testValSet: function(){
@@ -32,8 +32,8 @@
 				var obj = { foo: {bar: {}}};
 				d.val(obj,"foo.bar.name",v);
 
-				assertEqual(v, d.val(obj,"foo.bar.name"));
-				assertEqual(v, d.val(obj,["foo","bar","name"]));
+				assertEquals(v, d.val(obj,"foo.bar.name"));
+				assertEquals(v, d.val(obj,["foo","bar","name"]));
 			},
 
 			testValSetWithMap: function(){
@@ -46,8 +46,8 @@
 
 				d.val(obj,"foo.bar.name",v);
 
-				assertEqual(v, d.val(obj,"foo.bar.name"));
-				assertEqual(v, d.val(obj,["foo","bar","name"]));
+				assertEquals(v, d.val(obj,"foo.bar.name"));
+				assertEquals(v, d.val(obj,["foo","bar","name"]));
 			}
 
 

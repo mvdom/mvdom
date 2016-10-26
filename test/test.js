@@ -7,8 +7,8 @@
 		
 		
 		var beforeReturn = null;
-		if (tests._before){
-			beforeReturn = tests._before();
+		if (tests._init){
+			beforeReturn = tests._init();
 		}
 
 
@@ -19,7 +19,7 @@
 
 			var name, names = [];
 			for (name in tests){
-				if (name.indexOf("_before") !== -1){
+				if (name.indexOf("_init") !== -1 || name.indexOf("_beforeEach") !== -1){
 					continue;
 				}
 				names.push(name);
@@ -65,7 +65,7 @@
 })();
 
 /*eslint-disable no-unused-vars*/
-function assertEqual(expected, actual){
+function assertEquals(expected, actual){
 	try{
 
 		// if an array, we compare each instance

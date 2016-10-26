@@ -10,7 +10,10 @@ module.exports = {
 	ensureArray: ensureArray,
 
 	// asType
-	asArray: asArray
+	asArray: asArray,
+
+	// string utils
+	splitAndTrim: splitAndTrim
 };
 
 // --------- Object Utils --------- //
@@ -42,58 +45,6 @@ function isEmpty(v){
 
 	return false;
 }
-
-// Method that allow to get or set a value to a root object with a path.to.value
-// for example val({},"contact.job.title","vp"), will popuplate {} as {contact:{job:{title:"vp"}}};
-// and val({contact:{job:{title:"vp"}}}, "cotnact.job.title") === "vp"
-// function val(rootObj, pathToValue, value){
-// 	var setMode = (typeof value !== "undefined");
-// 	var firstNode = rootObj; // value if get mode, rootObj if setMode;
-
-// 	if (!rootObj) {
-// 		return rootObj;
-// 	}
-// 	// for now, return the rootObj if the pathToValue is empty or null or undefined
-// 	if (!pathToValue) {
-// 		return rootObj;
-// 	}
-
-// 	var names = (pathToValue instanceof Array)?pathToValue:pathToValue.split(".");
-
-// 	var i, l = names.length;
-// 	var lIdx = l  -1;
-// 	var name, currentNode = firstNode, nextNode;
-// 	for (i = 0; i < l; i++) {
-// 		name = names[i];
-// 		nextNode = currentNode[name];
-// 		if (setMode){
-// 			// if last index, set the value
-// 			if (i === lIdx){
-// 				currentNode[name] = value;
-// 				currentNode = value;
-// 			}else{
-// 				if (typeof nextNode === "undefined") {
-// 					nextNode = {};
-// 				} 
-// 				currentNode[name] = nextNode;
-// 				currentNode = nextNode;
-// 			}
-// 		}else{
-// 			currentNode = nextNode;
-// 			if (typeof currentNode === "undefined") {
-// 				currentNode = undefined;
-// 				break;
-// 			}			
-// 		}
-
-// 	} // /for
-// 	if (setMode){
-// 		return firstNode;
-// 	}else{
-// 		return currentNode;
-// 	}
-// }
-
 
 // TODO: add the set value
 function val(rootObj, pathToValue, value) {
@@ -218,3 +169,16 @@ function asArray(value){
 	return [];
 }
 // --------- /asType --------- //
+
+// --------- String Utils --------- //
+function splitAndTrim(str, sep){
+	if (str == null){
+		return [];
+	}
+	if (str.indexOf(sep) === -1){
+		return [str.trim()];
+	}
+	return str.split(sep).map(String.trim);
+}
+
+// --------- /String Utils --------- //

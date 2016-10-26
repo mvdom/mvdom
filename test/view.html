@@ -73,7 +73,7 @@
 		var view2;
 
 		var tests = {
-			_before: function(){
+			_init: function(){
 			},
 
 			_beforeEach: function(){
@@ -82,35 +82,35 @@
 
 			testSimpleMainViewAndHook: function(){
 				return d.display("MainView",d.first(".test-content")).then(function(){
-					assertEqual(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+					assertEquals(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
 				});				
 			}, 
 
 			testClickBut1: function(){
 				d.first(".but-1").click();
-				assertEqual(["click.but-1", "click.MainView"], outs);
+				assertEquals(["click.but-1", "click.MainView"], outs);
 			},
 
 			testClickItem1: function(){
 				d.first(".item-1").click();
 
-				assertEqual(["click.item", "click.MainView"], outs);
+				assertEquals(["click.item", "click.MainView"], outs);
 			},
 
 			testClickMainView: function(){
 				d.first(".MainView").click();
-				assertEqual(["click.MainView"], outs);
+				assertEquals(["click.MainView"], outs);
 			}, 
 
 			testCustomDocEvent: function(){
 				d.trigger(document,"CUSTOM-1");
-				assertEqual(["CUSTOM-1 0"], outs);
+				assertEquals(["CUSTOM-1 0"], outs);
 			}, 
 
 			testAddMainView: function(){
 				return d.display("MainView", d.first(".test-content")).then(function(view){
 					view2 = view;
-					assertEqual(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+					assertEquals(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
 				});
 			},
 

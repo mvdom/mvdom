@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: Hub</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./test.js"></script>
+
+		<link href="./test.css" rel="stylesheet">
+
+		<script>
+		var d = mvdom;
+		var outs = [];
+		var hub1;
+
+		var customObj = {name: "customA"}
+		var tests = {
+			_init: function(){
+				hub1 = d.hub("hub1");
+
+				// subscribe to a simple topic
+				hub1.sub("HUB1_TOPIC_1", function(data, info){
+					outs.push("HUB1_TOPIC_1" + " >> " + info.topic + "-" + info.label + "-" + data);
+				}, "ns1");
+
+				// subscribe to a topic and label
+				hub1.sub("HUB1_TOPIC_1", "hub1_label_1", function(data, info){
+					outs.push("HUB1_TOPIC_1; hub1_label_1" + " >> " + info.topic + "-" + info.label + "-" + data);
+				});
+
+				var hub2 = d.hub("hub2");
+
+				hub2.sub("HUB1_TOPIC_1", function(data, info){
+
+				}, {ns: "ns2", ctx: customObj});
+			},
+
+			_beforeEach: function(){
+				outs = [];
+			}, 
+
+			pubHub1Topic1: function(){
+				hub1.pub("HUB1_TOPIC_1","sendHub1Topic1");
+				assertEquals(["HUB1_TOPIC_1 >> HUB1_TOPIC_1-undefined-sendHub1Topic1"], outs);
+			},
+
+			pubHub1Topic1Label1: function(){
+				hub1.pub("HUB1_TOPIC_1","hub1_label_1", "sendHub1Topic1Label1");
+				assertEquals(["HUB1_TOPIC_1; hub1_label_1 >> HUB1_TOPIC_1-hub1_label_1-sendHub1Topic1Label1", 
+					"HUB1_TOPIC_1 >> HUB1_TOPIC_1-hub1_label_1-sendHub1Topic1Label1"], outs);
+			}, 
+
+			unsubNs1: function(){
+				// we unbind the topic only binding, should have no event
+				hub1.unsub("ns1");				
+				hub1.pub("HUB1_TOPIC_1","sendHub1Topic1");
+				assertEquals([],outs);
+
+				// but the label_1 binding should still be active (as it was not in the namespace)
+				hub1.pub("HUB1_TOPIC_1","hub1_label_1","offns1");
+				assertEquals(["HUB1_TOPIC_1; hub1_label_1 >> HUB1_TOPIC_1-hub1_label_1-offns1"], outs);
+			}
+
+
+
+		};		
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>Hub Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content">
+		</div>		
+	</body>
+</html>

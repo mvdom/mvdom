@@ -1,10 +1,13 @@
 'use strict';
 
 var view = require("./view.js");
-var events = require("./events.js");
+var event = require("./event.js");
 var dom = require("./dom.js");
 var dx = require("./dx.js");
+var hub = require("./hub.js");
 var utils = require("./utils.js");
+
+require("./view-event.js");
 
 module.exports = {
 	// view APIs
@@ -14,10 +17,10 @@ module.exports = {
 	remove: view.remove,
 	empty: view.empty,
 
-	// events API
-	on: events.on, 
-	off: events.off,
-	trigger: events.trigger,
+	// event API
+	on: event.on, 
+	off: event.off,
+	trigger: event.trigger,
 
 	// DOM Query Shortcuts
 	first: dom.first,
@@ -29,6 +32,9 @@ module.exports = {
 	push: dx.push,
 	puller: dx.puller,
 	pusher: dx.pusher,
+
+	// Hub
+	hub: hub.hub,
 
 	// utils
 	val: utils.val

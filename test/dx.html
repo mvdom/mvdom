@@ -42,7 +42,7 @@
 
 		var tests = {
 
-			_before: function(){
+			_init: function(){
 			},
 
 			_beforeEach: function(){
@@ -52,7 +52,7 @@
 			pull: function(){
 				var data = d.pull(d.first(".form.test-pull"));
 
-				assertEqual(expectedStringify, JSON.stringify(data));
+				assertEquals(expectedStringify, JSON.stringify(data));
 			},
 
 			push: function(){			
@@ -73,11 +73,11 @@
 				// pull the empty form, and change it matches.
 				var dataEmpty = d.pull(formEl);
 				var expectedEmptyFormStringify = '{"a":"","b":"","d":"","e":""}';
-				assertEqual(expectedEmptyFormStringify, JSON.stringify(d.pull(formEl)));
+				assertEquals(expectedEmptyFormStringify, JSON.stringify(d.pull(formEl)));
 
 				// push the orginal data, and then, pull and make sure it matches
 				d.push(formEl, data);
-				assertEqual(expectedStringify, JSON.stringify(d.pull(formEl)));
+				assertEquals(expectedStringify, JSON.stringify(d.pull(formEl)));
 			}
 
 		};		

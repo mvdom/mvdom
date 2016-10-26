@@ -19,6 +19,7 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Async Lifecycle management (hookable)
 - Enhanced DOM eventing (i.e., d.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
 - Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
+- Minimalistic pub/sub (hub) with topic and label selectors. 
 
 Coming soon:
 - Hookable routing
@@ -68,5 +69,46 @@ d.all(selector); // shortcut for document.querySelectorAll
 d.first(el, selector); // shortcut for el.querySelector
 d.first(selector); // shortcut for document.querySelector
 // --------- /DOM Query Shortcuts --------- //
+
+// --------- Hub (pub/sub) --------- //
+var myHub = d.hub("myHub"); // create new hub
+
+myHub.sub(topics, [labels,] handler[, opts]); // subscribe
+
+myHub.pub(topic, [label,], data); // publish
+
+myHub.unsub(opts.ns); // unsubscribe
+// --------- /Hub (pub/sub) --------- //
+```
+
+
+## Hub (pub/sub)
+```js
+var myHub = d.hub("myHub");
+
+// Subcribe to a topic
+// sub(topic,[labels,] handlerFunction, namespace)
+myHub.sub("Task",function(data, info){
+    console.log("topic: ", info.topic, ", label: ", info.label, ", data: ", data);
+},{ns:"namespace"});
+
+// pub(topic, [label,] data)
+var newTask = {id: 123, title: "A first task"};
+myHub.pub("Task", "create", newTask);
+// will print: 'topic: Task,label: create, data: {id: 123, title: "A first task"}'
+
+// or can subscribe only to the create label (here info.label will always be "create")
+myHub.sub("Task", "create", function(data, info){...});
+
+// unsubscribe
+myHub.unsub(ns); // if no namespace provided, the ns will be the function, and used as Key
+
+
+// Multiple labels, with common namespace
+myHub.sub("Task", "create, delete", function(data){...}, "ns1");
+myHub.sub("Project", function(data){...}, "ns1");
+
+// Then, to remove all subscription with ns1
+myHub.unsub("ns1");
 ```
 

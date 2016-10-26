@@ -1,7 +1,6 @@
 'use strict';
 
 var utils = require("./utils.js");
-var view = require("./view.js");
 
 module.exports = {
 	on: on,
@@ -208,52 +207,8 @@ function trigger(els, type, data){
 		el.dispatchEvent(evt);
 	});
 }
-
 // --------- /Module APIs --------- //
 
-// --------- Events Hook --------- //
-view.hook("willInit", function(view){
-	var opts = {ns: "view_" + view.id, ctx: view};
-	if (view.events){
-		bindEvents(view.events, view.el, opts);
-	}
-
-	if (view.docEvents){
-		bindEvents(view.docEvents, document, opts);
-	}
-
-	if (view.winEvents){
-		bindEvents(view.windEvents, document, opts);
-	}
-
-	// TODO: need to allow closest binding.
-});
-
-view.hook("willDetach", function(view){
-	var ns = {ns: "view_" + view.id};
-	off(document, ns);
-	off(window, ns);
-	// TODO: need to unbind closest binding
-});
-
-function bindEvents(events, el, opts){
-	var etxt, etxts, type, selector;
-	for (etxt in events){
-		etxts = etxt.trim().split(";");
-		type = etxts[0].trim();
-		selector = null;
-		if (etxts.length > 1){
-			selector = etxts[1].trim();
-		}
-		on(el, type, selector, events[etxt], opts);
-	}
-}
-
-
-
-// TODO: need to unbind on "willDestroy"
-
-// --------- /Events Hook --------- //
 
 function buildTypeSelectorKey(type, selector){
 	var v = type;

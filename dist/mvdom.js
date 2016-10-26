@@ -47,6 +47,7 @@ function _execQuerySelector(all, el, selector){
 'use strict';
 
 var utils = require("./utils.js");
+var dom = require("./dom.js");
 
 
 module.exports = {
@@ -131,7 +132,7 @@ function puller(selector,func){
 }
 
 function push(el, data) {
-	var dxEls = d.all(el, ".dx");
+	var dxEls = dom.all(el, ".dx");
 
 	dxEls.forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
@@ -170,7 +171,7 @@ function push(el, data) {
 
 function pull(el){
 	var obj = {};
-	var dxEls = d.all(el, ".dx");
+	var dxEls = dom.all(el, ".dx");
 
 	dxEls.forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
@@ -246,11 +247,10 @@ function getPropPath(dxEl){
 
 
 
-},{"./utils.js":5}],3:[function(require,module,exports){
+},{"./dom.js":1,"./utils.js":6}],3:[function(require,module,exports){
 'use strict';
 
 var utils = require("./utils.js");
-var view = require("./view.js");
 
 module.exports = {
 	on: on,
@@ -457,66 +457,296 @@ function trigger(els, type, data){
 		el.dispatchEvent(evt);
 	});
 }
-
 // --------- /Module APIs --------- //
 
-// --------- Events Hook --------- //
-view.hook("willInit", function(view){
-	var opts = {ns: "view_" + view.id, ctx: view};
-	if (view.events){
-		bindEvents(view.events, view.el, opts);
-	}
-
-	if (view.docEvents){
-		bindEvents(view.docEvents, document, opts);
-	}
-
-	if (view.winEvents){
-		bindEvents(view.windEvents, document, opts);
-	}
-
-	// TODO: need to allow closest binding.
-});
-
-view.hook("willDetach", function(view){
-	var ns = {ns: "view_" + view.id};
-	off(document, ns);
-	off(window, ns);
-	// TODO: need to unbind closest binding
-});
-
-function bindEvents(events, el, opts){
-	var etxt, etxts, type, selector;
-	for (etxt in events){
-		etxts = etxt.trim().split(";");
-		type = etxts[0].trim();
-		selector = null;
-		if (etxts.length > 1){
-			selector = etxts[1].trim();
-		}
-		on(el, type, selector, events[etxt], opts);
-	}
-}
-
-
-
-// TODO: need to unbind on "willDestroy"
-
-// --------- /Events Hook --------- //
 
 function buildTypeSelectorKey(type, selector){
 	var v = type;
 	return (selector)?(v + "--" + selector):v;
 }
 
-},{"./utils.js":5,"./view.js":6}],4:[function(require,module,exports){
+},{"./utils.js":6}],4:[function(require,module,exports){
+'use strict';
+
+var utils = require("./utils.js");
+
+module.exports = {
+	hub: hub
+};
+
+// User Hub object exposing the public API
+var hubDic = new Map();
+
+// Data for each hub (by name)
+var hubDataDic = new Map(); 
+
+// get or create a new hub;
+function hub(name){
+	if (name == null){
+		throw "MVDOM INVALID API CALLS: for now, d.hub(name) require a name (no name was given).";
+	}
+	var h = hubDic.get(name); 
+	// if it does not exist, we create and set it. 
+	if (!h){
+		// create the hub
+		h = Object.create(HubProto, {
+			name: { value: name } // read only
+		});
+		hubDic.set(name, h);
+
+		// create the hubData
+		hubDataDic.set(name, new HubDataProto(name));
+	}
+	return h;
+}
+
+hub.delete = function(name){
+	hubDic.delete(name);
+	hubDataDic.delete(name);
+};
+
+// --------- Hub --------- //
+var HubProto = {
+	sub: function(topics, labels, handler, opts){
+		// ARG SHIFTING: if labels arg is a function, then, we swith the argument left
+		if (typeof labels === "function"){
+			opts = handler;
+			handler = labels;			
+			labels = null;
+		}
+		
+		// make arrays
+		topics = utils.splitAndTrim(topics, ",");
+		if (labels != null){
+			labels = utils.splitAndTrim(labels, ",");
+		}
+
+		// make opts (always defined at least an emtpy object)
+		opts = makeOpts(opts);
+
+		// add the event to the hubData
+		var hubData = hubDataDic.get(this.name);
+		hubData.addEvent(topics, labels, handler, opts);
+	}, 
+
+	unsub: function(ns){
+		var hubData = hubDataDic.get(this.name);
+		hubData.removeRefsForNs(ns);
+	}, 
+
+	pub: function(topics, labels, data){
+		// ARG SHIFTING: if data is undefined, we shift args to the RIGHT
+		if (typeof data === "undefined"){
+			data = labels;
+			labels = null;
+		}
+
+		topics = utils.splitAndTrim(topics, ",");
+
+
+		if (labels != null){
+			labels = utils.splitAndTrim(labels, ",");		
+		}
+
+		var hubData = hubDataDic.get(this.name);
+
+		var hasLabels = (labels != null && labels.length > 0);
+
+		// if we have labels, then, we send the labels bound events first
+		if (hasLabels){
+			hubData.getRefs(topics, labels).forEach(function(ref){
+				invokeRef(ref, data);
+			});
+		}
+
+		// then, we send the topic only bound
+		hubData.getRefs(topics).forEach(function(ref){
+			// if this send, has label, then, we make sure we invoke for each of this label
+			if (hasLabels){
+				labels.forEach(function(label){
+					invokeRef(ref,data, label);
+				});
+			}
+			// if we do not have labels, then, just call it.
+			else{
+				invokeRef(ref, data);
+			}
+		});
+
+	}, 
+
+	deleteHub: function(){
+		hubDic.delete(this.name);
+		hubDataDic.delete(this.name);
+	}
+};
+// --------- /Hub --------- //
+
+// --------- HubData --------- //
+function HubDataProto(name){
+	this.name = name;
+	this.refsByNs = new Map();
+	this.refsByTopic = new Map();
+	this.refsByTopicLabel = new Map();
+}
+
+HubDataProto.prototype.addEvent = function(topics, labels, fun, opts){
+	var refs = buildRefs(topics, labels, fun, opts);
+	var refsByNs = this.refsByNs;
+	var refsByTopic = this.refsByTopic;
+	var refsByTopicLabel = this.refsByTopicLabel;
+	refs.forEach(function(ref){
+		// add this ref to the ns dictionary
+		// TODO: probably need to add an custom "ns"
+		if (ref.ns != null){
+			utils.ensureArray(refsByNs, ref.ns).push(ref);
+		}
+		// if we have a label, add this ref to the topicLabel dictionary
+		if (ref.label != null){
+			utils.ensureArray(refsByTopicLabel, buildTopicLabelKey(ref.topic, ref.label)).push(ref);
+		}
+		// Otherwise, add it to this ref this topic
+		else{
+			
+			utils.ensureArray(refsByTopic, ref.topic).push(ref);
+		}
+	});
+};
+
+HubDataProto.prototype.getRefs = function(topics, labels) {
+	var refs = [];
+	var refsByTopic = this.refsByTopic;
+	var refsByTopicLabel = this.refsByTopicLabel;
+	
+	topics.forEach(function(topic){
+		// if we do not have labels, then, just look in the topic dic
+		if (labels == null || labels.length === 0){
+			var topicRefs = refsByTopic.get(topic);
+			if (topicRefs){
+				refs.push.apply(refs, topicRefs);
+			}
+		}
+		// if we have some labels, then, take those in accounts
+		else{
+			labels.forEach(function(label){
+				var topicLabelRefs = refsByTopicLabel.get(buildTopicLabelKey(topic, label));
+				if (topicLabelRefs){
+					refs.push.apply(refs, topicLabelRefs);
+				}
+			});
+		}
+	});
+	return refs;
+};
+
+HubDataProto.prototype.removeRefsForNs = function(ns){
+	var refsByTopic = this.refsByTopic;
+	var refsByTopicLabel = this.refsByTopicLabel;
+	var refsByNs = this.refsByNs;
+
+	var refs = this.refsByNs.get(ns);
+	if (refs != null){
+
+		// we remove each ref from the corresponding dic
+		refs.forEach(function(ref){
+
+			// First, we get the refs from the topic or topiclabel
+			var refList;
+			if (ref.label != null){
+				var topicLabelKey = buildTopicLabelKey(ref.topic, ref.label);
+				refList = refsByTopicLabel.get(topicLabelKey);
+			}else{
+				refList = refsByTopic.get(ref.topic);
+			}
+
+			// Then, for the refList array, we remove the ones that match this object
+			var idx;
+			while((idx = refList.indexOf(ref)) !== -1){
+				refList.splice(idx, 1);
+			}
+		});
+
+		// we remove them all form the refsByNs
+		refsByNs.delete(ns);
+	}
+
+
+};
+
+// static/private
+function buildRefs(topics, labels, fun, opts){
+	var refs = [];
+	topics.forEach(function(topic){
+		// if we do not have any labels, then, just add this topic
+		if (labels == null || labels.length === 0){
+			refs.push({
+				topic: topic,
+				fun: fun, 
+				ns: opts.ns, 
+				ctx: opts.ctx
+			});
+		}
+		// if we have one or more labels, then, we add for those label
+		else{
+			labels.forEach(function(label){
+				refs.push({
+					topic: topic, 
+					label: label, 
+					fun: fun, 
+					ns: opts.ns,
+					ctx: opts.ctx
+				});
+			});			
+		}
+
+	});
+
+	return refs;
+}
+
+
+// static/private: return a safe opts. If opts is a string, then, assume is it the {ns}
+var emptyOpts = {};
+function makeOpts(opts){
+	if (opts == null){
+		opts = emptyOpts;
+	}else{
+		if (typeof opts === "string"){
+			opts = {ns:opts};
+		}
+	}
+	return opts;
+}
+
+// static/private
+function buildTopicLabelKey(topic, label){
+	return topic + "-!-" + label;
+}
+
+// static/private: call ref method (with optional label override)
+function invokeRef(ref, data, label){
+	var info = {
+		topic: ref.topic,
+		label: ref.label || label,
+		ns: ref.ns
+	};
+	ref.fun.call(ref.ctx,data,info);
+}
+// --------- /HubData --------- //
+
+
+
+},{"./utils.js":6}],5:[function(require,module,exports){
 'use strict';
 
 var view = require("./view.js");
-var events = require("./events.js");
+var event = require("./event.js");
 var dom = require("./dom.js");
 var dx = require("./dx.js");
+var hub = require("./hub.js");
 var utils = require("./utils.js");
+
+require("./view-event.js");
 
 module.exports = {
 	// view APIs
@@ -526,10 +756,10 @@ module.exports = {
 	remove: view.remove,
 	empty: view.empty,
 
-	// events API
-	on: events.on, 
-	off: events.off,
-	trigger: events.trigger,
+	// event API
+	on: event.on, 
+	off: event.off,
+	trigger: event.trigger,
 
 	// DOM Query Shortcuts
 	first: dom.first,
@@ -542,6 +772,9 @@ module.exports = {
 	puller: dx.puller,
 	pusher: dx.pusher,
 
+	// Hub
+	hub: hub.hub,
+
 	// utils
 	val: utils.val
 };
@@ -553,7 +786,7 @@ if (window){
 
 
 
-},{"./dom.js":1,"./dx.js":2,"./events.js":3,"./utils.js":5,"./view.js":6}],5:[function(require,module,exports){
+},{"./dom.js":1,"./dx.js":2,"./event.js":3,"./hub.js":4,"./utils.js":6,"./view-event.js":7,"./view.js":8}],6:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -566,7 +799,10 @@ module.exports = {
 	ensureArray: ensureArray,
 
 	// asType
-	asArray: asArray
+	asArray: asArray,
+
+	// string utils
+	splitAndTrim: splitAndTrim
 };
 
 // --------- Object Utils --------- //
@@ -598,58 +834,6 @@ function isEmpty(v){
 
 	return false;
 }
-
-// Method that allow to get or set a value to a root object with a path.to.value
-// for example val({},"contact.job.title","vp"), will popuplate {} as {contact:{job:{title:"vp"}}};
-// and val({contact:{job:{title:"vp"}}}, "cotnact.job.title") === "vp"
-// function val(rootObj, pathToValue, value){
-// 	var setMode = (typeof value !== "undefined");
-// 	var firstNode = rootObj; // value if get mode, rootObj if setMode;
-
-// 	if (!rootObj) {
-// 		return rootObj;
-// 	}
-// 	// for now, return the rootObj if the pathToValue is empty or null or undefined
-// 	if (!pathToValue) {
-// 		return rootObj;
-// 	}
-
-// 	var names = (pathToValue instanceof Array)?pathToValue:pathToValue.split(".");
-
-// 	var i, l = names.length;
-// 	var lIdx = l  -1;
-// 	var name, currentNode = firstNode, nextNode;
-// 	for (i = 0; i < l; i++) {
-// 		name = names[i];
-// 		nextNode = currentNode[name];
-// 		if (setMode){
-// 			// if last index, set the value
-// 			if (i === lIdx){
-// 				currentNode[name] = value;
-// 				currentNode = value;
-// 			}else{
-// 				if (typeof nextNode === "undefined") {
-// 					nextNode = {};
-// 				} 
-// 				currentNode[name] = nextNode;
-// 				currentNode = nextNode;
-// 			}
-// 		}else{
-// 			currentNode = nextNode;
-// 			if (typeof currentNode === "undefined") {
-// 				currentNode = undefined;
-// 				break;
-// 			}			
-// 		}
-
-// 	} // /for
-// 	if (setMode){
-// 		return firstNode;
-// 	}else{
-// 		return currentNode;
-// 	}
-// }
-
 
 // TODO: add the set value
 function val(rootObj, pathToValue, value) {
@@ -775,7 +959,69 @@ function asArray(value){
 }
 // --------- /asType --------- //
 
-},{}],6:[function(require,module,exports){
+// --------- String Utils --------- //
+function splitAndTrim(str, sep){
+	if (str == null){
+		return [];
+	}
+	if (str.indexOf(sep) === -1){
+		return [str.trim()];
+	}
+	return str.split(sep).map(String.trim);
+}
+
+// --------- /String Utils --------- //
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+var _view = require("./view.js");
+var _event = require("./event.js");
+
+// --------- Events Hook --------- //
+_view.hook("willInit", function(view){
+	var opts = {ns: "view_" + view.id, ctx: view};
+	if (view.events){
+		bindEvents(view.events, view.el, opts);
+	}
+
+	if (view.docEvents){
+		bindEvents(view.docEvents, document, opts);
+	}
+
+	if (view.winEvents){
+		bindEvents(view.windEvents, document, opts);
+	}
+
+	// TODO: need to allow closest binding.
+});
+
+_view.hook("willDetach", function(view){
+	var ns = {ns: "view_" + view.id};
+	_event.off(document, ns);
+	_event.off(window, ns);
+	// TODO: need to unbind closest binding
+});
+
+function bindEvents(events, el, opts){
+	var etxt, etxts, type, selector;
+	for (etxt in events){
+		etxts = etxt.trim().split(";");
+		type = etxts[0].trim();
+		selector = null;
+		if (etxts.length > 1){
+			selector = etxts[1].trim();
+		}
+		_event.on(el, type, selector, events[etxt], opts);
+	}
+}
+
+
+
+// TODO: need to unbind on "willDestroy"
+
+// --------- /Events Hook --------- //
+},{"./event.js":3,"./view.js":8}],8:[function(require,module,exports){
 'use strict';
 
 var utils = require("./utils.js");
@@ -981,4 +1227,4 @@ function performHook(name, view){
 
 
 
-},{"./dom.js":1,"./utils.js":5}]},{},[4]);
+},{"./dom.js":1,"./utils.js":6}]},{},[5]);
