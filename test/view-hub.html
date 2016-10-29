@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<title>MVDOM Test: View hub</title>
+
+		<script src="../dist/mvdom.js"></script>
+		<script src="./common/test.js"></script>
+
+		<link href="./common/test.css" rel="stylesheet">
+
+		<script>
+		var d = mvdom;
+		var outs = [];
+
+		d.register("MainView",{
+			create: function(){
+				outs.push("MainView.create");
+				return `<div class='MainView'>Main View ${this.id} 
+									<div class="but but-1">.but-1</div>
+									<div class="rect items">
+										<div class="rect sm item item-1">Item 1</div>
+										<div class="rect sm item item-2">Item 2</div>
+									<div>
+								</div>`;
+			},
+
+			postDisplay: function(){
+				outs.push("MainView.postDisplay");
+			},
+
+			hubEvents: {
+				// flat binding, with hub name as part of the binding string.
+				"dsHub; Task": function(data, info){
+					outs.push("dsHub; Task >> " + data);
+				},				
+				"dsHub; Task; create": function(data, info){
+					outs.push("dsHub; Task; create >> " + data);
+				},
+
+				"dsHub; Task; delete": function(data, info){
+					outs.push("dsHub; Task; delete >> " + data);
+				},
+
+				// hub by hub binding (with name as hubEvents property)
+				dsHub: {
+					"Task; update": function(data, info){
+						outs.push("dsHub: {'Task; update'} >> " + data);
+					}
+				}
+			}
+		});
+
+		var tests = {
+			_init: function(){
+				return d.display("MainView",d.first(".test-content")).then(function(){
+					
+				});				
+			},
+
+			_beforeEach: function(){
+				outs = [];
+			}, 
+
+			testSimplePub: function(){
+				d.hub("dsHub").pub("Task", "pub(Task)");
+				assertEquals(["dsHub; Task >> pub(Task)"], outs);
+			},
+
+			testPubWithLabel: function(){
+				d.hub("dsHub").pub("Task", "create", "pub(Task, create)");				
+				assertEquals(["dsHub; Task; create >> pub(Task, create)", "dsHub; Task >> pub(Task, create)"], outs);
+			}, 
+
+			testPubWithLabelForSubObj: function(){
+				d.hub("dsHub").pub("Task", "update", "pub(Task, update)");				
+				assertEquals(["dsHub: {'Task; update'} >> pub(Task, update)", "dsHub; Task >> pub(Task, update)"], outs);
+			}, 
+
+			testRemoveView: function(){
+				// remove the main view
+				d.remove(d.first(".MainView"));
+				// do the publish the events
+				d.hub("dsHub").pub("Task", "pub(Task)");
+				d.hub("dsHub").pub("Task", "create", "pub(Task, create)");
+				d.hub("dsHub").pub("Task", "update", "pub(Task, update)");				
+				// check that we have nothing
+				assertEquals([], outs);
+			}
+		};
+		
+		</script>
+
+	</head>
+
+	<body>
+		<div class="test-output">
+			<h1>View Hub Test</h1>
+			<ul id="output">
+			</ul>
+		</div>
+		<div class="test-content">
+		</div>						
+	</body>
+</html>

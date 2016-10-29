@@ -8,6 +8,7 @@ var hub = require("./hub.js");
 var utils = require("./utils.js");
 
 require("./view-event.js");
+require("./view-hub.js");
 
 module.exports = {
 	// view APIs

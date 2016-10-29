@@ -178,7 +178,10 @@ function splitAndTrim(str, sep){
 	if (str.indexOf(sep) === -1){
 		return [str.trim()];
 	}
-	return str.split(sep).map(String.trim);
+	return str.split(sep).map(trim);
 }
 
+function trim(str){
+	return str.trim();
+}
 // --------- /String Utils --------- //

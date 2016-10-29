@@ -29,14 +29,14 @@ Coming soon:
 npm install mvdom --save
 ```
 
-## APIs
+## API Overview
 
 ```js
 var d = require('mvdom'); // d is the new $
 
 // --------- View APIs --------- //
 // register a view controller (async lifecycle)
-d.register("ViewName", {createFn,initFn,postDisplayFn,detachFn}, config); 
+d.register("ViewName", {create,init,postDisplay,detach}, config); 
 // display a view in this DOM element el 
 d.display(parentEl, "ViewName"); 
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
@@ -81,9 +81,97 @@ myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
 
+## View 
+
+```js
+var d = mvdom;
+
+d.register("MainView",{
+    // Returns a HTML String or a HTML Element
+    // Must be one parent element
+    create: function(data, config){
+        return `<div class='MainView'>
+                  <div class=".but">${data.message}</div>
+                </div>`
+    }, 
+
+    // (optional) init() will be called after the component element is created
+    // but before it is added to the screen (i.e. added to the parent)
+    init: function(data, config){
+        var view = this; // best practice
+        view.el; // this is the top parent element created for this view
+        // if return a Promise, the flow will wait until the promise is resolved
+    }, 
+
+    // (optional) postDisplay() will be called after the component element is added to the dom
+    // and in another event (used a setTimeout 0). 
+    // Best Practice: This is a good place to add bindings that are not related to UI layout, or need to be done
+    // after the component is displayed
+    postDisplay: function(data, config){
+        // some non UI layout related, or actions that need to be performed after the component is displayed. 
+    }, 
+
+    // (optional) will be called when this view is deleted (from d.remove or d.empty on a parent)
+    detach: function(){
+        
+    }
+    // (optional) bind events to this view (support selector)
+    events: {
+        "click; .but": function(evt){
+            var view = this; // this is the view
+            console.log("click on .but", evt, view);
+        }
+    }, 
+
+    // (optional) bind events to the document 
+    // (will be unbind when destroy this view by calling d.remove on this element or parents or d.empty on any parent )
+    docEvents: {
+        "click; .do-logoff": function(evt){
+            var view = this;            
+        }
+    }, 
+
+    // (optional) same as above, but on window (good to handle window resize)
+    winEvents: {
+        "resize": function(evt){
+            // do something when window is resize
+        }
+    }, 
+
+    // (optional) subscribe to a hub by hub name, topic(s), and optional label(s)
+    hubEvents: {
+        "dataServiceHub": {
+            // subscribe on the dataServiceHub on the topic Task and any labels "create" "update" or "delete"
+            "Task; create, update, delete": function(data, info){
+                var view = this; // the this is this view object
+                console.log("Task has been " + info.label + "d");
+                // if d.hub("dataServiceHub").pub("Task","create",taskEntity)
+                // this will print "Task has been created"
+            }
+        }, 
+        // also support flat notation
+        "dataServiceHub; Task; create, update, delete": function(){
+            // same binding as above
+        }
+    }
+
+})
+```
+
+Then, to display `MainView` into a html element, just do. 
+
+```js
+// (viewName, parentHtmlElement, data)
+d.display("MainView", d.first("body"), {message:"hello from mvdom"});
+// Note: d.first is just a shortcut to document.querySelector
+```
+
+
 
 ## Hub (pub/sub)
 ```js
+var d = mvdom;
+
 var myHub = d.hub("myHub");
 
 // Subcribe to a topic
