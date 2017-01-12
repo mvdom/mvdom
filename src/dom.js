@@ -18,13 +18,15 @@ function all(el, selector){
 
 function closest(el, selector){
 	var tmpEl = el;
-	while (tmpEl !== document){
+
+	// use "!=" for null and undefined
+	while (tmpEl != null && tmpEl !== document){
 		if (tmpEl.matches(selector)){
 			return tmpEl;
 		}
 		tmpEl = tmpEl.parentElement;		
 	}
-	return false;
+	return null;
 }
 
 function _execQuerySelector(all, el, selector){
