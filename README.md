@@ -140,7 +140,7 @@ d.register("MainView",{
 
     // (optional) subscribe to a hub by hub name, topic(s), and optional label(s)
     hubEvents: {
-        "dataServiceHub": {
+        dataServiceHub: {
             // subscribe on the dataServiceHub on the topic Task and any labels "create" "update" or "delete"
             "Task; create, update, delete": function(data, info){
                 var view = this; // the this is this view object
@@ -151,7 +151,7 @@ d.register("MainView",{
         }, 
         // also support flat notation
         "dataServiceHub; Task; create, update, delete": function(){
-            // same binding as above
+           // same binding as above
         }
     }
 
@@ -198,5 +198,13 @@ myHub.sub("Project", function(data){...}, "ns1");
 
 // Then, to remove all subscription with ns1
 myHub.unsub("ns1");
+
+var obj = {name: "myObject"};
+
+myHub.sub("Project", function(data){
+    this.name; // "myObject"
+}, {ns:"ns1", ctx: obj});
+
+
 ```
 

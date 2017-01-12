@@ -40,9 +40,6 @@ function bindEvents(events, el, opts){
 		_event.on(el, type, selector, events[etxt], opts);
 	}
 }
-
-
-
 // TODO: need to unbind on "willDestroy"
 
 // --------- /Events Hook --------- //
