@@ -36,6 +36,42 @@
 
 				// should be the first container from this node the D container
 				assertEquals("D",d.closest(barEl,".container").childNodes[0].textContent.trim());
+			},
+
+			testNext: function(){
+				var firstEl = d.first(".rect.el-a");
+				
+				// test just next one
+				var nextEl = d.next(firstEl,".rect");
+				assertEquals("B 1", nextEl.innerHTML);
+				
+				// test couple ahead
+				nextEl = d.next(firstEl,".rect.el-c");
+				assertEquals("C 1", nextEl.innerHTML);
+
+				var lastEl = d.next(firstEl, ".rect.el-d");
+				assertEquals("rect el-d container", lastEl.classList.toString());				
+
+				nextEl = d.next(lastEl,".rect");
+				assertEquals(null, nextEl);
+
+				// test with null el
+				assertEquals(null, d.next(null,".rect"));
+			},
+
+			testPrev: function(){
+				var lastEl = d.first(".rect.el-d");
+				
+				// test just prev one
+				var prevEl = d.prev(lastEl,".rect");
+				assertEquals("C 3", prevEl.innerHTML);
+				
+				var firstEl = d.first(".rect.el-a");
+				prevEl = d.prev(firstEl,".rect");
+				assertEquals(null, prevEl);
+
+				// test with null el
+				assertEquals(null, d.prev(null,".rect"));
 			}
 
 		};		

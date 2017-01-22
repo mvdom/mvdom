@@ -11,6 +11,8 @@ require("./view-event.js");
 require("./view-hub.js");
 
 module.exports = {
+	version: "0.3.3-SNAPSHOT",
+	
 	// view APIs
 	hook: view.hook,
 	register: view.register,
@@ -27,6 +29,8 @@ module.exports = {
 	first: dom.first,
 	all: dom.all,
 	closest: dom.closest,
+	next: dom.next,
+	prev: dom.prev,
 
 	// DOM Push/Pull
 	pull: dx.pull,
