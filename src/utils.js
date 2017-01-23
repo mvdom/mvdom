@@ -156,8 +156,8 @@ function asArray(value){
 		if (value instanceof Array){
 			return value;
 		}
-		// not an Array but still have some arrayish methods (probably a NodeList)
-		else if (value.forEach && typeof value.length !== "undefined"){
+		// If it is a nodeList, copy the elements into a real array
+		else if (value.constructor && value.constructor.name === "NodeList"){
 			return Array.prototype.slice.call(value);
 		}
 		// otherwise we add value

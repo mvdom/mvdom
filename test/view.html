@@ -12,6 +12,7 @@
 		<script>
 		var d = mvdom;
 		var outs = [];
+		var view0, view1;
 
 		d.register("MainView",{
 			create: function(){
@@ -70,8 +71,6 @@
 			outs.push("hook.willCreate");
 		});
 
-		var view2;
-
 		var tests = {
 			_init: function(){
 			},
@@ -81,7 +80,8 @@
 			}, 
 
 			testSimpleMainViewAndHook: function(){
-				return d.display("MainView",d.first(".test-content")).then(function(){
+				return d.display("MainView",d.first(".test-content")).then(function(view){
+					view0 = view;
 					assertEquals(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
 				});				
 			}, 
@@ -109,18 +109,19 @@
 
 			testAddMainView: function(){
 				return d.display("MainView", d.first(".test-content")).then(function(view){
-					view2 = view;
-					assertEquals(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+					view1 = view;
 				});
 			},
 
 			testRemoveSecondMainView: function(){
-				// TODO: need to check that the docEvents binding was off
+				// we remove the second view (view1), and trigger a custom event
 				d.remove(d.all(".d-view.MainView")[1]);
-				outs = [];
-				d.first(view2.el, ".but-1").click();
-				console.log(outs);
+				d.trigger(document,"CUSTOM-1");
+				// here we should have only the view left that added the text in the outs
+				assertEquals(["CUSTOM-1 0"], outs);
 			}	
+
+			// TODO: need to test nested view remove
 		};
 		
 		</script>
