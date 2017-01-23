@@ -13,13 +13,13 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 
 ## Characteristics
 
-- Zero dependency, micro libary (< 10kb min, < 5kb gzip).
+- Zero dependency, micro libary (< 12kb min, < 5kb gzip).
 - Template agnostic (string templating friendly, e.g., Handlebars)
 - Dead simple APIs (e.g. d.register(name, controller), d.display(name, parent))
 - Async Lifecycle management (hookable)
 - Enhanced DOM eventing (i.e., d.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
 - Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
-- Minimalistic pub/sub (hub) with topic and label selectors. 
+- Minimalistic but powerful pub/sub (hub) with topic and label selectors. 
 
 Coming soon:
 - Hookable routing
@@ -68,6 +68,9 @@ d.all(selector); // shortcut for document.querySelectorAll
 
 d.first(el, selector); // shortcut for el.querySelector
 d.first(selector); // shortcut for document.querySelector
+
+d.next(el, selector); // shortcut to find the next sibling element matching the selector
+d.prev(el, selector); // shortcut to find the previous sibling element matching the selector
 // --------- /DOM Query Shortcuts --------- //
 
 // --------- Hub (pub/sub) --------- //
