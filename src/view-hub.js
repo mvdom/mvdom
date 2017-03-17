@@ -20,7 +20,7 @@ _view.hook("willInit", function(view){
 	// TODO: need to allow closest binding.
 });
 
-_view.hook("willDetach", function(view){
+_view.hook("willRemove", function(view){
 	var ns = "view_" + view.id;
 	var infoList = listHubInfo(view.hubEvents);
 	infoList.forEach(function(info){

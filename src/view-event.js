@@ -21,11 +21,11 @@ _view.hook("willInit", function(view){
 	// TODO: need to allow closest binding.
 });
 
-_view.hook("willDetach", function(view){
+_view.hook("willRemove", function(view){
 	var ns = {ns: "view_" + view.id};
 	_event.off(document, ns);
 	_event.off(window, ns);
-	// TODO: need to unbind closest binding
+	// TODO: need to unbind closest/parents binding
 });
 
 function bindEvents(events, el, opts){

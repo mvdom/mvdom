@@ -115,9 +115,12 @@ d.register("MainView",{
     }, 
 
     // (optional) will be called when this view is deleted (from d.remove or d.empty on a parent)
-    detach: function(){
+    // will be called after the view.el is removed from parent.
+    // info: {parentEl} Simple js object containing the parentEl property.
+    destroy: function(info){
         
     }
+
     // (optional) bind events to this view (support selector)
     events: {
         "click; .but": function(evt){
@@ -172,6 +175,7 @@ d.display("MainView", d.first("body"), {message:"hello from mvdom"});
 
 
 ## Hub (pub/sub)
+
 ```js
 var d = mvdom;
 

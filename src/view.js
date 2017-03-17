@@ -24,8 +24,8 @@ var hooks = {
 	didDisplay: [],
 	willPostDisplay: [],
 	didPostDisplay: [], 
-	willDetach: [],
-	didDetach: []
+	willRemove: [],
+	didRemove: []
 };
 
 // --------- Public APIs --------- //
@@ -62,12 +62,7 @@ function display(name, parentEl, data, config){
 
 function empty(els){
 	utils.asArray(els).forEach(function(el){
-		// first we detach all eventual children that were a view
-		detachChildren(el);
-		// Then, we can remove all of the d.
-		while (el.lastChild) {
-			el.removeChild(el.lastChild);
-		}
+		removeEl(el, true); // true to say childrenOnly
 	});
 }
 
@@ -77,32 +72,38 @@ function remove(els){
 	});
 }
 // --------- /Public APIs --------- //
-function detachChildren(el){
-	var viewEls = utils.asArray(dom.all(el, ".d-view"));
-	if (viewEls){
-		viewEls = viewEls.reverse();
-		viewEls.forEach(function(elItem){
-			doDetach(elItem._view);
-		});
-	}	
+
+// will 
+function removeEl(el, childrenOnly){
+	childrenOnly = (childrenOnly === true) ;
+
+	// first we get the children view els
+	var childrenViewEls = utils.asArray(dom.all(el, ".d-view"));
+
+	// then, we reverse it, because, we to start removing/destroying from the leaf
+	var viewEls = childrenViewEls.reverse();
+
+	viewEls.forEach(function(viewEl){
+		doRemove(viewEl._view);
+		// if we have children only, we have 
+	});
+
+	// if it is removing only the children, then, let's make sure that all direct children elements are removed
+	// (as the logic above only remove the viewEl)
+	if (childrenOnly){
+		// Then, we can remove all of the d.
+		while (el.lastChild) {
+			el.removeChild(el.lastChild);
+		}
+	}else{
+		if (el._view){
+			doRemove(el._view);
+		}
+	}
+
 }
 
-function removeEl(el){
-	// first get all of the possible children that are views (d-view) and detach them. 
-	detachChildren(el);
 
-	if (el._view){
-		doDetach(el._view);
-	}
-	
-	// finally remove it from the DOM
-	// NOTE: this means that the detach won't remove the node from the DOM
-	//       which avoid removing uncessary node, but means that didDetach will
-	//       still have a view.el in the DOM
-	if (el.parentNode){
-		el.parentNode.removeChild(el);
-	}
-}
 
 // return the "view" instance
 // TODO: need to be async as well and allowed for loading component if not exist
@@ -182,13 +183,26 @@ function doPostDisplay(view, data){
 	});
 }
 
-function doDetach(view){
-	performHook("willDetach", view);
+function doRemove(view){
+	// Note: on willRemove all of the events bound to documents, window, parentElements, hubs will be unbind.
+	performHook("willRemove", view);
 
-	view.detached = true;
+	// remove it from the DOM
+	// NOTE: this means that the detach won't remove the node from the DOM
+	//       which avoid removing uncessary node, but means that didDetach will
+	//       still have a view.el in the DOM
+	var parentEl;
+	if (view.el && view.el.parentNode){
+		parentEl = view.el.parentNode;
+		view.el.parentNode.removeChild(view.el);
+	}	
+
+	// we call 
+	if (view.destroy){
+		view.destroy({parentEl:parentEl});
+	}
 	
-	performHook("didDetach", view);
-
+	performHook("didRemove", view);
 }
 
 
