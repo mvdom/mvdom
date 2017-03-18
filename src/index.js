@@ -11,7 +11,7 @@ require("./view-event.js");
 require("./view-hub.js");
 
 module.exports = {
-	version: "0.3.3",
+	version: "0.3.5",
 	
 	// view APIs
 	hook: view.hook,
