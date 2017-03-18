@@ -80,9 +80,10 @@ function removeEl(el, childrenOnly){
 	// first we get the children view els
 	var childrenViewEls = utils.asArray(dom.all(el, ".d-view"));
 
-	// then, we reverse it, because, we to start removing/destroying from the leaf
+	// then, reverse it to remove/destroy from the leaf
 	var viewEls = childrenViewEls.reverse();
 
+	// remove 
 	viewEls.forEach(function(viewEl){
 		doRemove(viewEl._view);
 		// if we have children only, we have 
@@ -96,8 +97,14 @@ function removeEl(el, childrenOnly){
 			el.removeChild(el.lastChild);
 		}
 	}else{
+		// if it is a view, we remove the viewwith doRemove
 		if (el._view){
 			doRemove(el._view);
+		}else{
+			if (el.parentNode){
+				el.parentNode.removeChild(el);	
+			}
+			
 		}
 	}
 
