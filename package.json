@@ -1,12 +1,13 @@
 {
   "name": "mvdom",
-  "version": "0.3.5",
+  "version": "0.3.6-SNAPTSHOT",
   "description": "DOM Centric MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
   "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mvdom/mvdom.git"
   },
+  "keywords":["html5", "DOM Centric", "Patterns", "html", "framework", "mvc", "web-framework", "handlebars"],
   "dependencies": {},
   "devDependencies": {
     "browserify": "^13.0.1",
