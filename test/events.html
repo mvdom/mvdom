@@ -12,6 +12,7 @@
 		<script>
 		var d = mvdom;
 		var outs = [];
+		var assertEquals = assertEquals;
 
 		var tests = {
 			_init: function(){
@@ -57,30 +58,39 @@
 				});
 
 	
+				d.on(el, "click", ".do-select", function(evt){
+					outs.push(evt.target.className);
+					outs.push(evt.currentTarget.className);
+					outs.push(evt.selectTarget.className);
+				});
 			},
 
 			_beforeEach: function(){
 				outs = [];
 			}, 
 
+			// test event binding with custom event after
 			clickOnDoSave: function(){
 				d.first(".do-save").click();
 				// check size and last
 				assertEquals(["MainView click", ".do-save click", "DOSAVE"],outs);
 			}, 
 
+			// unbind the save button (check result as well)
 			clickOnDoUnbindSave: function(){
 				d.first(".do-unbind-save").click();
 				// check size and last
 				assertEquals(["MainView click", ".do-unbind-save click"],outs);
 			}, 
 
+			// check that the save button has been unbound
 			clickOnDoSaveAfterUnbind: function(){				
 				d.first(".do-save").click();
 				// check size and last
 				assertEquals(["MainView click"],outs);				
 			}, 
 
+			// check that binding with namespace worked, and then unbind (and check)
 			clickOnDoUnbindNS: function(){
 				d.first(".do-ns-1").click();
 				d.first(".do-ns-2").click();
@@ -91,12 +101,28 @@
 					"MainView click", ".do-unbind-ns"],outs);				
 			},
 
+			// check that the unbinding by namespace worked
 			clickOnDoNs: function(){
 				d.first(".do-ns-1").click();
 				d.first(".do-ns-2").click();
 				d.first(".do-other").click();
 				assertEquals(["MainView click", "MainView click", "MainView click", ".do-other"],outs);
-			}
+			}, 
+
+			// test at event.selectTarget is set correctly when event is triggered on the selected element
+			clickOnDoSelect: function(){
+				d.first(".do-select").click();
+				// main view event, event.target, event.currentTarget, event.selectTarget
+				assertEquals(outs,["MainView click", "but do-select", "MainView", "but do-select"], outs);
+			},
+
+			// test at the event.selectTarget when event occurs on one of the children
+			clickOnDoSelectSub: function(){
+				d.first(".do-select-sub").click();
+
+				// main view event, event.target, event.currentTarget, event.selectTarget
+				assertEquals(["MainView click", "but do-select-sub", "MainView", "but do-select"], outs);
+			}			
 
 		};		
 		
@@ -118,6 +144,7 @@
 				<div class="but do-ns-2">.do-ns-2</div>
 				<div class="but do-unbind-ns">.do-unbind-ns</div>
 				<div class="but do-other">.do-other</div>
+				<div class="but do-select">.do-select <div class="but do-select-sub">sub</div></div>
 			</div>
 		</div>		
 	</body>

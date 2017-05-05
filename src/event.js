@@ -42,6 +42,8 @@ function on(els, type, selector, listener, opts){
 				var ctx = (opts)?opts.ctx:null;
 				// if the target match the selector, then, easy, we call the listener
 				if (target.matches(selector)){
+					// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
+					evt.selectTarget = target;
 					listener.call(ctx,evt);
 				}
 				// now, if it does not, perhaps something in between the target and currentTarget
@@ -51,8 +53,8 @@ function on(els, type, selector, listener, opts){
 					// TODO: might need to check that tgt is not undefined as well. 
 					while (tgt !== null && tgt !== currentTarget && tgt !== document){
 						if (tgt.matches(selector)){
-							// Note: This is the mouseEvent are readonly, we cannot change the currentTarget, so the user will have to do a d.closest.
-							// Note: We might want to think about the jQuery approach to duplicate the event and trigger another event with the currentTarget
+							// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
+							evt.selectTarget = tgt;
 							listener.call(ctx,evt);
 							tgt = null;
 							break;

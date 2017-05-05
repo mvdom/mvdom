@@ -46,7 +46,7 @@ d.hook("willCreate", fn(view){});
 // --------- DOM Event Helpers --------- //
 // register a listener for this event type on one or more elements
 d.on(els, type, listener);
-// register a listener for this type and selector on one or more elements.  
+// register a listener for this type and selector on one or more elements (with event.selectTarget when selector).  
 d.on(els, type, selector, listener); 
 // register listener with optional namespace or context (this)
 d.on(els, type, [selector,] {ns,context});
@@ -172,7 +172,27 @@ d.display("MainView", d.first("body"), {message:"hello from mvdom"});
 // Note: d.first is just a shortcut to document.querySelector
 ```
 
+## DOM events
 
+All events forwarded by the `mvdom.on` are the native DOM events even when selectors are used. When selectors are used, mvdom add one property to the native event object and that is `.selectTarget`. For example,
+
+```html
+<div class="item">
+   <div class="sub-item">text</div>
+</div>
+```
+
+
+```js
+var baseEl = document;
+mvdom.on(document, "click", ".item", function(evt){
+  evt.target; // can be the .sub-item or .item depending where the click occurs
+  evt.currentTarget; // baseEl or document if not specified
+  evt.selectTarget; // will always be .item (even when .sub-item get clicked)
+});
+```
+
+Note: `.selectTarget` is only set when we have a selector.
 
 ## Hub (pub/sub)
 

@@ -3,10 +3,11 @@
 
 	document.addEventListener("DOMContentLoaded", function(event) {
 		var d = mvdom;
-		outputEl = d.first("#output");
+		var outputEl = window.outputEl = d.first("#output");
 		
 		
 		var beforeReturn = null;
+		
 		if (tests._init){
 			beforeReturn = tests._init();
 		}
@@ -33,7 +34,7 @@
 					}
 
 					// create the html element for this test
-					itemEl = document.createElement("li"); 		
+					var itemEl = document.createElement("li"); 		
 					itemEl.innerHTML = label(name) + " running";
 					outputEl.appendChild(itemEl);
 
