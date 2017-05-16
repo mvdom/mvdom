@@ -73,20 +73,26 @@ function remove(els){
 }
 // --------- /Public APIs --------- //
 
-// will 
+// will remove a el or its children
 function removeEl(el, childrenOnly){
 	childrenOnly = (childrenOnly === true) ;
 
-	// first we get the children view els
+	//// First we remove/destory the sub views
 	var childrenViewEls = utils.asArray(dom.all(el, ".d-view"));
 
-	// then, reverse it to remove/destroy from the leaf
+	// Reverse it to remove/destroy from the leaf
 	var viewEls = childrenViewEls.reverse();
 
-	// remove 
+	// call doRemove on each view to have the lifecycle performed (willRemove/didRemove, .destroy)
 	viewEls.forEach(function(viewEl){
-		doRemove(viewEl._view);
-		// if we have children only, we have 
+		if (viewEl._view){
+			doRemove(viewEl._view);	
+		}else{
+			// we should not be here, but somehow it happens in some app code (loggin warnning)
+			console.log("MVDOM - WARNING - the following dom element should have a ._view property but it is not? (safe ignore)", viewEl);
+			// NOTE: we do not need to remove the dom element as it will be taken care by the logic below (avoiding uncessary dom remove)
+		}
+		
 	});
 
 	// if it is removing only the children, then, let's make sure that all direct children elements are removed
