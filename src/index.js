@@ -11,7 +11,7 @@ require("./view-event.js");
 require("./view-hub.js");
 
 module.exports = {
-	version: "0.3.5",
+	version: "0.3.7",
 	
 	// view APIs
 	hook: view.hook,
@@ -46,6 +46,7 @@ module.exports = {
 };
 
 // put this component in the global scope
+// TODO: We might want to have a index-global for putting this in the global scope and index.js not putting it in the global scope. 
 if (window){
 	window.mvdom = module.exports;	
 }

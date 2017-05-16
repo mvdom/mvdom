@@ -10,22 +10,42 @@
 		<link href="./common/test.css" rel="stylesheet">
 
 		<script>
+		/* global assertEquals */
 		var d = mvdom;
 		var outs = [];
+
+		d.register("SubView",{
+			create: function(data){
+				return '<div class="SubView rect sm">SubView</div>';
+			}, 
+			init: function(data){
+				this.el.classList.add("subview-" + data.label);
+				this.el.innerHTML = "SubView-" + data.label;
+			},
+			destroy: function(info){
+				outs.push("SubView.destroy");
+			},			
+			docEvents: {
+				"CUSTOM": function(evt){
+					outs.push("CUSTOM " + this.name + " " + this.id);
+				}
+			}			
+		});
 
 		d.register("MainView",{
 			create: function(){
 				outs.push("MainView.create");
 				return `<div class='MainView'>Main View ${this.id} 
 									<div class="but but-1">.but-1</div>
-									<div class="rect items">
-										<div class="rect sm item item-1">Item 1</div>
-										<div class="rect sm item item-2">Item 2</div>
+									<div class="rect sub-views">
 									<div>
 								</div>`;
 			},
 
 			postDisplay: function(){
+				var containerEl = d.first(this.el, ".sub-views");
+				d.display("SubView", containerEl, {label: "A"});
+				d.display("SubView", containerEl, {label: "B"});
 				outs.push("MainView.postDisplay");
 			},
 
@@ -38,8 +58,8 @@
 					outs.push("click.but-1");
 				},
 
-				"click; .item": function(evt){
-					outs.push("click.item");
+				"click; .SubView": function(evt){
+					outs.push("click.SubView");
 				},
 
 				"click": function(evt){
@@ -48,8 +68,8 @@
 			}, 
 
 			docEvents: {
-				"CUSTOM-1": function(evt){
-					outs.push("CUSTOM-1 " + this.id);
+				"CUSTOM": function(evt){
+					outs.push("CUSTOM " + this.name + " " + this.id);
 				}
 			}, 
 
@@ -84,7 +104,7 @@
 
 			testSimpleMainViewAndHook: function(){
 				return d.display("MainView",d.first(".test-content")).then(function(view){
-					assertEquals(["hook.willCreate", "MainView.create", "MainView.postDisplay"], outs);
+					assertEquals(["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "MainView.postDisplay"], outs);
 				});				
 			}, 
 
@@ -93,10 +113,10 @@
 				assertEquals(["click.but-1", "click.MainView"], outs);
 			},
 
-			testClickItem1: function(){
-				d.first(".item-1").click();
+			testClickSubViewA: function(){
+				d.first(".SubView.subview-A").click();
 
-				assertEquals(["click.item", "click.MainView"], outs);
+				assertEquals(["click.SubView", "click.MainView"], outs);
 			},
 
 			testClickMainView: function(){
@@ -105,22 +125,37 @@
 			}, 
 
 			testCustomDocEvent: function(){
-				d.trigger(document,"CUSTOM-1");
-				assertEquals(["CUSTOM-1 0"], outs);
+				d.trigger(document,"CUSTOM");
+
+				assertEquals(["CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2"], outs);
 			}, 
 
 			testAddMainView: function(){
 				return d.display("MainView", d.first(".test-content")).then(function(view){
+					d.trigger(document,"CUSTOM");
+					assertEquals(["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "MainView.postDisplay", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM MainView 3", "CUSTOM SubView 4", "CUSTOM SubView 5"], outs);	
 				});
 			},
+
+			testCustomDocEvent2MainViews: function(){
+				d.trigger(document,"CUSTOM");
+
+				assertEquals(["CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM MainView 3", "CUSTOM SubView 4", "CUSTOM SubView 5"], outs);
+			}, 
+
+			testEmptySecondMainView: function(){
+				d.empty(d.all(".d-view.MainView")[1]);				
+				d.trigger(document,"CUSTOM");
+				assertEquals(["SubView.destroy", "SubView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM MainView 3"], outs);
+			}, 
 
 			testRemoveSecondMainView: function(){
 				
 				// we remove the second view (view1), and trigger a custom event
 				d.remove(d.all(".d-view.MainView")[1]);
-				d.trigger(document,"CUSTOM-1");
+				d.trigger(document,"CUSTOM");
 				// here we should have only the view left that added the text in the outs
-				assertEquals(["MainView.destroy","CUSTOM-1 0"], outs);
+				assertEquals(["MainView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2"], outs);
 			}	
 
 			// TODO: need to test nested view remove
