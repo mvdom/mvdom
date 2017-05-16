@@ -127,6 +127,9 @@ function doInstantiate(name, config){
 	// set the id
 	view.id = viewIdSeq++;
 
+	// set the name
+	view.name = name;
+
 	return view;
 }
 
