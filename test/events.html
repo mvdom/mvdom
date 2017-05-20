@@ -10,9 +10,9 @@
 		<link href="./common/test.css" rel="stylesheet">
 
 		<script>
+		/* global assertEquals */
 		var d = mvdom;
-		var outs = [];
-		var assertEquals = assertEquals;
+		var outs = [];	
 
 		var tests = {
 			_init: function(){
@@ -57,6 +57,10 @@
 					outs.push("DOSAVE");
 				});
 
+
+				d.on(el, "click, noexist,,, custom1", ".do-multi", function(evt){
+					outs.push(evt.type + ".do-multi");
+				});
 	
 				d.on(el, "click", ".do-select", function(evt){
 					outs.push(evt.target.className);
@@ -122,6 +126,14 @@
 
 				// main view event, event.target, event.currentTarget, event.selectTarget
 				assertEquals(["MainView click", "but do-select-sub", "MainView", "but do-select"], outs);
+			},
+
+			testMultiBinding: function(){
+				var el = d.first(".do-multi");
+				el.click();
+				d.trigger(el, "custom1");
+
+				assertEquals(["MainView click", "click.do-multi", "custom1.do-multi"], outs);
 			}			
 
 		};		
@@ -145,6 +157,7 @@
 				<div class="but do-unbind-ns">.do-unbind-ns</div>
 				<div class="but do-other">.do-other</div>
 				<div class="but do-select">.do-select <div class="but do-select-sub">sub</div></div>
+				<div class="but do-multi">.do-multi</div>
 			</div>
 		</div>		
 	</body>
