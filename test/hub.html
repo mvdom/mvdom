@@ -10,11 +10,13 @@
 		<link href="./common/test.css" rel="stylesheet">
 
 		<script>
+		/* global assertEquals */
 		var d = mvdom;
 		var outs = [];
 		var hub1;
 
-		var customObj = {name: "customA"}
+
+		var customObj = {name: "customA"};
 		var tests = {
 			_init: function(){
 				hub1 = d.hub("hub1");
