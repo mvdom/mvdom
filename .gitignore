@@ -9,31 +9,17 @@
 # ignore node_modules
 node_modules/
 
-# ignore dist
 dist/
 
-# since we use Maven, ant buil.xml will be private for each developers
-#  (if they need their own scripts to do some stuff)
-build.xml
-
-# maven target (we definitely do not want this one in git)
-target/
 # prevent tmp/ should be for dev db and stuff
 tmp/
 #ignore dev/ folder
 dev/
 
-# prevent the compiled .js/.css files to be in the SCM
-templates.js
-*.css
-!src/main/webapp/bootstrap/css/*
 
 # prevent the .map
 *.map
 
-# remove intellij stuff
-*.iml
-.idea/
 
 # Ignore Sublime Text files
 *.sublime-project

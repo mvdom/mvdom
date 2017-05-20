@@ -21,8 +21,6 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
 - Minimalistic but powerful pub/sub (hub) with topic and label selectors. 
 
-Coming soon:
-- Hookable routing
 
 ## Installation
 ```
