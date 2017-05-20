@@ -45,11 +45,11 @@ d.hook("willCreate", fn(view){});
 
 // --------- DOM Event Helpers --------- //
 // register a listener for this event type on one or more elements
-d.on(els, type, listener);
+d.on(els, types, listener);
 // register a listener for this type and selector on one or more elements (with event.selectTarget when selector).  
-d.on(els, type, selector, listener); 
+d.on(els, types, selector, listener); 
 // register listener with optional namespace or context (this)
-d.on(els, type, [selector,] {ns,context});
+d.on(els, types, [selector,] {ns,context});
 
 // unregister a listener
 d.off(els, type, [selector,] listener);
@@ -193,6 +193,13 @@ mvdom.on(document, "click", ".item", function(evt){
 ```
 
 Note: `.selectTarget` is only set when we have a selector.
+
+Multi events bind can be done with ","
+
+```js
+mvdom.on(someEl, "webkitTransitionEnd, transitionend", ...)
+```
+
 
 ## Hub (pub/sub)
 
