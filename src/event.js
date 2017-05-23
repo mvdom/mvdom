@@ -45,7 +45,7 @@ function on(els, types, selector, listener, opts){
 					var currentTarget = evt.currentTarget;
 					var ctx = (opts)?opts.ctx:null;
 					// if the target match the selector, then, easy, we call the listener
-					if (dom._matchesFn.call(target,selector)){
+					if (target && dom._matchesFn.call(target,selector)){
 						// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
 						evt.selectTarget = target;
 						listener.call(ctx,evt);
