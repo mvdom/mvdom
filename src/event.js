@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require("./utils.js");
+var dom = require("./dom.js");
 
 module.exports = {
 	on: on,
@@ -44,7 +45,7 @@ function on(els, types, selector, listener, opts){
 					var currentTarget = evt.currentTarget;
 					var ctx = (opts)?opts.ctx:null;
 					// if the target match the selector, then, easy, we call the listener
-					if (target.matches(selector)){
+					if (dom._matchesFn.call(target,selector)){
 						// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
 						evt.selectTarget = target;
 						listener.call(ctx,evt);
@@ -55,7 +56,7 @@ function on(els, types, selector, listener, opts){
 						tgt = evt.target.parentNode;
 						// TODO: might need to check that tgt is not undefined as well. 
 						while (tgt !== null && tgt !== currentTarget && tgt !== document){
-							if (tgt.matches(selector)){
+							if (dom._matchesFn.call(tgt,selector)){
 								// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
 								evt.selectTarget = tgt;
 								listener.call(ctx,evt);
@@ -104,7 +105,7 @@ function on(els, types, selector, listener, opts){
 
 			return this;
 
-		}); // /types.forEach(function(type){
+		}); // /utils.asArray(els).forEach(function(el){
 
 	}); // /types.forEach(function(type){
 
