@@ -8,6 +8,10 @@ module.exports = {
 	prev: prev
 };
 
+// for Edge, still do not support .matches :(
+var tmpEl = document.createElement("div");
+var matchesFn = tmpEl.matches || tmpEl.webkitMatchesSelector || tmpEl.msMatchesSelector;
+
 // --------- DOM Query Shortcuts --------- //
 
 // Shortcut for .querySelector
@@ -37,9 +41,10 @@ function prev(el, selector){
 function closest(el, selector){
 	var tmpEl = el;
 
+	
 	// use "!=" for null and undefined
 	while (tmpEl != null && tmpEl !== document){
-		if (tmpEl.matches(selector)){
+		if (matchesFn.call(tmpEl,selector)){
 			return tmpEl;
 		}
 		tmpEl = tmpEl.parentElement;		
@@ -56,7 +61,8 @@ function _sibling(next, el, selector){
 
 	// use "!=" for null and undefined
 	while (tmpEl != null && tmpEl !== document){
-		if (tmpEl.matches && tmpEl.matches(selector)){
+		// only if nodeType, otherwise, 
+		if (tmpEl.nodeType === 1 && matchesFn.call(tmpEl, selector)){
 			return tmpEl;
 		}
 		tmpEl = tmpEl[sibling];
