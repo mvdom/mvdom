@@ -1,6 +1,6 @@
 {
   "name": "mvdom",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "DOM Centric MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
   "main": "src/index.js",
   "repository": {
