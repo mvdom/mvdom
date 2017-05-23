@@ -1,16 +1,16 @@
-'use strict';
+
 
 module.exports = {
 	// Object Utils
 	isNull: isNull,
 	isEmpty: isEmpty,
-	val: val,
+	val: val, // public
 	ensureMap: ensureMap,
 	ensureSet: ensureSet,
 	ensureArray: ensureArray,
 
 	// asType
-	asArray: asArray,
+	asArray: asArray, // public
 
 	// string utils
 	splitAndTrim: splitAndTrim
@@ -46,7 +46,7 @@ function isEmpty(v){
 	return false;
 }
 
-// TODO: add the set value
+// TODO: need to document
 function val(rootObj, pathToValue, value) {
 	var setMode = (typeof value !== "undefined");
 
@@ -158,6 +158,10 @@ function asArray(value){
 		}
 		// If it is a nodeList, copy the elements into a real array
 		else if (value.constructor && value.constructor.name === "NodeList"){
+			return Array.prototype.slice.call(value);
+		} 
+		// if it is a function arguments
+		else if (value.toString() === "[object Arguments]"){
 			return Array.prototype.slice.call(value);
 		}
 		// otherwise we add value

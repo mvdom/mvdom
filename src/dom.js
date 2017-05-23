@@ -1,5 +1,7 @@
 'use strict';
 
+var utils = require("./utils.js");
+
 module.exports = {
 	first: first, 
 	all: all, 
@@ -8,9 +10,11 @@ module.exports = {
 	prev: prev
 };
 
+
 // for Edge, still do not support .matches :(
 var tmpEl = document.createElement("div");
 var matchesFn = tmpEl.matches || tmpEl.webkitMatchesSelector || tmpEl.msMatchesSelector;
+module.exports._matchesFn = matchesFn; // make it available for this module (this will be internal only)
 
 // --------- DOM Query Shortcuts --------- //
 

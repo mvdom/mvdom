@@ -61,10 +61,11 @@
 				var data = d.pull(formEl);
 
 				// clean the form
-				d.all(".form .dx").forEach(function(el){
-					if (el.matches("input[type='checkbox'], input[type='radio']")){
+				d.asArray(d.all(".form .dx")).forEach(function(el){
+					var matchesFn = el.matches || el.webkitMatchesSelector;
+					if (matchesFn.call(el, "input[type='checkbox'], input[type='radio']")){
 						el.checked = null;
-					}else if (el.matches("input")){
+					}else if (matchesFn.call(el,"input")){
 						el.value = null;
 					}else {
 						el.innerHTML = "";

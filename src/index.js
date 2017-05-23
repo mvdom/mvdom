@@ -42,7 +42,8 @@ module.exports = {
 	hub: hub.hub,
 
 	// utils
-	val: utils.val
+	val: utils.val,
+	asArray: utils.asArray
 };
 
 // put this component in the global scope

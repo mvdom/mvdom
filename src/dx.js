@@ -1,8 +1,6 @@
-'use strict';
 
-var utils = require("./utils.js");
 var dom = require("./dom.js");
-
+var utils = require("./utils.js");
 
 module.exports = {
 	pull: pull, 
@@ -88,13 +86,14 @@ function puller(selector,func){
 function push(el, data) {
 	var dxEls = dom.all(el, ".dx");
 
-	dxEls.forEach(function(dxEl){
+	utils.asArray(dxEls).forEach(function(dxEl){
+		
 		var propPath = getPropPath(dxEl);
 		var value = utils.val(data,propPath);
 		var i = 0, selector, fun, l = _pushers.length;
 		for (; i<l ; i++){
 			selector = _pushers[i][0];
-			if (dxEl.matches(selector)){
+			if (dom._matchesFn.call(dxEl,selector)){
 				fun = _pushers[i][1];
 				fun.call(dxEl,value);
 				break;
@@ -127,12 +126,12 @@ function pull(el){
 	var obj = {};
 	var dxEls = dom.all(el, ".dx");
 
-	dxEls.forEach(function(dxEl){
+	utils.asArray(dxEls).forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
 		var i = 0, selector, fun, l = _pullers.length;		
 		for (; i<l ; i++){
 			selector = _pullers[i][0];
-			if (dxEl.matches(selector)){
+			if (dom._matchesFn.call(dxEl,selector)){
 				fun = _pullers[i][1];
 				var existingValue = utils.val(obj,propPath);
 				var value = fun.call(dxEl,existingValue);
