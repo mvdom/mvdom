@@ -36,7 +36,7 @@ var d = require('mvdom'); // d is the new $
 // register a view controller (async lifecycle)
 d.register("ViewName", {create,init,postDisplay,detach}, config); 
 // display a view in this DOM element el 
-d.display(parentEl, "ViewName"); 
+d.display("ViewName", parentEl); 
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
 d.hook("willCreate", fn(view){}); 
 // --------- /View APIs --------- //
