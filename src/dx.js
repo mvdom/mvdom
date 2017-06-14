@@ -83,17 +83,27 @@ function puller(selector,func){
 	_pullers.unshift([selector,func]);
 }
 
-function push(el, data) {
-	var dxEls = dom.all(el, ".dx");
+function push(el, selector_or_data, data) {
+	var selector;
+
+	// if data is null or undefined
+	if (data == null){
+		selector = ".dx";
+		data = selector_or_data;
+	}else{
+		selector = selector_or_data;
+	}
+
+	var dxEls = dom.all(el, selector);
 
 	utils.asArray(dxEls).forEach(function(dxEl){
 		
 		var propPath = getPropPath(dxEl);
 		var value = utils.val(data,propPath);
-		var i = 0, selector, fun, l = _pushers.length;
+		var i = 0, pusherSelector, fun, l = _pushers.length;
 		for (; i<l ; i++){
-			selector = _pushers[i][0];
-			if (dom._matchesFn.call(dxEl,selector)){
+			pusherSelector = _pushers[i][0];
+			if (dom._matchesFn.call(dxEl,pusherSelector)){
 				fun = _pushers[i][1];
 				fun.call(dxEl,value);
 				break;
@@ -102,16 +112,19 @@ function push(el, data) {
 	});
 }
 
-function pull(el){
+function pull(el, selector){
 	var obj = {};
-	var dxEls = dom.all(el, ".dx");
+
+	selector = (selector)?selector:".dx";
+
+	var dxEls = dom.all(el, selector);
 
 	utils.asArray(dxEls).forEach(function(dxEl){
 		var propPath = getPropPath(dxEl);
-		var i = 0, selector, fun, l = _pullers.length;		
+		var i = 0, pullerSelector, fun, l = _pullers.length;		
 		for (; i<l ; i++){
-			selector = _pullers[i][0];
-			if (dom._matchesFn.call(dxEl,selector)){
+			pullerSelector = _pullers[i][0];
+			if (dom._matchesFn.call(dxEl,pullerSelector)){
 				fun = _pullers[i][1];
 				var existingValue = utils.val(obj,propPath);
 				var value = fun.call(dxEl,existingValue);

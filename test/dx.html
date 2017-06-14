@@ -10,10 +10,6 @@
 		<link href="./common/test.css" rel="stylesheet">
 
 		<style>
-		.test-content{
-			display: flex;
-			flex-direction: row;
-		}
 		.form{
 			width: 500px;
 			font-size: 16px;
@@ -30,6 +26,10 @@
 		}
 		.field .ctrl{
 			flex: 1 0 0;
+		}
+
+		.field input{
+			margin-right: 16px;
 		}
 
 		</style>
@@ -73,14 +73,45 @@
 				});
 
 				// pull the empty form, and change it matches.
-				var dataEmpty = d.pull(formEl);
 				var expectedEmptyFormStringify = '{"a":"","b":"","d":"","e":""}';
 				assertEquals(expectedEmptyFormStringify, JSON.stringify(d.pull(formEl)));
 
 				// push the orginal data, and then, pull and make sure it matches
 				d.push(formEl, data);
 				assertEquals(expectedStringify, JSON.stringify(d.pull(formEl)));
+			}, 
+
+			selectorPull: function(){
+				var el = d.first(".custom-form");
+
+				// test the pull on the .edit .dx
+				var editData = d.pull(el, ".edit .dx");
+				assertEquals({firstName: "firstName1", lastName: "lastName1"}, editData);
+
+				// test the pull on the .view .dx
+				var viewData = d.pull(el, ".view .dx");
+				assertEquals({firstName: "aaa", lastName: "bbb"}, viewData);
+			},
+
+			selectorPush: function(){
+				var el = d.first(".custom-form");
+
+				// NOTE: This test assume the test data properties are in the same order
+				//       as the dom element, as the assertEquals just use a stringify to compare object
+
+				// test the push on the .edit .dx
+				var editData = {firstName: "firstName2", lastName: "lastName2"};
+				d.push(el,".edit .dx", editData);
+				
+
+				// test the push on the .view .dx
+				var viewData = {firstName: "ccc", lastName: "ddd"};
+				d.push(el,".view .dx", viewData);
+
+				assertEquals(editData, d.pull(el,".edit .dx"));
+				assertEquals(viewData, d.pull(el,".view .dx"));
 			}
+
 
 		};		
 		
@@ -95,6 +126,7 @@
 			</ul>
 		</div>
 		<div class="test-content">
+			<h1>Generic dx test</h1>
 			<div class="form test-pull">
 				<div class="field">
 					<label>input a</label>
@@ -164,6 +196,26 @@
 					<div class="ctrl dx" data-dx="e">e-val</div>
 				</div>
 			</div> <!-- /.test-pull -->
-		</div>		
+
+			<h1>Custom selector test</h1>
+			<div class="custom-form">
+				<div class="field">
+					<div class="edit">
+						<input class="dx dx-firstName" value="firstName1">
+					</div>
+					<div class="view">
+						<span class="dx dx-firstName">aaa</span>
+					</div>
+				</div>
+				<div class="field">
+					<div class="edit">
+						<input class="dx dx-lastName" value="lastName1">
+					</div>
+					<div class="view">
+						<span class="dx dx-lastName">bbb</span>
+					</div>
+				</div>				
+			</div>
+		</div>	<!-- /.test-content -->	
 	</body>
 </html>

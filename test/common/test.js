@@ -1,3 +1,4 @@
+/* global tests */
 
 (function(){
 
@@ -87,13 +88,22 @@ function assertEquals(expected, actual){
 			return;
 		}
 
+		// if it is an object, we use stringify
+		if (typeof expected === "object"){
+			if (JSON.stringify(expected) !== JSON.stringify(actual)){
+				throw "";
+			}
+		}
+
 		// if it is not an array, then just compare the reference
-		if (expected !== actual){
+		else if (expected !== actual){
 			throw "";
 		}
 
 	}catch (e){
-		throw "expected '" + expected + "' but got '" + actual + "'";
+		var expectedStr = (typeof expected === "object")?JSON.stringify(expected):expected;
+		var actualStr = (typeof actual === "object")?JSON.stringify(actual):actual;
+		throw "expected '" + expectedStr + "' but got '" + actualStr + "'";
 	}
 
 

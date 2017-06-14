@@ -9,7 +9,7 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Frameworks come and go, languages and runtimes stay.
 - Size is a factor of complexity and starting simple will always scale better.
 
-**Conclusion**: For maximum mileage, start simple, minimalistic, embrace the DOM, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
+**In Short**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
 ## Characteristics
 
@@ -30,59 +30,69 @@ npm install mvdom --save
 ## API Overview
 
 ```js
-var d = require('mvdom'); // d is the new $
 
 // --------- View APIs --------- //
 // register a view controller (async lifecycle)
-d.register("ViewName", {create,init,postDisplay,destroy}[, config]); 
+mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config]); 
 // display a view in this DOM element el 
-d.display("ViewName", parentEl [, config]); 
+mvdom.display("ViewName", parentEl [, config]); 
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
-d.hook("willCreate", fn(view){}); 
+mvdom.hook("willCreate", fn(view){}); 
 // --------- /View APIs --------- //
 
 // --------- DOM Event Helpers --------- //
 // register a listener for this event type on one or more elements
-d.on(els, types, listener);
+mvdom.on(els, types, listener);
 // register a listener for this type and selector on one or more elements (with event.selectTarget when selector).  
-d.on(els, types, selector, listener); 
+mvdom.on(els, types, selector, listener); 
 // register listener with optional namespace or context (this)
-d.on(els, types, [selector,] {ns,context});
+mvdom.on(els, types, [selector,] {ns,context});
 
 // unregister a listener
-d.off(els, type, [selector,] listener);
+mvdom.off(els, type, [selector,] listener)
 // unregister all listeners matching a type and eventual selector. 
-d.off(els, type[, selector]);
+mvdom.off(els, type[, selector])
 // unregister all listeners for a given namespace 'ns'
-d.off(els, {ns});
+mvdom.off(els, {ns})
 
 // trigger a custom event on a given type by default 
-d.trigger(els, "MyCustomEvent", {detail: "cool", cancelable: false});
+mvdom.trigger(els, "MyCustomEvent", {detail: "cool", cancelable: false});
 // --------- DOM Event Helpers --------- //
 
 // --------- DOM Query Shortcuts --------- //
-d.all(el, selector); // shortcut for el.querySelectorAll
-d.all(selector); // shortcut for document.querySelectorAll
+var nodeList = mvdom.all(el, selector); // shortcut for el.querySelectorAll
+var nodeList = mvdom.all(selector); // shortcut for document.querySelectorAll
 
-d.first(el, selector); // shortcut for el.querySelector
-d.first(selector); // shortcut for document.querySelector
+var element = mvdom.first(el, selector); // shortcut for el.querySelector
+var element = mvdom.first(selector); // shortcut for document.querySelector
 
-d.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
-d.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
+var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
+var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
 // --------- /DOM Query Shortcuts --------- //
 
+// --------- DOM Data eXchange (dx) push/pull --------- //
+mvdom.push(el, [selector,] data); // will set the data.property to the matching selector (default ".dx") elements
+var data = mvdom.pull(el[, selector]); // will extract the data from the matching elements (default selector ".dx")
+
+// register custom pushers / pullers (default ones are for html form elements and simple div innerHTML)
+mvdom.pusher(selector, pusherFun(value){this /* dom element*/}); // pusher function set a value to a matching element
+mvdom.puller(selector, pullerFun(){this /* dom element*/}); // puller function returns the value from a matching element element 
+// --------- /DOM Data eXchange (dx) push/pull --------- //
+
 // --------- Hub (pub/sub) --------- //
-var myHub = d.hub("myHub"); // create new hub
+var myHub = mvdom.hub("myHub"); // create new hub
 
 myHub.sub(topics, [labels,] handler[, opts]); // subscribe
 
-myHub.pub(topic, [label,], data); // publish
+myHub.pub(topic, [label,] data); // publish
 
 myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
 
-## mvdom.register(viewName, controller [, config])
+## View Register
+
+#### `mvdom.register(viewName, controller [, config])`
 
 Register a new view with `mvdom.register`. The view controller is responsible for the view lifecycle (which is asynchronous in nature). The only require view controller method, is the `.create([data, config])` which is reponsible to return the HTML.
 
@@ -111,7 +121,7 @@ mvdom.register("MainView",{
     // Best Practice: This is a good place to add bindings that are not related to UI layout, or need to be done
     // after the component is displayed
     postDisplay: function(data, config){
-        // some non UI layout related, or actions that need to be performed after the component is displayed. 
+        // some non UI layout related, or actions that need to be performed after the component is displaye
 
         // if return a promise, the mvdom.display(...).then will resolve when the return promise will be resolve. 
         // however, the mvdom.display(...) promise resolution will always be this view, regardless of the object or promise returns by this function.
@@ -167,7 +177,9 @@ mvdom.register("MainView",{
 })
 ```
 
-## mvdom.display(viewName, referenceDomElement, [data, config])
+## View Display
+
+#### `mvdom.display(viewName, referenceDomElement, [data, config])`
 
 Display a view with `mvdom.display`, for example: 
 
@@ -177,16 +189,10 @@ mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
 // Note: mvdom.first is just a shortcut to document.querySelector
 ```
 
-By default, the `config.append = "last"` which means the referenceDomElement will be the parent and the view element will be added at the end (using `referenceDomElement.appendChild(view.el)`)
 
-If no data, but config, pass null like `mvdom.display("MainView", parentEl, null, {append:"first"})`
+## View Config
 
-In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as `append`. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
-
-
-## mvdom view config
-
-The optional mvdom view `config` argument allow to customize the way the view is managed. It can be set at the registration phase, as well as overriden for each display. 
+The optional mvdom view `config` argument allow to customize the way the view is handled. It can be set at the registration phase, as well as overriden for each display. For now, it is a single property config, `.append`, which tells how to add the new view.el to the DOM.
 
 - append: ("last", "first", "before", "after"). 
     + **"last"**: The _referenceDomElement_ is interpreted as the parent, and the append will use `referenceDomElement.appendChild(view.el)`
@@ -194,10 +200,30 @@ The optional mvdom view `config` argument allow to customize the way the view is
     + **"before"**: The _referenceDomElement_ is interepreted as a sibling, and the append will use the `.insertBefore` the _referenceDomElement_.
     + **"after"**: The _referenceDomElement_ is interepreted as a sibling, and we `.insertBefore` the next sibling of the _referenceDomElement_. If the next sibling is null, use the `referenceDomElement.parentNode.appendChild(view.el)` to add it last.
 
+By default, the `config.append = "last"` which means the referenceDomElement will be the parent and the view element will be added at the end (using `referenceDomElement.appendChild(view.el)`)
 
-## DOM events
+If no data, but config, pass null like `mvdom.display("MainView", parentEl, null, {append:"first"})`
 
-All events forwarded by the `mvdom.on` are the native DOM events even when selectors are used. When selectors are used, mvdom add one property to the native event object and that is `.selectTarget`. For example,
+In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as `append`. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
+
+
+## Dom Event Binding
+
+#### `mvdom.on([el,] eventType, [selector,] eventHander(evt){}[, opts])`
+
+Bind a eventHandler to a dom element(s) for an event type and optional selector. It also support name spacing, and custom context at binding time (i.e. the "this" of the eventHandler) 
+
+- el: (optional) (default document) The base document element to bind the event to. Can also be an array or nodeList of element. 
+- eventType: (required) Multiple are supported with "," (e.g., "webkitTransitionEnd, transitionend")
+- selector: (optional) HTML5 selector, if set, only target matching this selector will trigger the eventHandler
+- eventHandler: (required) The event hander. "this" can be configured via `opts.ctx`
+- opts: (optional)
+    + ctx: eventHandler context (i.e. this)
+    + ns: Binding namespace
+
+Note: Similar to jquery.on, except that the event object (evt) are the native ones, and that the selector are plain HTML5 selectors. 
+
+###### Examples
 
 ```html
 <div class="item">
@@ -211,7 +237,7 @@ var baseEl = document;
 mvdom.on(document, "click", ".item", function(evt){
   evt.target; // can be the .sub-item or .item depending where the click occurs
   evt.currentTarget; // baseEl or document if not specified
-  evt.selectTarget; // will always be .item (even when .sub-item get clicked)
+  evt.selectTarget; // will always be .item element (even when .sub-item get clicked)
 });
 ```
 
@@ -222,6 +248,68 @@ Multi events bind can be done with ","
 ```js
 mvdom.on(someEl, "webkitTransitionEnd, transitionend", ...)
 ```
+
+#### `mvdom.off(els, [type, selector, listener][, opts])`
+
+Unbind event binding that have been bound by `mvdom.on`. 
+
+- `.off(els)` Unbind all bindings added via .on
+- `.off(els, type)` Unbind all bindings of type added via .on
+- `.off(els, type, selector)` Unbind all bindings of type and selector added via .on
+- `.off(els, type, selector, listener)` Unbind all bindings of this type, selector, and listener
+- `.off(els,{ns})` Unbind all bindings from the namespace ns (recommended).
+
+## Dom Data eXchange (push/pull)
+
+`mvdom.push` and `mvdom.pull` provides a simple and extensible way to extract or inject data from and to a DOM sub tree. 
+
+#### `mvdom.push(el, [selector,] data);` 
+Will inject data  to the matching selector (default ".dx") elements. By default, selector is ".dx". 
+
+#### `mvdom.pull(el[, selector]);` 
+Will extract the data from the matching elements (default selector ".dx")
+
+
+##### Example
+
+```html
+<div id="myEl">
+  <fieldset>
+    <input class="dx" name="firstName" value="Mike">
+    <input class="dx" name="lastName" value="Donavan">
+  </fieldset>
+  <div>
+    <div class="dx dx-address-street">123 Main Street</div>
+    <div class="dx" data-dx="address.city">San Francisco</div>
+  </div>
+</div>
+```
+
+```js
+var myEl = mvdom.first("#myEl"); // or document.getElementById
+
+// Extract the data from the element. 
+//   Will first do a ".dx" select, and for each element extract the property path and value from the element.
+var data = mvdom.pull(myEl); 
+// data: {firstName: "Mike", lastName: "Donavan", 
+//        address: {street: "123 Main Street", city: "San Francisco"}}
+
+// Update the DOM with some data
+var updateData = {address: {street: "124 Second Street"}};
+mvdom.push(myEl, updateData)
+```
+
+
+##### More Info (internals)
+
+`mvdom.push` and `mvdom.pull` work on a four step flow:
+
+1) First, the selector is used to select all of the dom element candidates for value extraction or injection. By default, we use the `".dx"` class selector, as class selection is much faster than any other attributes. Custom selector can be provided.
+2) Second, for each element candidate, mvdom extract the property path from the element, `name` attribute, or class name with the `dx-` prefix ('-' be translate to '.'), or with the html attribute `data-dx`. (see example above for an example of each).
+3) Third, it looks default and registered for the appropriate pusher or puller function to inject or extract the value. Default pushers/pullers support html form elements (input, textarea, checkbox, radio) and basic innerHTML set and get, but custom ones can be registered (and will take precedence) by specifying the element matching selector. 
+    + `d.pusher(selector, pusherFun(value){this /* dom element*/});` Register pusher function set a value to a matching dom element
+    + `d.puller(selector, pullerFun(){this /* dom element*/});` Register puller function returns the value from a matching dom 
+4) Fourth, it set the value to the appropriate property path (support nested properties as shown above)
 
 
 ## Hub (pub/sub)
@@ -247,7 +335,6 @@ myHub.sub("Task", "create", function(data, info){...});
 
 // unsubscribe
 myHub.unsub(ns); // if no namespace provided, the ns will be the function, and used as Key
-
 
 // Multiple labels, with common namespace
 myHub.sub("Task", "create, delete", function(data){...}, "ns1");
