@@ -31,11 +31,13 @@ function all(el, selector){
 }
 
 // return the first element next to the el matching the selector
+// if no selector, will return the next Element
 // return null if not found.
 function next(el, selector){
 	return _sibling(true, el, selector);
 }
 
+// if no selector, will return the previous Element
 function prev(el, selector){
 	return _sibling(false, el, selector);
 }
@@ -66,7 +68,7 @@ function _sibling(next, el, selector){
 	// use "!=" for null and undefined
 	while (tmpEl != null && tmpEl !== document){
 		// only if nodeType, otherwise, 
-		if (tmpEl.nodeType === 1 && matchesFn.call(tmpEl, selector)){
+		if (tmpEl.nodeType === 1 && (!selector || matchesFn.call(tmpEl, selector))){
 			return tmpEl;
 		}
 		tmpEl = tmpEl[sibling];
