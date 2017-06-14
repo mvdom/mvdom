@@ -100,26 +100,6 @@ function push(el, data) {
 			}
 		}		
 	});
-
-	// // iterate and process each matched element
-	// return this.each(function() {
-	// 	var $e = $(this);
-
-	// 	$e.find(".dx").each(function(){
-	// 		var $dx = $(this);
-	// 		var propPath = getPropPath($dx);
-	// 		var value = val(data,propPath);
-	// 		var i = 0, selector, fun, l = _pushers.length;
-	// 		for (; i<l ; i++){
-	// 			selector = _pushers[i][0];
-	// 			if ($dx.is(selector)){
-	// 				fun = _pushers[i][1];
-	// 				fun.call($dx,value);
-	// 				break;
-	// 			}
-	// 		}
-	// 	});
-	// });
 }
 
 function pull(el){
@@ -144,31 +124,6 @@ function pull(el){
 	});
 
 	return obj;
-
-	// // iterate and process each matched element
-	// this.each(function() {
-	// 	var $e = $(this);
-
-	// 	$e.find(".dx").each(function(){
-	// 		var $dx = $(this);
-	// 		var propPath = getPropPath($dx);
-	// 		var i = 0, selector, fun, l = _pullers.length;
-	// 		for (; i<l ; i++){
-	// 			selector = _pullers[i][0];
-	// 			if ($dx.is(selector)){
-	// 				fun = _pullers[i][1];
-	// 				var existingValue = val(obj,propPath);
-	// 				var value = fun.call($dx,existingValue);
-	// 				if (typeof value !== "undefined"){
-	// 					val(obj,propPath,value);	
-	// 				}
-	// 				break;
-	// 			}					
-	// 		}
-	// 	});
-	// });		
-	
-	// return obj;
 }
 
 /** 

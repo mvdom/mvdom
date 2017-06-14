@@ -9,7 +9,7 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Frameworks come and go, languages and runtimes stay.
 - Size is a factor of complexity and starting simple will always scale better.
 
-**Conclusion**: For maximum mileage, start simple and minimalistic, embrace the DOM, add only what is strictly need to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
+**Conclusion**: For maximum mileage, start simple, minimalistic, embrace the DOM, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
 ## Characteristics
 
@@ -67,8 +67,8 @@ d.all(selector); // shortcut for document.querySelectorAll
 d.first(el, selector); // shortcut for el.querySelector
 d.first(selector); // shortcut for document.querySelector
 
-d.next(el, selector); // shortcut to find the next sibling element matching the selector
-d.prev(el, selector); // shortcut to find the previous sibling element matching the selector
+d.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
+d.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
 // --------- /DOM Query Shortcuts --------- //
 
 // --------- Hub (pub/sub) --------- //
