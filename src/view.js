@@ -28,6 +28,10 @@ var hooks = {
 	didRemove: []
 };
 
+var defaultConfig = {
+	append: "last"
+};
+
 // --------- Public APIs --------- //
 function hook(name, fun){
 	hooks[name].push(fun);
@@ -121,6 +125,13 @@ function removeEl(el, childrenOnly){
 // return the "view" instance
 // TODO: need to be async as well and allowed for loading component if not exist
 function doInstantiate(name, config){
+
+	// if the config is a string, then assume it is the append directive.
+	if (typeof config === "string"){
+		config = {append: config};
+	}
+
+
 	// get the view def from the dictionary
 	var viewDef = viewDefDic[name];
 
@@ -128,12 +139,12 @@ function doInstantiate(name, config){
 	if (!viewDef){
 		throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
 	}
-	
+
 	// instantiate the view instance
 	var view = Object.assign({}, viewDef.controller);
 
 	// set the config
-	view.config = Object.assign({}, viewDef.config, config);
+	view.config = Object.assign({}, defaultConfig, viewDef.config, config);
 
 	// set the id
 	view.id = viewIdSeq++;
@@ -178,11 +189,50 @@ function doInit(view, data){
 	});
 }
 
-function doDisplay(view, parentEl, data){
+function doDisplay(view, refEl, data){
 	performHook("willDisplay", view);
 
-	// add the view to the parent (and probably to do the DOM)
-	parentEl.appendChild(view.el);
+	// --------- Append view.el --------- //
+	var append = view.config.append;
+	var parentEl, nextSibling = null;
+
+	//// 1) We determine the parentEl
+	if (append === "last" || append === "first"){
+		parentEl = refEl;
+	}else if (append === "before" || append === "after"){
+		parentEl = refEl.parentNode;
+		if (!parentEl){
+			throw new Error("mvdom ERROR - The referenceElement " + refEl + " does not have a parentNode. View '" + view.name + "' cannot be added.");
+		}
+	}
+
+	//// 2) We determine if we have a nextSibling or not
+	// if "first", we try to see if there is a first child
+	if (append === "first"){
+		nextSibling = refEl.firstChild; // if this is null, then, it will just do an appendChild
+	}
+	// if "before", then, the refEl is the nextSibling
+	else if (append === "before"){
+		nextSibling = refEl;
+	}
+	// if "after", try to find the next Sibling (if not found, it will be just a appendChild to add last)
+	else if (append === "after"){
+		nextSibling = dom.next(refEl);
+	}
+
+	//// 3) We append the view.el
+	// if we have a nex sibling, we insert it before
+	if (nextSibling){
+		parentEl.insertBefore(view.el, nextSibling);
+	}
+	// otherwise, we just do a append last
+	else{
+		parentEl.appendChild(view.el);
+	}	
+	// --------- /Append view.el --------- //
+
+
+
 
 	performHook("didDisplay", view);
 	return new Promise(function(resolve, fail){
@@ -195,13 +245,15 @@ function doDisplay(view, parentEl, data){
 function doPostDisplay(view, data){
 	performHook("willPostDisplay", view);
 
+	var result;
 	if (view.postDisplay){
-		view.postDisplay(data);
+		result = view.postDisplay(data);
 	}
 
-	return new Promise(function(resolve, fail){
-		resolve(view);
+	return Promise.resolve(result).then(function(){
+		return view;
 	});
+
 }
 
 function doRemove(view){

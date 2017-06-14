@@ -82,7 +82,9 @@ myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
 
-## mvdom.register(viewName, controller[, config])
+## mvdom.register(viewName, controller [, config])
+
+Register a new view with `mvdom.register`. The view controller is responsible for the view lifecycle (which is asynchronous in nature). The only require view controller method, is the `.create([data, config])` which is reponsible to return the HTML.
 
 ```js
 
@@ -110,6 +112,9 @@ mvdom.register("MainView",{
     // after the component is displayed
     postDisplay: function(data, config){
         // some non UI layout related, or actions that need to be performed after the component is displayed. 
+
+        // if return a promise, the mvdom.display(...).then will resolve when the return promise will be resolve. 
+        // however, the mvdom.display(...) promise resolution will always be this view, regardless of the object or promise returns by this function.
     }, 
 
     // (optional) will be called when this view is deleted (from d.remove or d.empty on a parent)
@@ -162,15 +167,33 @@ mvdom.register("MainView",{
 })
 ```
 
-## mvdom.display(viewName, [data, config])
+## mvdom.display(viewName, referenceDomElement, [data, config])
 
-Then, to display `MainView` into a html element, just do. 
+Display a view with `mvdom.display`, for example: 
 
 ```js
-// mvdom.display(viewName, parentHtmlElement, data)
+// mvdom.display(viewName, referenceDomElement, data)
 mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
 // Note: mvdom.first is just a shortcut to document.querySelector
 ```
+
+By default, the `config.append = "last"` which means the referenceDomElement will be the parent and the view element will be added at the end (using `referenceDomElement.appendChild(view.el)`)
+
+If no data, but config, pass null like `mvdom.display("MainView", parentEl, null, {append:"first"})`
+
+In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as `append`. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
+
+
+## mvdom view config
+
+The optional mvdom view `config` argument allow to customize the way the view is managed. It can be set at the registration phase, as well as overriden for each display. 
+
+- append: ("last", "first", "before", "after"). 
+    + **"last"**: The _referenceDomElement_ is interpreted as the parent, and the append will use `referenceDomElement.appendChild(view.el)`
+    + **"first"**: The _referenceDomElement_ is interpreted as the parent, and the append will use the `.insertBefore` the `.firstChild` of the _referenceDomElement_. If no firstElement, then, will do a normal appendChild.
+    + **"before"**: The _referenceDomElement_ is interepreted as a sibling, and the append will use the `.insertBefore` the _referenceDomElement_.
+    + **"after"**: The _referenceDomElement_ is interepreted as a sibling, and we `.insertBefore` the next sibling of the _referenceDomElement_. If the next sibling is null, use the `referenceDomElement.parentNode.appendChild(view.el)` to add it last.
+
 
 ## DOM events
 
