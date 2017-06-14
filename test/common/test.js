@@ -40,6 +40,7 @@
 
 					// run this test
 					var p, fn = tests[name], failEx = null;	
+					
 					try {
 						p = fn();
 					} catch (ex){

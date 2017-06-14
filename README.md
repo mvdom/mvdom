@@ -34,9 +34,9 @@ var d = require('mvdom'); // d is the new $
 
 // --------- View APIs --------- //
 // register a view controller (async lifecycle)
-d.register("ViewName", {create,init,postDisplay,detach}, config); 
+d.register("ViewName", {create,init,postDisplay,destroy}[, config]); 
 // display a view in this DOM element el 
-d.display("ViewName", parentEl); 
+d.display("ViewName", parentEl [, config]); 
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
 d.hook("willCreate", fn(view){}); 
 // --------- /View APIs --------- //
@@ -82,13 +82,13 @@ myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
 
-## View 
+## mvdom.register(viewName, controller[, config])
 
 ```js
-var d = mvdom;
 
-d.register("MainView",{
-    // Returns a HTML String or a HTML Element
+// register a view controller
+mvdom.register("MainView",{
+    // Returns a HTML String
     // Must be one parent element
     create: function(data, config){
         return `<div class='MainView'>
@@ -162,12 +162,14 @@ d.register("MainView",{
 })
 ```
 
+## mvdom.display(viewName, [data, config])
+
 Then, to display `MainView` into a html element, just do. 
 
 ```js
-// (viewName, parentHtmlElement, data)
-d.display("MainView", d.first("body"), {message:"hello from mvdom"});
-// Note: d.first is just a shortcut to document.querySelector
+// mvdom.display(viewName, parentHtmlElement, data)
+mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
+// Note: mvdom.first is just a shortcut to document.querySelector
 ```
 
 ## DOM events
@@ -202,7 +204,7 @@ mvdom.on(someEl, "webkitTransitionEnd, transitionend", ...)
 ## Hub (pub/sub)
 
 ```js
-var d = mvdom;
+var d = window.mvdom; // just a best practice we have, but feel free to use mvdom as is.
 
 var myHub = d.hub("myHub");
 

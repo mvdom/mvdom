@@ -124,6 +124,11 @@ function doInstantiate(name, config){
 	// get the view def from the dictionary
 	var viewDef = viewDefDic[name];
 
+	// if viewDef not found, throw an exception (Probably not registered)
+	if (!viewDef){
+		throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
+	}
+	
 	// instantiate the view instance
 	var view = Object.assign({}, viewDef.controller);
 
