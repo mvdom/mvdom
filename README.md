@@ -30,7 +30,6 @@ npm install mvdom --save
 ## API Overview
 
 ```js
-
 // --------- View APIs --------- //
 // register a view controller (async lifecycle)
 mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config]); 
@@ -61,26 +60,28 @@ mvdom.trigger(els, "MyCustomEvent", {detail: "cool", cancelable: false});
 
 // --------- DOM Query Shortcuts --------- //
 var nodeList = mvdom.all(el, selector); // shortcut for el.querySelectorAll
-var nodeList = mvdom.all(selector); // shortcut for document.querySelectorAll from Document
+var nodeList = mvdom.all(selector); // shortcut for document.querySelectorAll from document
 
 var element = mvdom.first(el, selector); // shortcut for el.querySelector
-var element = mvdom.first(selector); // shortcut for document.querySelector from Document
+var element = mvdom.first(selector); // shortcut for document.querySelector from document
 var element = mvdom.first(el); // find firstElementChild (even for fragment for browsers that do not support it)
 
 var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
 var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
 // --------- /DOM Query Shortcuts --------- //
 
-// --------- DOM Append Helper --------- //
-// refEl interpreted as the parent
+// --------- DOM Helpers --------- //
+// Append child, refEl interpreted as parnt
 var newEl = mvdom.append(refEl, newEl); // standard refEl.appendChild(newEl)
 var newEl = mvdom.append(refEl, newEl, "first"); // Insert newEl as first element of refEl.
-var newEl = mvdom.append(refEl, newEl, "last"; // Here for symmetry, refEl.appendChild(newEl)
+var newEl = mvdom.append(refEl, newEl, "last"); // Here for symmetry, refEl.appendChild(newEl)
 
-// refEl interpreted as sibling
+// Append sibling, refEl interpreted as sibling
 var newEl = mvdom.append(refEl, newEl, "after"); // Append newEl after the refEl, use appendChild if no next sibling
 var newEl = mvdom.append(refEl, newEl, "before"); // Here for symmetry, refEl.parentNode.insertBefore(newEl, refEl)
-// --------- /DOM Append Helper --------- //
+
+var frag = mvdom.frag("<div>any</div><td>html</td>"); // Create document fragment (use 'template' with fallback )
+// --------- /DOM Helpers --------- //
 
 // --------- DOM Data eXchange (dx) push/pull --------- //
 mvdom.push(el, [selector,] data); // will set the data.property to the matching selector (default ".dx") elements
@@ -101,6 +102,7 @@ myHub.pub(topic, [label,] data); // publish
 myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
+
 
 ## View Register
 

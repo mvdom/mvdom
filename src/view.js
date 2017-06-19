@@ -113,8 +113,7 @@ function removeEl(el, childrenOnly){
 		}else{
 			if (el.parentNode){
 				el.parentNode.removeChild(el);	
-			}
-			
+			}			
 		}
 	}
 
@@ -164,9 +163,11 @@ function doCreate(view, data){
 
 	return p.then(function(html){
 		// create the html element
-		var div = document.createElement('div');
-		div.innerHTML = html;
-		var viewEl = div.firstChild;
+		var frag = dom.frag(html);
+		if (frag.childNodes.length > 1){
+			console.log("mvdom - WARNING - view HTML for view", view, "has multiple childNodes, but should have only one. Take the first one, but future version will throw exception");
+		}
+		var viewEl = frag.firstChild;
 
 		// set the view.el and view.el._view
 		view.el = viewEl;
@@ -199,7 +200,7 @@ function doDisplay(view, refEl, data){
 	}
 
 	performHook("didDisplay", view);
-	
+
 	return new Promise(function(resolve, fail){
 		setTimeout(function(){
 			resolve();

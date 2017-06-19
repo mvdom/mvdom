@@ -8,7 +8,8 @@ module.exports = {
 	closest: closest,
 	next: next,
 	prev: prev, 
-	append: append
+	append: append,
+	frag: frag
 };
 
 
@@ -86,7 +87,7 @@ function closest(el, selector){
 // --------- /DOM Query Shortcuts --------- //
 
 
-// --------- DOM Append Helper --------- //
+// --------- DOM Helpers --------- //
 function append(refEl, newEl, position){
 	var parentEl, nextSibling = null;
 	
@@ -130,7 +131,33 @@ function append(refEl, newEl, position){
 
 	return newEl;	
 }
-// --------- /DOM Append Helper --------- //
+
+
+function frag(html){
+	// make it null proof
+	html = (html)?html.trim():null;
+	if (!html){
+		return null;
+	}
+
+	var template = document.createElement("template");
+	if(template.content){
+		template.innerHTML = html
+		return template.content;
+	}
+	// for IE 11
+	else{
+		var frag = document.createDocumentFragment();
+		var tmp = document.createElement("div");
+		tmp.innerHTML = html;
+		while (tmp.firstChild) {
+			frag.appendChild(tmp.firstChild);
+		}
+		return frag;
+
+	}	
+}
+// --------- /DOM Helpers --------- //
 
 
 

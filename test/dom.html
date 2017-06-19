@@ -80,27 +80,28 @@
 				assertEquals(null, d.prev(null,".rect"));
 			},
 
-			testAppend: function(){
+			testAppendAndFrag: function(){
 
 				var testContentEl = d.first(".test-content");
 
 
 				var eContainerEl = d.append(testContentEl, createEl("el-e container", "container text"));
-				var elA = d.append(eContainerEl, createEl("el-3 sm a","A"));
-				var elB = d.append(eContainerEl, createEl("el-3 sm b","B"), "first");
-				var elC = d.append(elB, createEl("el-3 sm c","C"), "before");
-				var elD = d.append(elC, createEl("el-3 sm d","D"), "after");
-				var elE = d.append(eContainerEl, createEl("el-3 sm E","E"), "last");
+				var elA = d.append(eContainerEl, d.frag("<div class='rect el-e sm'>A</div>")); //createEl("el-3 sm a","A")
+				var elB = d.append(eContainerEl, createEl("el-e sm b","B"), "first");
+				var elC = d.append(elB, createEl("el-e sm c","C"), "before");
+				var elD = d.append(elC, createEl("el-e sm d","D"), "after");
+				var elE = d.append(eContainerEl, createEl("el-e sm E","E"), "last");
+
+				d.append(eContainerEl, d.frag("<div class='rect el-e sm'>F</div> TTT <div class='rect el-e sm'>G</div>"));
 
 				var out = [];
 				var nodes = eContainerEl.childNodes;
-				for (var i = 0; i < nodes.length; i++){
-					out.push(nodes[i].innerText);
+				for (var node, i = 0; i < nodes.length; i++){
+					node = nodes[i];
+					out.push(node.innerText || node.nodeValue);
 				}
-				assertEquals([undefined, "C", "D", "B", "A", "E"], out);
+				assertEquals(["container text", "C", "D", "B", "A", "E", "F", " TTT ", "G"], out);
 			}
-
-
 		};		
 		
 		function createEl(classNames, text){
