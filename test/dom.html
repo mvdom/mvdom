@@ -18,6 +18,11 @@
 				assertEquals("A", d.first(".el-a").innerHTML);
 			},
 
+			testFirstElement: function(){
+				var testContentEl = d.first(".test-content");
+				assertEquals("A", d.first(testContentEl).innerHTML);
+			},
+
 			testAll: function(){
 				console.log();
 				// should have 3 Ds
@@ -92,7 +97,7 @@
 				for (var i = 0; i < nodes.length; i++){
 					out.push(nodes[i].innerText);
 				}
-				assertEquals(["C", "D", "B", undefined, "A", "E"], out);
+				assertEquals([undefined, "C", "D", "B", "A", "E"], out);
 			}
 
 
@@ -115,6 +120,7 @@
 			</ul>
 		</div>
 		<div class="test-content container">
+			test-content text
 			<div class="rect el-a">A</div>
 			<div class="rect el-b">B 1</div>
 			<div class="rect el-b">B 2</div>

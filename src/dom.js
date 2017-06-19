@@ -21,8 +21,33 @@ module.exports._matchesFn = matchesFn; // make it available for this module (thi
 
 // Shortcut for .querySelector
 // return the first element matching the selector from this el (or document if el is not given)
-function first(el, selector){
-	return _execQuerySelector(false, el, selector);
+function first(el_or_selector, selector){
+	// We do not have a selector at all, then, this call is for firstElementChild
+	if (!selector && typeof el_or_selector !== "string"){
+		var el = el_or_selector;
+		// try to get 
+		var firstElementChild = el.firstElementChild;
+
+		// if firstElementChild is null/undefined, but we have a firstChild, it is perhaps because not supported
+		if (!firstElementChild && el.firstChild){
+
+			// If the firstChild is of type Element, return it. 
+			if (el.firstChild.nodeType === 1 ){
+				return el.firstChild;
+			}
+			// Otherwise, try to find the next element (using the next)
+			else{
+				return next(el.firstChild);
+			}			
+		}
+
+		return firstElementChild;
+	}
+	// otherwise, the call was either (selector) or (el, selector), so foward to the querySelector
+	else{
+		return _execQuerySelector(false, el_or_selector, selector);	
+	}
+	
 }
 
 // Shortcut for .querySelectorAll
@@ -81,7 +106,7 @@ function append(refEl, newEl, position){
 	//// 2) We determine if we have a nextSibling or not
 	// if "first", we try to see if there is a first child
 	if (position === "first"){
-		nextSibling = refEl.firstChild; // if this is null, then, it will just do an appendChild
+		nextSibling = first(refEl); // if this is null, then, it will just do an appendChild
 		// Note: this might be a text node but this is fine in this context.
 	}
 	// if "before", then, the refEl is the nextSibling

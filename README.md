@@ -61,10 +61,11 @@ mvdom.trigger(els, "MyCustomEvent", {detail: "cool", cancelable: false});
 
 // --------- DOM Query Shortcuts --------- //
 var nodeList = mvdom.all(el, selector); // shortcut for el.querySelectorAll
-var nodeList = mvdom.all(selector); // shortcut for document.querySelectorAll
+var nodeList = mvdom.all(selector); // shortcut for document.querySelectorAll from Document
 
 var element = mvdom.first(el, selector); // shortcut for el.querySelector
-var element = mvdom.first(selector); // shortcut for document.querySelector
+var element = mvdom.first(selector); // shortcut for document.querySelector from Document
+var element = mvdom.first(el); // find firstElementChild (even for fragment for browsers that do not support it)
 
 var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
 var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
