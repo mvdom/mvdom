@@ -16,7 +16,7 @@
 
 		d.register("SubView",{
 			create: function(data){
-				return '<div class="SubView rect sm">SubView</div>';
+				return d.frag('<div class="SubView rect sm">SubView</div>');
 			}, 
 			init: function(data){
 				this.el.classList.add("subview-" + data.label);
@@ -167,6 +167,24 @@
 				d.trigger(document,"CUSTOM");
 				// here we should have only the view left that added the text in the outs
 				assertEquals(["MainView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3"], outs);
+			}, 
+
+			// we test that creating a view with element, works (text and fragment are already tested with MainView and SubView)
+			testCreateWithElement: function(){
+				var testContentEl = d.first(".test-content");
+
+				d.register("OtherViewA", {create: function(){
+					var el = document.createElement("div");
+					el.classList.add("OtherViewA");
+					el.classList.add("rect");
+					el.innerHTML = "Other View A<b class='rect sm'>b tag</b>";
+					return el;
+				}});
+
+				return d.display("OtherViewA",testContentEl).then(function(view){
+					var testEl = d.first(".OtherViewA");
+					assertEquals("Other View A", testEl.innerText);
+				});
 			}	
 
 			// TODO: need to test nested view remove

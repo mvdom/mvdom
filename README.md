@@ -114,12 +114,13 @@ Register a new view with `mvdom.register`. The view controller is responsible fo
 
 // register a view controller
 mvdom.register("MainView",{
-    // Returns a HTML String
-    // Must be one parent element
+    // Returns a HTML String, Document Element, or Document Fragment
+    // Can return a Promise that resolve in one of those three object time
+    // Must be one Dome Element
     create: function(data, config){
         return `<div class='MainView'>
                   <div class=".but">${data.message}</div>
-                </div>`
+                </div>`;
     }, 
 
     // (optional) init() will be called after the component element is created

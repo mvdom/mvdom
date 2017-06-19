@@ -161,13 +161,24 @@ function doCreate(view, data){
 	// Call the view.create
 	var p = Promise.resolve(view.create(data));
 
-	return p.then(function(html){
-		// create the html element
-		var frag = dom.frag(html);
-		if (frag.childNodes.length > 1){
-			console.log("mvdom - WARNING - view HTML for view", view, "has multiple childNodes, but should have only one. Take the first one, but future version will throw exception");
+	return p.then(function(html_or_node){
+
+		var node = (typeof html_or_node === "string")?dom.frag(html_or_node):html_or_node;
+
+		// If we have a fragument
+		if (node.nodeType === 11){
+			if (node.childNodes.length > 1){
+				console.log("mvdom - WARNING - view HTML for view", view, "has multiple childNodes, but should have only one. Fallback by taking the first one, but check code.");
+			}
+			node = node.firstChild;
 		}
-		var viewEl = frag.firstChild;
+
+		// make sure that the node is of time Element
+		if (node.nodeType !== 1){
+			throw new Error("el for view " + view.name + " is node of type Element. " + node);
+		}
+
+		var viewEl = node;
 
 		// set the view.el and view.el._view
 		view.el = viewEl;
