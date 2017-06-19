@@ -7,7 +7,8 @@ module.exports = {
 	all: all, 
 	closest: closest,
 	next: next,
-	prev: prev
+	prev: prev, 
+	append: append
 };
 
 
@@ -46,7 +47,6 @@ function prev(el, selector){
 // return null if not found
 function closest(el, selector){
 	var tmpEl = el;
-
 	
 	// use "!=" for null and undefined
 	while (tmpEl != null && tmpEl !== document){
@@ -60,6 +60,56 @@ function closest(el, selector){
 
 // --------- /DOM Query Shortcuts --------- //
 
+
+// --------- DOM Append Helper --------- //
+function append(refEl, newEl, position){
+	var parentEl, nextSibling = null;
+	
+	// default is "last"
+	position = (position)?position:"last";
+
+	//// 1) We determine the parentEl
+	if (position === "last" || position === "first"){
+		parentEl = refEl;
+	}else if (position === "before" || position === "after"){
+		parentEl = refEl.parentNode;
+		if (!parentEl){
+			throw new Error("mvdom ERROR - The referenceElement " + refEl + " does not have a parentNode. Cannot insert " + position);
+		}
+	}
+
+	//// 2) We determine if we have a nextSibling or not
+	// if "first", we try to see if there is a first child
+	if (position === "first"){
+		nextSibling = refEl.firstChild; // if this is null, then, it will just do an appendChild
+		// Note: this might be a text node but this is fine in this context.
+	}
+	// if "before", then, the refEl is the nextSibling
+	else if (position === "before"){
+		nextSibling = refEl;
+	}
+	// if "after", try to find the next Sibling (if not found, it will be just a appendChild to add last)
+	else if (position === "after"){
+		nextSibling = next(refEl);
+	}
+
+	//// 3) We append the newEl
+	// if we have a next sibling, we insert it before
+	if (nextSibling){
+		parentEl.insertBefore(newEl, nextSibling);
+	}
+	// otherwise, we just do a append last
+	else{
+		parentEl.appendChild(newEl);
+	}
+
+	return newEl;	
+}
+// --------- /DOM Append Helper --------- //
+
+
+
+
 function _sibling(next, el, selector){
 	var sibling = (next)?"nextSibling":"previousSibling";
 
@@ -67,7 +117,7 @@ function _sibling(next, el, selector){
 
 	// use "!=" for null and undefined
 	while (tmpEl != null && tmpEl !== document){
-		// only if nodeType, otherwise, 
+		// only if node type is of Element, otherwise, 
 		if (tmpEl.nodeType === 1 && (!selector || matchesFn.call(tmpEl, selector))){
 			return tmpEl;
 		}

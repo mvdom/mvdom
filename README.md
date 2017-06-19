@@ -7,7 +7,7 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Over componentization is as bad as under componentization.
 - Black magic always come with a hidden cost.
 - Frameworks come and go, languages and runtimes stay.
-- Size is a factor of complexity and starting simple will always scale better.
+- Size is a factor of complexity and starting small and simple will always scale better.
 
 **In Short**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
@@ -69,6 +69,17 @@ var element = mvdom.first(selector); // shortcut for document.querySelector
 var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
 var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
 // --------- /DOM Query Shortcuts --------- //
+
+// --------- DOM Append Helper --------- //
+// refEl interpreted as the parent
+var newEl = mvdom.append(refEl, newEl); // standard refEl.appendChild(newEl)
+var newEl = mvdom.append(refEl, newEl, "first"); // Insert newEl as first element of refEl.
+var newEl = mvdom.append(refEl, newEl, "last"; // Here for symmetry, refEl.appendChild(newEl)
+
+// refEl interpreted as sibling
+var newEl = mvdom.append(refEl, newEl, "after"); // Append newEl after the refEl, use appendChild if no next sibling
+var newEl = mvdom.append(refEl, newEl, "before"); // Here for symmetry, refEl.parentNode.insertBefore(newEl, refEl)
+// --------- /DOM Append Helper --------- //
 
 // --------- DOM Data eXchange (dx) push/pull --------- //
 mvdom.push(el, [selector,] data); // will set the data.property to the matching selector (default ".dx") elements

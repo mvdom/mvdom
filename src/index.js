@@ -32,6 +32,9 @@ module.exports = {
 	next: dom.next,
 	prev: dom.prev,
 
+	// DOM Append Helper
+	append: dom.append,
+
 	// DOM Push/Pull
 	pull: dx.pull,
 	push: dx.push,

@@ -73,10 +73,37 @@
 
 				// test with null el
 				assertEquals(null, d.prev(null,".rect"));
+			},
+
+			testAppend: function(){
+
+				var testContentEl = d.first(".test-content");
+
+
+				var eContainerEl = d.append(testContentEl, createEl("el-e container", "container text"));
+				var elA = d.append(eContainerEl, createEl("el-3 sm a","A"));
+				var elB = d.append(eContainerEl, createEl("el-3 sm b","B"), "first");
+				var elC = d.append(elB, createEl("el-3 sm c","C"), "before");
+				var elD = d.append(elC, createEl("el-3 sm d","D"), "after");
+				var elE = d.append(eContainerEl, createEl("el-3 sm E","E"), "last");
+
+				var out = [];
+				var nodes = eContainerEl.childNodes;
+				for (var i = 0; i < nodes.length; i++){
+					out.push(nodes[i].innerText);
+				}
+				assertEquals(["C", "D", "B", undefined, "A", "E"], out);
 			}
+
 
 		};		
 		
+		function createEl(classNames, text){
+			var el = document.createElement("div");
+			el.setAttribute("class", "rect " + classNames);
+			el.innerText = text;
+			return el;
+		}
 		</script>
 
 	</head>
