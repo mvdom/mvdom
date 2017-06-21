@@ -21,6 +21,12 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
 - Minimalistic but powerful pub/sub (hub) with topic and label selectors. 
 
+## Compatibility
+
+- Written and tested on all modern browsers (Chrome, Safari, Mobile Safari, Firefox, Edge)
+- Requires Promise, Array.forEach (for IE11, can be polyfill with https://polyfill.io)
+- Using javascript syntax compatible with IE9+ (no transpilling needed)
+
 
 ## Installation
 ```
