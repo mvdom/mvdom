@@ -110,6 +110,15 @@
 
 				assertEquals(editData, d.pull(el,".edit .dx"));
 				assertEquals(viewData, d.pull(el,".view .dx"));
+			}, 
+
+			testEmptyProperties: function(){
+				var el = d.first(".empty-props");
+
+				d.push(el, {a:null, b:null});
+
+				var data = d.pull(el);
+				assertEquals({a: "", b: "", c: "c1", d: "d1"}, data);
 			}
 
 
@@ -216,6 +225,24 @@
 					</div>
 				</div>				
 			</div>
+
+			<h1>Empty properties</h1>
+				<div class="empty-props">
+					<div class="field">
+						<input class="dx dx-a" value="a1">
+					</div>
+					<div class="field">
+						<span class="dx dx-b">b1</span>
+					</div>
+					<div class="field">
+						<input class="dx dx-c" value="c1">
+					</div>
+					<div class="field">
+						<span class="dx dx-d">d1</span>
+					</div>							
+			</div>
+
+
 		</div>	<!-- /.test-content -->	
 	</body>
 </html>

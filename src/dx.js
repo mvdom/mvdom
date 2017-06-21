@@ -27,19 +27,19 @@ var _pushers = [
 	}],
 
 	["input", function(value){
-		this.value = value;
+		if(typeof value !== "undefined") this.value = value;
 	}],
 
 	["select", function(value){
-		this.value = value;
+		if(typeof value !== "undefined") this.value = value;
 	}],
 
 	["textarea", function(value){
-		this.value = value;
+		if(typeof value !== "undefined") this.value = value;
 	}],
 
 	["*", function(value){
-		this.innerHTML = value;
+		if(typeof value !== "undefined") this.innerHTML = value;
 	}]
 ];
 
