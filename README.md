@@ -13,7 +13,7 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 
 ## Characteristics
 
-- Zero dependency, micro libary (< 12kb min, < 5kb gzip).
+- Zero dependency, micro libary (< 15kb min, < 6kb gzip).
 - Template agnostic (string templating friendly, e.g., Handlebars)
 - Dead simple APIs (e.g. d.register(name, controller), d.display(name, parent))
 - Async Lifecycle management (hookable)
@@ -29,9 +29,18 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 
 
 ## Installation
+
 ```
-npm install mvdom --save
+npm install mvdom
 ```
+
+Typical usage in source file: 
+
+```
+var mvdom = require("mvdom");
+```
+
+See [#building] to build the distribution manually. 
 
 ## API Overview
 
@@ -372,4 +381,15 @@ myHub.sub("Project", function(data){
 
 
 ```
+
+
+## Building
+
+This library uses a gulp-and-webpack-free way of building distribution file, and requires node.js >= 8.0.0.
+
+- `npm run build` to generate the distrubtion files: `dist/mvdom.js` `dist/mvdom.js.map` and `dist/mvdom.min.js`
+- `npm run watch` for repl development which will automatically recompile the distribution files on any src js change.
+
+
+
 

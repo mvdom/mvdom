@@ -1,7 +1,3 @@
-'use strict';
-
-var utils = require("./utils.js");
-
 module.exports = {
 	first: first, 
 	all: all, 
@@ -142,7 +138,7 @@ function frag(html){
 
 	var template = document.createElement("template");
 	if(template.content){
-		template.innerHTML = html
+		template.innerHTML = html;
 		return template.content;
 	}
 	// for IE 11

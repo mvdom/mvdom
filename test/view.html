@@ -183,7 +183,8 @@
 
 				return d.display("OtherViewA",testContentEl).then(function(view){
 					var testEl = d.first(".OtherViewA");
-					assertEquals("Other View A", testEl.innerText);
+					// here remove the \n otherwise, can't compare somehow.
+					assertEquals("Other View A_b tag", testEl.innerText.replace(/\n/g,"_"));
 				});
 			}	
 

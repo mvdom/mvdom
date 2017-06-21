@@ -1,5 +1,3 @@
-'use strict';
-
 var view = require("./view.js");
 var event = require("./event.js");
 var dom = require("./dom.js");

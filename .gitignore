@@ -8,6 +8,8 @@
 
 # ignore node_modules
 node_modules/
+# for now, we ignore this new node.js package file.
+package-lock.json
 
 dist/
 

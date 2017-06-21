@@ -7,20 +7,28 @@
     "type": "git",
     "url": "git://github.com/mvdom/mvdom.git"
   },
-  "keywords":["html5", "DOM Centric", "Patterns", "html", "framework", "mvc", "web-framework", "handlebars"],
+  "keywords": [
+    "html5",
+    "DOM Centric",
+    "Patterns",
+    "html",
+    "framework",
+    "mvc",
+    "web-framework",
+    "handlebars"
+  ],
   "dependencies": {},
   "devDependencies": {
     "browserify": "^13.0.1",
-    "fs-extra-plus": "^0.1.0",
-    "gulp": "^3.9.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "*",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "cmdrouter": "^0.2.0",
+    "exorcist": "^0.4.0",
+    "fs-extra-plus": "^0.1.1",
+    "uglify-js": "^3.0.18"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./scripts/build.js",
+    "watch": "node ./scripts/build.js watch"
   },
   "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
   "license": "MIT"
