@@ -46,6 +46,7 @@ function register(name, controller, config){
 }
 
 function display(name, parentEl, data, config){
+	var self = this;
 
 	var view = doInstantiate(name, config);
 	
@@ -54,7 +55,7 @@ function display(name, parentEl, data, config){
 		return doInit(view, data);
 	})
 	.then(function(){
-		return doDisplay(view, parentEl, data);
+		return doDisplay.call(self, view, parentEl, data);
 	})
 	.then(function(){
 		return doPostDisplay(view, data);
@@ -202,8 +203,9 @@ function doInit(view, data){
 function doDisplay(view, refEl, data){
 	performHook("willDisplay", view);
 
-	try{
-		dom.append(refEl, view.el, view.config.append);
+	try{		
+		// WORKAROUND: this needs tobe the mvdom, since we have cyclic reference between dom.js and view.js (on empty)
+		dom.append.call(this, refEl, view.el, view.config.append);
 	}catch(ex){
 		throw new Error("mvdom ERROR - Cannot add view.el " + view.el + " to refEl " + refEl + ". Cause: " + ex.toString());
 	}

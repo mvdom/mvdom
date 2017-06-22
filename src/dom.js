@@ -91,7 +91,7 @@ function append(refEl, newEl, position){
 	position = (position)?position:"last";
 
 	//// 1) We determine the parentEl
-	if (position === "last" || position === "first"){
+	if (position === "last" || position === "first"  || position === "empty"){
 		parentEl = refEl;
 	}else if (position === "before" || position === "after"){
 		parentEl = refEl.parentNode;
@@ -122,6 +122,11 @@ function append(refEl, newEl, position){
 	}
 	// otherwise, we just do a append last
 	else{
+		if (position === "empty"){
+			// TODO: CIRCULAR dependency. Right now, we do need to call the view.empty to do the correct empty, but view also use dom.js
+			//       This works right now as all the modules get merged into the same object, but would be good to find a more elegant solution
+			this.empty(refEl);
+		}
 		parentEl.appendChild(newEl);
 	}
 

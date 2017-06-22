@@ -37,7 +37,7 @@
 				outs.push("MainView.create");
 				return `<div class='MainView'>Main View ${this.id} 
 									<div class="but but-1">.but-1</div>
-									<div class="rect sub-views">
+									<div class="rect sub-views">AAA
 									<div>
 								</div>`;
 			},
@@ -186,7 +186,17 @@
 					// here remove the \n otherwise, can't compare somehow.
 					assertEquals("Other View A_b tag", testEl.innerText.replace(/\n/g,"_"));
 				});
-			}	
+			}, 
+
+			testDisplayWithEmptyDirective: function(){
+				var testContentEl = d.first(".test-content");
+				var containerEl = d.first(d.frag("<div class='rect'>some content</div>"));
+				d.append(testContentEl, containerEl);
+				return d.display("SubView", containerEl,{label: "test"},"empty").then(function(view){
+					var txt = containerEl.innerText.replace(/\s/g,"_");
+					assertEquals("SubView-test", txt);		
+				});
+			}
 
 			// TODO: need to test nested view remove
 		};

@@ -55,8 +55,8 @@
 				nextEl = d.next(firstEl,".rect.el-c");
 				assertEquals("C 1", nextEl.innerHTML);
 
-				var lastEl = d.next(firstEl, ".rect.el-d");
-				assertEquals("rect el-d container", lastEl.classList.toString());				
+				var lastEl = d.next(firstEl, ".rect.el-f");
+				assertEquals("rect el-f container", lastEl.classList.toString());				
 
 				nextEl = d.next(lastEl,".rect");
 				assertEquals(null, nextEl);
@@ -101,6 +101,13 @@
 					out.push(node.innerText || node.nodeValue);
 				}
 				assertEquals(["container text", "C", "D", "B", "A", "E", "F", " TTT ", "G"], out);
+			}, 
+
+			testAppendEmpty: function(){
+				var testContentEl = d.first(".container.el-f");
+				d.append(testContentEl, d.frag("<div>NEW EL</div>EE"), "empty");
+				var txt = testContentEl.innerText.replace(/\s/g,"_");
+				assertEquals("NEW_EL_EE", txt);
 			}
 		};		
 		
@@ -134,6 +141,10 @@
 				<div class="rect sm el-d foo">D.foo 2</div>
 				<div class="rect sm el-d bar">D.bar 3</div>
 			</div>
+			<div class="rect el-f container">
+			F
+				<div class="rect sm">FFF</div>
+			</div>				
 		</div>		
 	</body>
 </html>

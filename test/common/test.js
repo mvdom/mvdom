@@ -53,6 +53,11 @@
 					// always resolve (to allow to continue to next test) and show appropriate message
 					return Promise.resolve(p).then(function(){
 						itemEl.innerHTML = (failEx)?failEx:(label(name) + " OK ");
+					}).catch(function(ex){
+						failEx = label(name) + " FAILED " + ex;
+						itemEl.innerHTML = failEx;
+						itemEl.classList.add("fail");
+						console.log(ex);						
 					});
 				});
 			});

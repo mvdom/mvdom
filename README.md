@@ -52,6 +52,9 @@ mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config]);
 mvdom.display("ViewName", parentEl [, config]); 
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
 mvdom.hook("willCreate", fn(view){}); 
+
+mvdom.empty(el); // will empty all children of an element, and also "destroy" the eventual views
+mvdom.remove(el); // will remove this element, and also "destroy" the eventual attached view and the sub views
 // --------- /View APIs --------- //
 
 // --------- DOM Event Helpers --------- //
@@ -90,6 +93,7 @@ var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibli
 var newEl = mvdom.append(refEl, newEl); // standard refEl.appendChild(newEl)
 var newEl = mvdom.append(refEl, newEl, "first"); // Insert newEl as first element of refEl.
 var newEl = mvdom.append(refEl, newEl, "last"); // Here for symmetry, refEl.appendChild(newEl)
+var newEl = mvdom.append(refEl, newEl, "empty"); // Will empty refEl before .appendChildrefEl.appendChild(newEL)
 
 // Append sibling, refEl interpreted as sibling
 var newEl = mvdom.append(refEl, newEl, "after"); // Append newEl after the refEl, use appendChild if no next sibling
@@ -209,12 +213,12 @@ mvdom.register("MainView",{
 
 ## View Display
 
-#### `mvdom.display(viewName, referenceDomElement, [data, config])`
+#### `mvdom.display(viewName, refEl, [data, config])`
 
 Display a view with `mvdom.display`, for example: 
 
 ```js
-// mvdom.display(viewName, referenceDomElement, data)
+// mvdom.display(viewName, refEl, data)
 mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
 // Note: mvdom.first is just a shortcut to document.querySelector
 ```
@@ -225,16 +229,17 @@ mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
 The optional mvdom view `config` argument allow to customize the way the view is handled. It can be set at the registration phase, as well as overriden for each display. For now, it is a single property config, `.append`, which tells how to add the new view.el to the DOM.
 
 - append: ("last", "first", "before", "after"). 
-    + **"last"**: The _referenceDomElement_ is interpreted as the parent, and the append will use `referenceDomElement.appendChild(view.el)`
-    + **"first"**: The _referenceDomElement_ is interpreted as the parent, and the append will use the `.insertBefore` the `.firstChild` of the _referenceDomElement_. If no firstElement, then, will do a normal appendChild.
-    + **"before"**: The _referenceDomElement_ is interepreted as a sibling, and the append will use the `.insertBefore` the _referenceDomElement_.
-    + **"after"**: The _referenceDomElement_ is interepreted as a sibling, and we `.insertBefore` the next sibling of the _referenceDomElement_. If the next sibling is null, use the `referenceDomElement.parentNode.appendChild(view.el)` to add it last.
+    + **"last"**: The __refEl__ is interpreted as the parent, and the append will use `refEl.appendChild(view.el)`
+    + **"first"**: The __refEl__ is interpreted as the parent, and the append will use the `.insertBefore` the `.firstChild` of the __refEl__. If no firstElement, then, will do a normal appendChild.
+    + **"empty"**: The __refEl__ is interpreted as the parent, first, `mvdom.empty(refEl)` is called and then `refEl.appendChild(view.el)`.
+    + **"before"**: The __refEl__ is interepreted as a sibling, and the append will use the `.insertBefore` the __refEl__.
+    + **"after"**: The __refEl__ is interepreted as a sibling, and we `.insertBefore` the next sibling of the __refEl__. If the next sibling is null, use the `refEl.parentNode.appendChild(view.el)` to add it last.
 
-By default, the `config.append = "last"` which means the referenceDomElement will be the parent and the view element will be added at the end (using `referenceDomElement.appendChild(view.el)`)
+By default, the `config.append = "last"` which means the refEl will be the parent and the view element will be added at the end (using `refEl.appendChild(view.el)`)
 
 If no data, but config, pass null like `mvdom.display("MainView", parentEl, null, {append:"first"})`
 
-In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as `append`. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
+In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as the `append` property. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
 
 
 ## Dom Event Binding
