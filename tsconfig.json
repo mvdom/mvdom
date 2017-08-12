@@ -1,0 +1,11 @@
+// NOTE: This file is not used to compile any typescript but just to set the strict mode to test the typescript declaration
+//       in the /test/test-types.ts file. So far this mvdom does not intend to use typescript as its very small 
+//       and written in a pure JS mindset (handcrafted for modern browsers native support - minimum IE11 polyfill -). 
+//       However, thanks to TypeScript declaration scheme, this library looks like a full Typescript module when imported in 
+//       a typescript project (/src/index.d.ts)
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": true  /* Enable all strict type-checking options. */
+  }
+}

@@ -51,15 +51,15 @@ function display(name, parentEl, data, config){
 	var view = doInstantiate(name, config);
 	
 	return doCreate(view, data)
-	.then(function(){
-		return doInit(view, data);
-	})
-	.then(function(){
-		return doDisplay.call(self, view, parentEl, data);
-	})
-	.then(function(){
-		return doPostDisplay(view, data);
-	});
+		.then(function(){
+			return doInit(view, data);
+		})
+		.then(function(){
+			return doDisplay.call(self, view, parentEl, data);
+		})
+		.then(function(){
+			return doPostDisplay(view, data);
+		});
 
 }
 

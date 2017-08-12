@@ -8,7 +8,6 @@ module.exports = {
 };
 
 // --------- Module APIs --------- //
-
 // bind a event can be call with 
 // - els: single or array of the base dom elements to bind the event listener upon.
 // - type: event type (like 'click' or can be custom event).

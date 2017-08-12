@@ -1,8 +1,9 @@
 {
   "name": "mvdom",
-  "version": "0.4.3",
+  "version": "0.5.0-SNAPSHOT",
   "description": "DOM Centric MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
   "main": "src/index.js",
+  "typings": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/mvdom/mvdom.git"
@@ -19,11 +20,11 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^13.0.1",
+    "browserify": "^14.4.0",
     "cmdrouter": "^0.2.0",
     "exorcist": "^0.4.0",
-    "fs-extra-plus": "^0.1.1",
-    "uglify-js": "^3.0.18"
+    "fs-extra-plus": "^0.1.2",
+    "uglify-js": "^3.0.27"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

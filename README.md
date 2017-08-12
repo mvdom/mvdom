@@ -40,6 +40,9 @@ Typical usage in source file:
 var mvdom = require("mvdom");
 ```
 
+> Note 1: While mvdom is written in pure js, it does provide typescript types. See [Typescript and/or Intellisense Support](#Type-Support)
+
+
 See [#building] to build the distribution manually. 
 
 ## API Overview
@@ -62,8 +65,8 @@ mvdom.remove(el); // will remove this element, and also "destroy" the eventual a
 mvdom.on(els, types, listener);
 // register a listener for this type and selector on one or more elements (with event.selectTarget when selector).  
 mvdom.on(els, types, selector, listener); 
-// register listener with optional namespace or context (this)
-mvdom.on(els, types, [selector,] {ns,context});
+// register listener with optional namespace or ctx (this)
+mvdom.on(els, types, selector, listener, {ns,ctx});
 
 // unregister a listener
 mvdom.off(els, type, [selector,] listener)
@@ -84,7 +87,7 @@ var element = mvdom.first(el, selector); // shortcut for el.querySelector
 var element = mvdom.first(selector); // shortcut for document.querySelector from document
 var element = mvdom.first(el); // find firstElementChild (even for fragment for browsers that do not support it)
 
-var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optioal selector
+var element = mvdom.next(el[, selector]); // shortcut to find the next sibling element matching an optional selector
 var element = mvdom.prev(el[, selector]); // shortcut to find the previous sibling element matching an optional selector
 // --------- /DOM Query Shortcuts --------- //
 
@@ -107,12 +110,12 @@ mvdom.push(el, [selector,] data); // will set the data.property to the matching 
 var data = mvdom.pull(el[, selector]); // will extract the data from the matching elements (default selector ".dx")
 
 // register custom pushers / pullers (default ones are for html form elements and simple div innerHTML)
-mvdom.pusher(selector, pusherFun(value){this /* dom element*/}); // pusher function set a value to a matching element
-mvdom.puller(selector, pullerFun(){this /* dom element*/}); // puller function returns the value from a matching element element 
+mvdom.pusher(selector, pusherFn(value){this /* dom element*/}); // pusher function set a value to a matching element
+mvdom.puller(selector, pullerFn(){this /* dom element*/}); // puller function returns the value from a matching element 
 // --------- /DOM Data eXchange (dx) push/pull --------- //
 
 // --------- Hub (pub/sub) --------- //
-var myHub = mvdom.hub("myHub"); // create new hub
+var myHub = mvdom.hub("myHub"); // create a new named hub, and returns the named hub. 
 
 myHub.sub(topics, [labels,] handler[, opts]); // subscribe
 
@@ -228,7 +231,7 @@ mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
 
 The optional mvdom view `config` argument allow to customize the way the view is handled. It can be set at the registration phase, as well as overriden for each display. For now, it is a single property config, `.append`, which tells how to add the new view.el to the DOM.
 
-- append: ("last", "first", "before", "after"). 
+- append: ("last", "first", "before", "empty", "after"). 
     + **"last"**: The __refEl__ is interpreted as the parent, and the append will use `refEl.appendChild(view.el)`
     + **"first"**: The __refEl__ is interpreted as the parent, and the append will use the `.insertBefore` the `.firstChild` of the __refEl__. If no firstElement, then, will do a normal appendChild.
     + **"empty"**: The __refEl__ is interpreted as the parent, first, `mvdom.empty(refEl)` is called and then `refEl.appendChild(view.el)`.
@@ -394,6 +397,50 @@ This library uses a gulp-and-webpack-free way of building distribution file, and
 
 - `npm run build` to generate the distrubtion files: `dist/mvdom.js` `dist/mvdom.js.map` and `dist/mvdom.min.js`
 - `npm run watch` for repl development which will automatically recompile the distribution files on any src js change.
+
+
+
+## Type Support
+
+While `mvdom` is written in pure JS, it does provide typescript types for typescript, flow, and intellisense supports. See `types/` folder. 
+
+#### In a TypeScript project. 
+
+```ts
+import mvdom from "mvdom"; 
+```
+And you should be all set. 
+
+If you load the mvdom separatly and need to put mvdom in the global scope, see **External lib `global.d.ts`** below.
+
+
+#### In a Javascript Project (Intellisense support)
+
+Even in pure javascript projects, some modern IDE/Editor supports typescript types for intellisense. 
+
+```
+var mvdom = require("mvdom");
+```
+
+Should provide intellisense for the mvdom variable. 
+
+If you package/load the mvdom lib separately from your application code, you just create a `global.d.ts` (as below) which will tell intellisense (at least in VSCode) to consider mvdom as a global variable.
+
+
+#### External lib `global.d.ts`
+
+If you load **mvdom** in a separate file and do not embed in your application javascript modules, you should make into a global declarationby creating a `global.d.ts` (putting it at the root of the project is fine, this is not a file to be compiled)
+
+`global.d.ts`
+```ts
+import Mvdom from "./node_modules/mvdom/types/Mvdom";
+
+declare global {
+	var mvdom: Mvdom;
+}
+```
+
+
 
 
 
