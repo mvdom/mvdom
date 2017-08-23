@@ -1,24 +1,41 @@
 
+// Note: if we put the types in mvdom namespace, then, they do not get expanded by intellisense. 
 
-// Note: if we put the type in mvdom namespace, then, they do not get expanded by intellisense. 
 type Append = "first" | "last" | "empty" | "before" | "after";
 type HookStage = "willCreate" | "didCreate" | "willInit" | "didInit" | "willDisplay" | "didDisplay" | "willPostDisplay" | "didPostDisplay" | "willRemove" | "didRemove";	
-type HTMLElementOrMoreOrNull = HTMLElement | NodeList | [HTMLElement] | null;
-type HTMLElementOrNull = HTMLElement | null;
+type EventTargetOrMoreOrNull = EventTarget | NodeList | [HTMLElement] | null;
+type HTMLElementOrNull = HTMLElement | null | undefined;
+
 
 /** Config that can be set at the view controller registration or overriden by view instantiation (i.e. mvdom.display) */
 declare interface Config{
 	append: Append;
 }
 
-declare interface ViewController{
-	create?(data: any, config: Config): string | HTMLElement | HTMLFrameElement;
-	init?(data: any, config: Config): any;
-	postDisplay?(data: any, config: Config): any;
-	destroy?(): any;
+declare interface HubEventInfo{
+	topic: string;
+	label: string;
 }
 
-declare interface View{
+export declare interface ViewController{
+	create?(this:View, data?: any, config?: Config): string | HTMLElement | DocumentFragment;
+	init?(this:View, data?: any, config?: Config): any;
+	postDisplay?(this:View, data?: any, config?: Config): any;
+	destroy?(this:View): any;
+
+	events?: {[name:string]: (this:View, evt: Event) => void};
+
+	docEvents?: {[name:string]: (this:View, evt: Event) => void};
+
+	winEvents?: {[name:string]: (this:View, evt: Event) => void};
+
+	hubEvents?: {[name:string]: (this:View, data: any, info: HubEventInfo ) => void};
+
+	[name: string]: any;
+}
+
+// for now, the View extends the ViewContoller (single object)
+export declare interface View extends ViewController{
 	/** Unique id of the view. Used in namespace binding and such.  */
 	id: string;
 
@@ -26,8 +43,10 @@ declare interface View{
 	name: string;
 
 	/** The htmlElement created */
-	el: HTMLElement;
+	el?: HTMLElement;
 }
+
+//export declare interface View extends ViewController{}
 
 declare interface EventOptions {
 	/** The context with which the call back will be called (i.e. this context) */
@@ -44,6 +63,7 @@ declare interface EventInfo{
 }
 
 type HubSubHandler = (data: any, info: any) => void;
+
 declare interface Hub{
 
 	/** Subscribe a new hanlder to one or more topics ("," separated) */
@@ -60,17 +80,17 @@ declare interface Hub{
 	unsub(nsObj: NsObject): void;
 
 }
-declare class Mvdom {
 
+export declare interface Mvdom {
+	
 	// --------- View --------- //
 	/** Register a new view controller with a name (used in mvdom.display(name, ...)) 
 	 *  @param name the name of the view controller type. Usually camel case (e.g., "MyView")
 	 *  @param viewController the controller object that will be used to instanatiate the view
 	*/
-	register(name: string, viewController: ViewController, config: Config): void;
+	register(name: string, viewController: ViewController, config?: Config): void;
 
-
-	//function display<T extends ViewController>(viewController: {new(): T;}): Promise<T>;
+	register<T extends ViewController>(viewControllerClass: {new(): T;} ): void;
 
 	/** Create a new view instanced for this given name and append it to the parentEl
 	 * 
@@ -79,28 +99,33 @@ declare class Mvdom {
 	 *  @param data An optional data object to be passed to the view instance. Need to be null if config is present.
 	 *  @param config An optional config telling more information or append type
 	*/
-	display(viewName: string, parentEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<View>;
-	
+	display(viewName: string, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<View>;
+
+	display<C extends View>(viewController: {new(): C;}, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<C>;
+
 	/** Register a HookCallback function that will be called when any view reach this lifecycle stage */
 	hook(hookStage: HookStage, cb: (view: View) => void): void;
+
+	empty(el: HTMLElementOrNull): void;
+	remove(el: HTMLElementOrNull): void;
 	// --------- /View --------- //
 
 	// --------- DOM Event Helpers --------- //
 
 	/** Direct event binding to one of more HTML Element */
-	on(els: HTMLElementOrMoreOrNull, types: string, listener: () => void, opts?: EventOptions): void;
+	on(els: EventTargetOrMoreOrNull, types: string, listener: (evt:DocumentEvent) => void, opts?: EventOptions): void;
 	/** Selector based binding to one or more HTML ELement. Only one binding per els, but will use selector string to decide if the listener should be called (similar to jQuery.on) */
-	on(els: HTMLElementOrMoreOrNull, types: string, selector: string, listener: (evt: any) => void, opts?: EventOptions): void;
+	on(els: EventTargetOrMoreOrNull, types: string, selector: string, listener: (evt: any) => void, opts?: EventOptions): void;
 
-	off(els: HTMLElementOrMoreOrNull, types: string, selector?: string, listener?: (evt: any) => void, nsObj?: NsObject): void;
-	off(els: HTMLElementOrMoreOrNull, nsObj: {ns: string}): void;
+	off(els: EventTargetOrMoreOrNull, types: string, selector?: string, listener?: (evt: any) => void, nsObj?: NsObject): void;
+	off(els: EventTargetOrMoreOrNull, nsObj: {ns: string}): void;
 
-	trigger(els: HTMLElementOrMoreOrNull, eventName: string, info: EventInfo): void;
+	trigger(els: EventTargetOrMoreOrNull, eventName: string, info?: EventInfo): void;
 	// --------- /DOM Event Helpers --------- //
 
 	// --------- DOM Query Helpers --------- //
-	all(el: HTMLElementOrNull, selector: string): NodeList;
-	all(selector: string): NodeList;
+	all(el: HTMLElementOrNull, selector: string): NodeListOf<HTMLElement>;
+	all(selector: string): NodeListOf<HTMLElement>;
 
 	/** Shortchut to el.querySelector, but allow el to be null (in which case will return null) */
 	first(el: HTMLElementOrNull, selector: string): HTMLElementOrNull;
@@ -113,13 +138,16 @@ declare class Mvdom {
 	next(el: HTMLElementOrNull, selector?: string): HTMLElementOrNull;
 	/** Returns the previous sibling element matching an optional selector (return null if none)*/
 	prev(el: HTMLElementOrNull, selector?: string): HTMLElementOrNull;
+
+	/** Find the closest HTMLElement from this element given a selector (including el if match). */
+	closest(el: HTMLElementOrNull, selector: string): HTMLElementOrNull;
 	// --------- /DOM Query Helpers --------- //
 
 	// --------- DOM Helpers --------- //
 	/** standard refEl.appendChild(newEl) (just here for symmetry) 
 	 * @returns the newEl
 	*/
-	append(refEl: HTMLElement, newEl: HTMLElement, append: Append): HTMLElement; 
+	append(refEl: HTMLElement, newEl: HTMLElement | DocumentFragment, append?: Append): HTMLElement; 
 
 	/** Create a DocumentFragment from a string. (Use template.content with fallback on older browser) */
 	frag(html: string): DocumentFragment;
@@ -127,9 +155,11 @@ declare class Mvdom {
 
 	// --------- push/pull --------- //
 	/** Push a data object into a DOM Element subtree (given the dx naming convention). */
+	push(el: HTMLElement, data: any): void;
 	push(el: HTMLElement, selector: string, data: any): void;
+	
 	/** Extract a data object from a DOM Element subtree (given the dx naming convention). */
-	pull(el: HTMLElement, selector: string, data: any): any;
+	pull(el: HTMLElement, selector?: string, data?: any): any;
 
 	/** register pusher function set a value to a matching element */
 	pusher(selector: string, pusherFn: (value: any) => void): void;
@@ -145,4 +175,3 @@ declare class Mvdom {
 	// --------- /Hub (pub/sub) --------- //
 }
 
-export default Mvdom;

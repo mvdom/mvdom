@@ -1,39 +1,60 @@
 <!DOCTYPE html>
 <html lang="">
-	<head>
-		<meta charset="utf-8">
-		<title>MVDOM Test: View</title>
 
-		<script src="../dist/mvdom.js"></script>
-		<script src="./common/test.js"></script>
+<head>
+	<meta charset="utf-8">
+	<title>MVDOM Test: View</title>
 
-		<link href="./common/test.css" rel="stylesheet">
+	<script src="../dist/mvdom.js"></script>
+	<script src="./common/test.js"></script>
 
-		<script>
+	<link href="./common/test.css" rel="stylesheet">
+
+	<script>
 		/* global assertEquals */
 		var d = mvdom;
 		var outs = [];
 
-		d.register("SubView",{
-			create: function(data){
-				return d.frag('<div class="SubView rect sm">SubView</div>');
-			}, 
-			init: function(data){
-				this.el.classList.add("subview-" + data.label);
-				this.el.innerHTML = "SubView-" + data.label;
-			},
-			destroy: function(info){
-				outs.push("SubView.destroy");
-			},			
-			docEvents: {
-				"CUSTOM": function(evt){
-					outs.push("CUSTOM " + this.name + " " + this.id);
-				}
-			}			
-		});
+		// d.register("SubView", {
+		// 	create: function (data) {
+		// 		return d.frag('<div class="SubView rect sm">SubView</div>');
+		// 	},
+		// 	init: function (data) {
+		// 		this.el.classList.add("subview-" + data.label);
+		// 		this.el.innerHTML = "SubView-" + data.label;
+		// 	},
+		// 	destroy: function (info) {
+		// 		outs.push("SubView.destroy");
+		// 	},
+		// 	docEvents: {
+		// 		"CUSTOM": function (evt) {
+		// 			outs.push("CUSTOM " + this.name + " " + this.id);
+		// 		}
+		// 	}
+		// });
+		
+		// a View the "class" way (class will work as well)
+		var SubView = function () { };
+		SubView.prototype.create = function (data) {
+			return d.frag('<div class="SubView rect sm">SubView</div>');
+		}
 
-		d.register("MainView",{
-			create: function(){
+		SubView.prototype.init = function (data) {
+			this.el.classList.add("subview-" + data.label);
+			this.el.innerHTML = "SubView-" + data.label;
+		}
+		SubView.prototype.destroy = function (info) {
+			outs.push("SubView.destroy");
+		}
+		SubView.prototype.docEvents = {
+			"CUSTOM": function (evt) {
+				outs.push("CUSTOM " + this.name + " " + this.id);
+			}
+		}
+		d.register(SubView);
+
+		d.register("MainView", {
+			create: function () {
 				outs.push("MainView.create");
 				return `<div class='MainView'>Main View ${this.id} 
 									<div class="but but-1">.but-1</div>
@@ -42,57 +63,57 @@
 								</div>`;
 			},
 
-			postDisplay: function(){
+			postDisplay: function () {
 				var containerEl = d.first(this.el, ".sub-views");
-				return d.display("SubView", containerEl, {label: "A"}).then(function(viewA){
-					return d.display("SubView", containerEl, {label: "B"}, {append:"first"}).then(function(viewB){
-						return d.display("SubView", viewA.el, {label: "C"}, "before").then(function(viewC){
+				return d.display(SubView, containerEl, { label: "A" }).then(function (viewA) {
+					return d.display("SubView", containerEl, { label: "B" }, { append: "first" }).then(function (viewB) {
+						return d.display("SubView", viewA.el, { label: "C" }, "before").then(function (viewC) {
 							outs.push("MainView.postDisplay");
-						});	
-					});	
+						});
+					});
 				});
-				
-				
-				
+
+
+
 			},
 
-			destroy: function(info){
+			destroy: function (info) {
 				outs.push("MainView.destroy");
 			},
 
 			events: {
-				"click; .but": function(evt){
+				"click; .but": function (evt) {
 					outs.push("click.but-1");
 				},
 
-				"click; .SubView": function(evt){
+				"click; .SubView": function (evt) {
 					outs.push("click.SubView");
 				},
 
-				"click": function(evt){
+				"click": function (evt) {
 					outs.push("click.MainView");
 				}
-			}, 
+			},
 
 			docEvents: {
-				"CUSTOM": function(evt){
+				"CUSTOM": function (evt) {
 					outs.push("CUSTOM " + this.name + " " + this.id);
 				}
-			}, 
+			},
 
 			winEvents: {
 
-			}, 
+			},
 
 			parentEvents: { // NOT Supported yet
-				"TopView; click": function(evt){
+				"TopView; click": function (evt) {
 
 				}
-			}, 
+			},
 
 			closestEvents: {
-				".container; click": function(evt){
-					
+				".container; click": function (evt) {
+
 				}
 			}
 		});
@@ -102,116 +123,118 @@
 		});
 
 		var tests = {
-			_init: function(){
+			_init: function () {
 			},
 
-			_beforeEach: function(){
+			_beforeEach: function () {
 				outs = [];
-			}, 
+			},
 
-			testSimpleMainViewAndHook: function(){
-				return d.display("MainView",d.first(".test-content")).then(function(view){
+			testSimpleMainViewAndHook: function () {
+				return d.display("MainView", d.first(".test-content")).then(function (view) {
 					assertEquals(["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay"], outs);
-				});				
-			}, 
+				});
+			},
 
-			testClickBut1: function(){
+			testClickBut1: function () {
 				d.first(".but-1").click();
 				assertEquals(["click.but-1", "click.MainView"], outs);
 			},
 
-			testClickSubViewA: function(){
+			testClickSubViewA: function () {
 				d.first(".SubView.subview-A").click();
 
 				assertEquals(["click.SubView", "click.MainView"], outs);
 			},
 
-			testClickMainView: function(){
+			testClickMainView: function () {
 				d.first(".MainView").click();
 				assertEquals(["click.MainView"], outs);
-			}, 
+			},
 
-			testCustomDocEvent: function(){
-				d.trigger(document,"CUSTOM");
+			testCustomDocEvent: function () {
+				d.trigger(document, "CUSTOM");
 
 				assertEquals(["CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3"], outs);
-			}, 
+			},
 
-			testAddMainView: function(){
-				return d.display("MainView", d.first(".test-content")).then(function(view){
-					d.trigger(document,"CUSTOM");
+			testAddMainView: function () {
+				return d.display("MainView", d.first(".test-content")).then(function (view) {
+					d.trigger(document, "CUSTOM");
 					var expected = ["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", "CUSTOM MainView 4", "CUSTOM SubView 5", "CUSTOM SubView 6", "CUSTOM SubView 7"];
-					assertEquals(expected, outs);	
+					assertEquals(expected, outs);
 
 
 				});
 			},
 
-			testCustomDocEvent2MainViews: function(){
-				d.trigger(document,"CUSTOM");
+			testCustomDocEvent2MainViews: function () {
+				d.trigger(document, "CUSTOM");
 
-				assertEquals(["CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", 
+				assertEquals(["CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3",
 					"CUSTOM MainView 4", "CUSTOM SubView 5", "CUSTOM SubView 6", "CUSTOM SubView 7"], outs);
-			}, 
+			},
 
-			testEmptySecondMainView: function(){
-				d.empty(d.all(".d-view.MainView")[1]);				
-				d.trigger(document,"CUSTOM");
+			testEmptySecondMainView: function () {
+				d.empty(d.all(".d-view.MainView")[1]);
+				d.trigger(document, "CUSTOM");
 				assertEquals(["SubView.destroy", "SubView.destroy", "SubView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", "CUSTOM MainView 4"], outs);
-			}, 
+			},
 
-			testRemoveSecondMainView: function(){
-				
+			testRemoveSecondMainView: function () {
+
 				// we remove the second view (view1), and trigger a custom event
 				d.remove(d.all(".d-view.MainView")[1]);
-				d.trigger(document,"CUSTOM");
+				d.trigger(document, "CUSTOM");
 				// here we should have only the view left that added the text in the outs
 				assertEquals(["MainView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3"], outs);
-			}, 
+			},
 
 			// we test that creating a view with element, works (text and fragment are already tested with MainView and SubView)
-			testCreateWithElement: function(){
+			testCreateWithElement: function () {
 				var testContentEl = d.first(".test-content");
 
-				d.register("OtherViewA", {create: function(){
-					var el = document.createElement("div");
-					el.classList.add("OtherViewA");
-					el.classList.add("rect");
-					el.innerHTML = "Other View A<b class='rect sm'>b tag</b>";
-					return el;
-				}});
+				d.register("OtherViewA", {
+					create: function () {
+						var el = document.createElement("div");
+						el.classList.add("OtherViewA");
+						el.classList.add("rect");
+						el.innerHTML = "Other View A<b class='rect sm'>b tag</b>";
+						return el;
+					}
+				});
 
-				return d.display("OtherViewA",testContentEl).then(function(view){
+				return d.display("OtherViewA", testContentEl).then(function (view) {
 					var testEl = d.first(".OtherViewA");
 					// here remove the \n otherwise, can't compare somehow.
-					assertEquals("Other View A_b tag", testEl.innerText.replace(/\n/g,"_"));
+					assertEquals("Other View A_b tag", testEl.innerText.replace(/\n/g, "_"));
 				});
-			}, 
+			},
 
-			testDisplayWithEmptyDirective: function(){
+			testDisplayWithEmptyDirective: function () {
 				var testContentEl = d.first(".test-content");
 				var containerEl = d.first(d.frag("<div class='rect'>some content</div>"));
 				d.append(testContentEl, containerEl);
-				return d.display("SubView", containerEl,{label: "test"},"empty").then(function(view){
-					var txt = containerEl.innerText.replace(/\s/g,"_");
-					assertEquals("SubView-test", txt);		
+				return d.display("SubView", containerEl, { label: "test" }, "empty").then(function (view) {
+					var txt = containerEl.innerText.replace(/\s/g, "_");
+					assertEquals("SubView-test", txt);
 				});
 			}
 
 			// TODO: need to test nested view remove
 		};
-		
-		</script>
+	</script>
 
-	</head>
+</head>
 
-	<body>
-		<div class="test-output">
-			<h1>Simple View Test</h1>
-			<ul id="output">
-			</ul>
-		</div>
-		<div class="test-content">
-		</div>						
-	</body>
+<body>
+	<div class="test-output">
+		<h1>Simple View Test</h1>
+		<ul id="output">
+		</ul>
+	</div>
+	<div class="test-content">
+	</div>
+</body>
+
 </html>

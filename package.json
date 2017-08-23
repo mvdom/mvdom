@@ -24,7 +24,7 @@
     "cmdrouter": "^0.2.0",
     "exorcist": "^0.4.0",
     "fs-extra-plus": "^0.1.2",
-    "uglify-js": "^3.0.27"
+    "uglify-js": "^3.0.28"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

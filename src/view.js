@@ -35,9 +35,27 @@ function hook(name, fun){
 	hooks[name].push(fun);
 }
 
-function register(name, controller, config){
+function register(nameOrFactory, controllerOrConfig, config){
+	var name = null;
+	var factory = null;
+	var controller = null;
+
+	if (nameOrFactory instanceof Function){
+		
+		factory = nameOrFactory;
+		name = factory.name;
+		if (!name || name === "function"){
+			throw new Error("MVDOM ERROR - Cannot register an anonymous function, must be a full constructor function or a class");
+		}
+		config = controllerOrConfig;
+	}else{
+		name = nameOrFactory;
+		controller = controllerOrConfig;
+	}
+
 	var viewDef = {
 		name: name,
+		factory: factory,
 		controller: controller,
 		config: config
 	}; 
@@ -48,7 +66,13 @@ function register(name, controller, config){
 function display(name, parentEl, data, config){
 	var self = this;
 
-	var view = doInstantiate(name, config);
+	if (name instanceof Function){
+		name = name.name;
+		if (!name ||  name === "function"){
+			throw new Error("MVDOM ERROR - function passed as view identifier must have the name of the registered view");
+		}
+	}
+	var view = doInstantiate(name, data, config);
 	
 	return doCreate(view, data)
 		.then(function(){
@@ -122,13 +146,12 @@ function removeEl(el, childrenOnly){
 
 // return the "view" instance
 // TODO: need to be async as well and allowed for loading component if not exist
-function doInstantiate(name, config){
+function doInstantiate(name, data, config){
 
 	// if the config is a string, then assume it is the append directive.
 	if (typeof config === "string"){
 		config = {append: config};
 	}
-
 
 	// get the view def from the dictionary
 	var viewDef = viewDefDic[name];
@@ -138,11 +161,17 @@ function doInstantiate(name, config){
 		throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
 	}
 
-	// instantiate the view instance
-	var view = Object.assign({}, viewDef.controller);
+	var view = null;
+	var viewConfig = Object.assign({}, defaultConfig, viewDef.config, config);
+
+	if (viewDef.controller){
+		view = Object.assign({}, viewDef.controller);
+	}else if (viewDef.factory){
+		view = new viewDef.factory(data, config); 
+	}
 
 	// set the config
-	view.config = Object.assign({}, defaultConfig, viewDef.config, config);
+	view.config = viewConfig;
 
 	// set the id
 	view.id = viewIdSeq++;
