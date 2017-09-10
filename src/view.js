@@ -35,44 +35,38 @@ function hook(name, fun){
 	hooks[name].push(fun);
 }
 
-function register(nameOrFactory, controllerOrConfig, config){
+function register(nameOrConstructor, archetypeOrConfig, config){
 	var name = null;
-	var factory = null;
-	var controller = null;
+	var constructor = null;
+	var archetype = null;
 
-	if (nameOrFactory instanceof Function){
+	if (nameOrConstructor instanceof Function){
 		
-		factory = nameOrFactory;
-		name = factory.name;
+		constructor = nameOrConstructor;
+		name = constructor.name;
 		if (!name || name === "function"){
 			throw new Error("MVDOM ERROR - Cannot register an anonymous function, must be a full constructor function or a class");
 		}
-		config = controllerOrConfig;
+		config = archetypeOrConfig;
 	}else{
-		name = nameOrFactory;
-		controller = controllerOrConfig;
+		name = nameOrConstructor;
+		archetype = archetypeOrConfig;
 	}
 
 	var viewDef = {
 		name: name,
-		factory: factory,
-		controller: controller,
+		constructor: constructor,
+		archetype: archetype,
 		config: config
 	}; 
 
 	viewDefDic[name] = viewDef;
 }
 
-function display(name, parentEl, data, config){
+function display(nameOrConstructor, parentEl, data, config){
 	var self = this;
 
-	if (name instanceof Function){
-		name = name.name;
-		if (!name ||  name === "function"){
-			throw new Error("MVDOM ERROR - function passed as view identifier must have the name of the registered view");
-		}
-	}
-	var view = doInstantiate(name, data, config);
+	var view = doInstantiate(nameOrConstructor, data, config);
 	
 	return doCreate(view, data)
 		.then(function(){
@@ -146,15 +140,41 @@ function removeEl(el, childrenOnly){
 
 // return the "view" instance
 // TODO: need to be async as well and allowed for loading component if not exist
-function doInstantiate(name, data, config){
+function doInstantiate(nameOrConstructor, data, config){
 
 	// if the config is a string, then assume it is the append directive.
 	if (typeof config === "string"){
 		config = {append: config};
 	}
 
+	var name, constructor; 
+
+	if (typeof nameOrConstructor === "function"){
+		name = nameOrConstructor.name;
+		constructor = nameOrConstructor;
+	}else{
+		name = nameOrConstructor;
+	}
+
 	// get the view def from the dictionary
 	var viewDef = viewDefDic[name];
+
+	// if we display by constructor
+	if (constructor != null){
+		// check that if we have a viewDef for the constructor name, it matches. 
+		if (viewDef && viewDef.constructor !== constructor){
+			throw new Error("MVDOM ERROR - Constructor function to display " + name + 
+			" does match what it was registered. Registered named should be unique as they can be displayed by name." );
+		}
+		// if we do not have a viewDef, we can create one on the fly
+		if (!viewDef){
+			viewDef = {
+				name: name,
+				constructor: constructor
+			};
+		}
+
+	}
 
 	// if viewDef not found, throw an exception (Probably not registered)
 	if (!viewDef){
@@ -164,10 +184,10 @@ function doInstantiate(name, data, config){
 	var view = null;
 	var viewConfig = Object.assign({}, defaultConfig, viewDef.config, config);
 
-	if (viewDef.controller){
-		view = Object.assign({}, viewDef.controller);
-	}else if (viewDef.factory){
-		view = new viewDef.factory(data, config); 
+	if (viewDef.archetype){
+		view = Object.assign({}, viewDef.archetype);
+	}else if (viewDef.constructor){
+		view = new viewDef.constructor(data, config); 
 	}
 
 	// set the config

@@ -15,26 +15,10 @@
 		var d = mvdom;
 		var outs = [];
 
-		// d.register("SubView", {
-		// 	create: function (data) {
-		// 		return d.frag('<div class="SubView rect sm">SubView</div>');
-		// 	},
-		// 	init: function (data) {
-		// 		this.el.classList.add("subview-" + data.label);
-		// 		this.el.innerHTML = "SubView-" + data.label;
-		// 	},
-		// 	destroy: function (info) {
-		// 		outs.push("SubView.destroy");
-		// 	},
-		// 	docEvents: {
-		// 		"CUSTOM": function (evt) {
-		// 			outs.push("CUSTOM " + this.name + " " + this.id);
-		// 		}
-		// 	}
-		// });
-		
+		// --------- SubView (prototype way) --------- //
 		// a View the "class" way (class will work as well)
-		var SubView = function () { };
+		// var SubView = function () { }; // this will work as well
+		function SubView() {};
 		SubView.prototype.create = function (data) {
 			return d.frag('<div class="SubView rect sm">SubView</div>');
 		}
@@ -52,7 +36,14 @@
 			}
 		}
 		d.register(SubView);
+		// --------- /SubView (prototype way) --------- //
 
+		function ExtraView(){};
+		ExtraView.prototype.create = function(data){
+			return d.frag('<div class="SubView rect sm">ExtraView-_name_</div>'.replace("_name_", data.name));
+		}
+
+		// --------- MainView (object way) --------- //
 		d.register("MainView", {
 			create: function () {
 				outs.push("MainView.create");
@@ -117,6 +108,7 @@
 				}
 			}
 		});
+		// --------- /MainView (object way) --------- //
 
 		d.hook("willCreate", view => {
 			outs.push("hook.willCreate");
@@ -219,8 +211,17 @@
 					var txt = containerEl.innerText.replace(/\s/g, "_");
 					assertEquals("SubView-test", txt);
 				});
-			}
+			},
 
+			// test ExtraView function constructor that did not get register
+			testDisplayViewByConstructor: function(){
+				var testContentEl = d.first(".test-content");
+
+				return d.display(ExtraView, testContentEl, {name: "01"}).then(function(view){
+					assertEquals("ExtraView", view.name);
+					assertEquals("ExtraView-01", view.el.innerText);
+				});
+			},			
 			// TODO: need to test nested view remove
 		};
 	</script>

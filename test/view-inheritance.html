@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+	<meta charset="utf-8">
+	<title>MVDOM Test: View</title>
+
+	<script src="../dist/mvdom.js"></script>
+	<script src="./common/test.js"></script>
+
+	<link href="./common/test.css" rel="stylesheet">
+
+	<script>
+		/* global assertEquals */
+		var d = mvdom;
+		var outs = [];
+
+		function BaseView(){
+			this.controller = [{
+				events: {
+					"click": function(){
+						out.push("click" + this.name);
+					}
+				}
+			}]
+		}
+
+		function SubView(){
+			BaseView.call(this);
+			this.controller.push({
+				events: {
+					"click": function(){
+						out.push("click" + this.name);
+					}
+				}				
+			})
+		}
+
+		SubView.prototype = Object.create(BaseView.prototype);
+		SubView.prototype.contructor = SubView;
+
+		SubView.prototype.create = function(){
+			return '<div class="SubView rect sm">SubView</div>';
+		}		
+
+		var tests = {
+			_init: function () {
+			},
+
+			_beforeEach: function () {
+				outs = [];
+			},
+
+			// test ExtraView function constructor that did not get register
+			testWithControllers: function(){
+				var testContentEl = d.first(".test-content");
+
+				return d.display(SubView, testContentEl, {name: "01"}).then(function(view){
+					console.log(view)
+				});
+			},			
+			// TODO: need to test nested view remove
+		};
+	</script>
+
+</head>
+
+<body>
+	<div class="test-output">
+		<h1>Simple View Test</h1>
+		<ul id="output">
+		</ul>
+	</div>
+	<div class="test-content">
+	</div>
+</body>
+
+</html>

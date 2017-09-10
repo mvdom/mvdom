@@ -407,38 +407,41 @@ While `mvdom` is written in pure JS, it does provide typescript types for typesc
 #### In a TypeScript project. 
 
 ```ts
-import mvdom from "mvdom"; 
-```
-And you should be all set. 
+import * as mvdom from "mvdom";
+// or
+import mvdom = require("mvdom");
 
-If you load the mvdom separatly and need to put mvdom in the global scope, see **External lib `global.d.ts`** below.
-
-
-#### In a Javascript Project (Intellisense support)
-
-Even in pure javascript projects, some modern IDE/Editor supports typescript types for intellisense. 
-
-```
-var mvdom = require("mvdom");
+// and then, you should have all type
+mvdom.display....
 ```
 
-Should provide intellisense for the mvdom variable. 
-
-If you package/load the mvdom lib separately from your application code, you just create a `global.d.ts` (as below) which will tell intellisense (at least in VSCode) to consider mvdom as a global variable.
+As of 0.5.3, you can display a view from a Function Constructor without having to register it. 
 
 
-#### External lib `global.d.ts`
-
-If you load **mvdom** in a separate file and do not embed in your application javascript modules, you should make into a global declarationby creating a `global.d.ts` (putting it at the root of the project is fine, this is not a file to be compiled)
-
-`global.d.ts`
 ```ts
-import Mvdom from "./node_modules/mvdom/types/Mvdom";
+import mvdom = require("mvdom");
 
-declare global {
-	var mvdom: Mvdom;
+class MyView implements View{
+  id: string; // will be set by mvdom (will be unique)
+  name: string; // will be set as well (will be MyView)
+  el?: HTMLElement; // will be set by mvdom
+
+  create(){
+    return `<div>My First mvdom View <span class="but">click to remove me</span></div>`;
+  }, 
+
+  events = {
+    "click; .but": () => {
+      console.log("This button has been clicked");
+      mvdom.remove(this.el); // this will remove the div and unbind
+    }
+  }
 }
+
+mvdom.display(MyView, "body");
 ```
+
+
 
 
 
