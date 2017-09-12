@@ -125,6 +125,7 @@ myHub.unsub(opts.ns); // unsubscribe
 // --------- /Hub (pub/sub) --------- //
 ```
 
+For full API spec, see [Typescript index.d.ts](types/index.d.ts)
 
 ## View Register
 
@@ -171,7 +172,10 @@ mvdom.register("MainView",{
         
     }
 
-    // (optional) bind events to this view (support selector)
+    // (optional) events: {eventSelector: handlerFunction} | 
+    //                    {eventSelector: handlerFunction}[]
+    // 
+    // Can be an array of eventBinding as well
     events: {
         "click; .but": function(evt){
             var view = this; // this is the view
@@ -179,15 +183,16 @@ mvdom.register("MainView",{
         }
     }, 
 
-    // (optional) bind events to the document 
-    // (will be unbind when destroy this view by calling d.remove on this element or parents or d.empty on any parent )
+    // (optional) same format as above, but bind on document 
+    // - support array of bindings as well)
+    // - will unbind on destroy when calling d.remove on this element or parents or d.empty on any parent
     docEvents: {
         "click; .do-logoff": function(evt){
             var view = this;            
         }
     }, 
 
-    // (optional) same as above, but on window (good to handle window resize)
+    // (optional) same as docEvents but on window object. 
     winEvents: {
         "resize": function(evt){
             // do something when window is resize
@@ -195,6 +200,7 @@ mvdom.register("MainView",{
     }, 
 
     // (optional) subscribe to a hub by hub name, topic(s), and optional label(s)
+    // - support array of bindings as well.
     hubEvents: {
         dataServiceHub: {
             // subscribe on the dataServiceHub on the topic Task and any labels "create" "update" or "delete"
@@ -440,10 +446,6 @@ class MyView implements View{
 
 mvdom.display(MyView, "body");
 ```
-
-
-
-
 
 
 

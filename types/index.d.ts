@@ -53,21 +53,24 @@ declare interface Hub {
 // --------- /Hub --------- //
 
 // --------- View Interfaces --------- //
+type eventBindings = { [name: string]: (this: AnyView, evt: Event) => void };
+type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
+	{ [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
+
 export declare interface ViewController {
-	create?(this: View, data?: any, config?: Config): string | HTMLElement | DocumentFragment;
-	init?(this: View, data?: any, config?: Config): any;
-	postDisplay?(this: View, data?: any, config?: Config): any;
-	destroy?(this: View): any;
+	create?(data?: any, config?: Config): string | HTMLElement | DocumentFragment;
+	init?(data?: any, config?: Config): any;
+	postDisplay?(data?: any, config?: Config): any;
+	destroy?(): any;
 
-	events?: { [name: string]: (this: View, evt: Event) => void };
+	events?: eventBindings | eventBindings[];
 
-	docEvents?: { [name: string]: (this: View, evt: Event) => void };
+	docEvents?: eventBindings | eventBindings[];
 
-	winEvents?: { [name: string]: (this: View, evt: Event) => void };
+	winEvents?: eventBindings | eventBindings[];
 
-	hubEvents?: { [name: string]: (this: View, data: any, info: HubEventInfo) => void };
+	hubEvents?: hubBindings | hubBindings[];
 
-	[name: string]: any;
 }
 
 // for now, the View extends the ViewContoller (single object)
@@ -80,6 +83,10 @@ export declare interface View extends ViewController {
 
 	/** The htmlElement created */
 	el?: HTMLElement;
+}
+
+export declare interface AnyView extends View {
+	[name: string]: any;
 }
 // --------- /View Interfaces --------- //
 

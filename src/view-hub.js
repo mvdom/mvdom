@@ -5,27 +5,39 @@ var utils = require("./utils.js");
 // --------- Events Hook --------- //
 _view.hook("willInit", function(view){
 	var opts = {ns: "view_" + view.id, ctx: view};
-
+	
+	
 	if (view.hubEvents){
 		// build the list of bindings
+		var hubEventsList = utils.asArray(view.hubEvents);
 
-		var infoList = listHubInfo(view.hubEvents);
-		infoList.forEach(function(info){
-			info.hub.sub(info.topics, info.labels, info.fun, opts);
+		hubEventsList.forEach(function(hubEvents){
+			var infoList = listHubInfo(hubEvents);
+			infoList.forEach(function(info){
+				info.hub.sub(info.topics, info.labels, info.fun, opts);
+			});			
 		});
 	}
-
-	// TODO: need to allow closest binding.
 });
 
 _view.hook("willRemove", function(view){
 	var ns = "view_" + view.id;
-	var infoList = listHubInfo(view.hubEvents);
-	infoList.forEach(function(info){
-		info.hub.unsub(ns);
-	});
+	if (view.hubEvents){
+		var hubEventsList = utils.asArray(view.hubEvents);
+		hubEventsList.forEach(function(hubEvents){
+			var infoList = listHubInfo(hubEvents);
+			infoList.forEach(function(info){
+				info.hub.unsub(ns);
+			});
+		});
+	}
 });
 
+/**
+ * @param {*} hubEvents cloud be {"hubName; topics[; labels]": fn} 
+ * 											or {hubName: {"topics[; labels]": fn}}
+ * @returns [{hub, topics, labels}]
+ */
 function listHubInfo(hubEvents){
 	var key, val, key2, hub, infoList = [];
 
@@ -60,7 +72,5 @@ function getHubInfo(str, hub, fun){
 	info.hub = (!hub)?_hub.hub(a[0]):hub;
 	return info;
 }
-
-// TODO: need to unbind on "willDestroy"
 
 // --------- /Events Hook --------- //
