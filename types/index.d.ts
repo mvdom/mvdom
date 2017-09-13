@@ -9,7 +9,7 @@ type HTMLElementOrNull = HTMLElement | null | undefined;
 // --------- /Type Helpers --------- //
 
 declare interface Config {
-	append: Append;
+	append?: Append;
 }
 
 // --------- Hub --------- //
