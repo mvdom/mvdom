@@ -1,6 +1,89 @@
-## Concept
+`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it. 
 
-mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it. 
+## Hello World (es2015)
+
+`main.js`
+```js
+import { display } from 'mvdom';
+
+class HelloWorld {
+  create(){
+    return `<div class='HelloWorld'>Hello ${data.name}</div>`;
+  }
+}
+
+display(new HelloWorld(), {name: "John"});
+```
+
+Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **14kb min and ZERO depedency (beside the DOM)**!
+
+
+## Example (es2015)
+
+`FirstView.js`
+```js
+class FirstView{
+  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+    return `<div class='FirstView'>My First View, data: ${data}</div>`
+  }
+}
+```
+
+`main.js`
+```js
+import { display, first, hub } from 'mvdom';
+import { FirstView } from './FirstView';
+
+class MainView{
+
+  constructor(){
+    this.events = { // dom event binds to view.el, with optional selector
+      "click; .MainView > header": () => {
+        console.log("header clicked");
+      }
+    }
+
+    this.winEvents = { // will safely be un-bound on remove (use mvdom.remove or mvdom.empty on parents)
+      "resize": () => {
+        console.log("Window is resizing")
+      }
+    }
+
+    this.hubEvents = { // pub/sub with hub. This view will unsubcribe to this hub on remove.
+      "presenceHub; change": (isPresent) => {
+        console.log(`User is ${isPresent?'':'NOT '}present`);
+      }
+    }
+  }
+
+  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+    return `<div class='MainView'>
+      <header>${data.header}</header>
+      <section class='content'></section>
+    </div>`
+  }
+
+  postDisplay(data){ // will be called once the MainView div is added (next tick)
+    // display by another view in the content
+    display(data.contentViewClass, first(this.el, 'content'), data.contentData);
+  }
+}
+
+// display by instance
+display(new MainView(), "body", {header: "My First Main View", contentViewClass: OtherView, contentData: "Hello from main view"})
+  .then(function(view){
+    console.log(`view ${view.name} with unique instance id ${view.id} has been created, init, added to the dom, and postDisplay has been run`);
+
+    // just for the example, after 3 second, assume the user is not present
+    setTimeout(function(){
+      hub("presenceHub").pub("change", false);
+    }, 3000)
+  });
+```
+
+## Concept 
+
+**Key concept:** `ComponentView !== ComponentElement`, use mvdom for composite views (the big ones), regular DOM for component elements with native DOM event model for components intercomunications. Event based architecture always scale better, and the DOM has one for us.
 
 - The DOM is your friend, don't fight it, embrace it. 
 - Used right, the DOM can be a great foundation for a simple and scalable MVC model.
@@ -8,23 +91,25 @@ mvDom is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the found
 - Black magic always come with a hidden cost.
 - Frameworks come and go, languages and runtimes stay.
 - Size is a factor of complexity and starting small and simple will always scale better.
+- **Patterns over Frameworks**
 
 **In Short**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
+
 ## Characteristics
 
-- Zero dependency, micro libary (< 15kb min, < 6kb gzip).
+- **Zero dependency**, micro libary (< 15kb minimized, < 6kb gzip).
 - Template agnostic (string templating friendly, e.g., Handlebars)
-- Dead simple APIs (e.g. d.register(name, controller), d.display(name, parent))
-- Async Lifecycle management (hookable)
+- Dead simple APIs (e.g. display(view, parent), hub, on, first, all, ...)
+- Async and Hookable Lifecycle management
 - Enhanced DOM eventing (i.e., d.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
-- Simple, extensible, and optimized DOM data exchange (`d.push(el, data)` & `var data = d.pull(el)`). 
+- Simple, extensible, and optimized DOM data exchange (`push(el, data)` & `var data = pull(el)`). 
 - Minimalistic but powerful pub/sub (hub) with topic and label selectors. 
 
 ## Compatibility
 
 - Written and tested on all modern browsers (Chrome, Safari, Mobile Safari, Firefox, Edge)
-- Requires Promise, Array.forEach (for IE11, can be polyfill with https://polyfill.io)
+- Requires Promise, Array.forEach (for IE11, can be polyfill with https://polyfill.io or core.js)
 - Using javascript syntax compatible with IE9+ (no transpilling needed)
 
 
@@ -36,8 +121,17 @@ npm install mvdom
 
 Typical usage in source file: 
 
+```js
+import {display, first, all, ...} from 'mvdom'
 ```
+
+or if still in common js
+
+```js
+// common js way
 var mvdom = require("mvdom");
+
+mvdom.display ...
 ```
 
 > Note 1: While mvdom is written in pure js, it does provide typescript types. See [Typescript and/or Intellisense Support](#Type-Support)
@@ -49,15 +143,20 @@ See [#building] to build the distribution manually.
 
 ```js
 // --------- View APIs --------- //
-// register a view controller (async lifecycle)
-mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config]); 
 // display a view in this DOM element el 
-mvdom.display("ViewName", parentEl [, config]); 
+mvdom.display(viewInstance, parentEl [, data,  config]); 
+mvdom.display(viewConstructor, parentEl [, data,  config]); 
+
 // register a hook at a specific stage (willCreate, didCreate, willInit, ...)
 mvdom.hook("willCreate", fn(view){}); 
 
 mvdom.empty(el); // will empty all children of an element, and also "destroy" the eventual views
 mvdom.remove(el); // will remove this element, and also "destroy" the eventual attached view and the sub views
+
+// register a view controller (async lifecycle)
+mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config])
+mvdom.register(ViewConstructor, [, config]); 
+mvdom.display("ViewName", parentEl [, config]); 
 // --------- /View APIs --------- //
 
 // --------- DOM Event Helpers --------- //
@@ -127,15 +226,50 @@ myHub.unsub(opts.ns); // unsubscribe
 
 For full API spec, see [Typescript index.d.ts](types/index.d.ts)
 
+
+## View Display
+
+#### `mvdom.display(viewInstance, refEl: string | HTMLElement, data?: any, config?: {append}])`
+```js
+import { display } from 'mvdom';
+
+class MyView{
+  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+    return `<div class='MyView'>${data.title}</div>`
+  }
+}
+
+// display by instance
+display(new MyView(), "body", {title: "My First View"})
+```
+
+#### `mvdom.display(viewConstructorFunction, refEl: string | HTMLElement, data?: any, config?: {append}])`
+
+```js
+display(MyView, "body", {title: "My First View"})
+```
+
+#### `mvdom.display(viewName, refEl, [data, config])`
+
+Display a view by name `mvdom.display` (view definition must have been registered beforehand) for example: 
+
+```js
+// mvdom.display(viewName, refEl, data)
+display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
+// Note: mvdom.first is just a shortcut to document.querySelector
+```
+
 ## View Register
 
-#### `mvdom.register(viewName, controller [, config])`
+Note: Register is only require when display by name is needed than display by function constructor or instance
 
-Register a new view with `mvdom.register`. The view controller is responsible for the view lifecycle (which is asynchronous in nature). The only require view controller method, is the `.create([data, config])` which is reponsible to return the HTML.
+#### `mvdom.register(viewName, archetype [, config])`
+
+Register a new view "archetype" (i.e js object that will be clone for each instantiation) by name `mvdom.register`. The "controller" part of a view definition, see below, will be called during the lifecycle of the view ( everything is asynchronous based). The only required method is `.create([data, config])` which is reponsible to return the HTML.
 
 ```js
 
-// register a view controller
+// register a view archetype
 mvdom.register("MainView",{
     // Returns a HTML String, Document Element, or Document Fragment
     // Can return a Promise that resolve in one of those three object time
@@ -220,16 +354,19 @@ mvdom.register("MainView",{
 })
 ```
 
-## View Display
+#### `mvdom.register(viewConstructorFunction [, config])`
 
-#### `mvdom.display(viewName, refEl, [data, config])`
-
-Display a view with `mvdom.display`, for example: 
+Can also register a constructorFunction, and the `constructorFunction.name` will become the name of this registered view definition. 
 
 ```js
-// mvdom.display(viewName, refEl, data)
-mvdom.display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
-// Note: mvdom.first is just a shortcut to document.querySelector
+import { register } from 'mvdom';
+class MyView{
+  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+    return `<div class='MyView'>${data.title}</div>`
+  }
+}
+
+register(MyView, {append: first});
 ```
 
 
@@ -359,9 +496,10 @@ mvdom.push(myEl, updateData)
 ## Hub (pub/sub)
 
 ```js
-var d = window.mvdom; // just a best practice we have, but feel free to use mvdom as is.
+import { hub } from 'mvdom';
 
-var myHub = d.hub("myHub");
+// get (create if necessary) a hub instance with unique name "myHub"
+var myHub = hub("myHub");
 
 // Subcribe to a topic
 // sub(topic,[labels,] handlerFunction, namespace)
@@ -405,7 +543,6 @@ This library uses a gulp-and-webpack-free way of building distribution file, and
 - `npm run watch` for repl development which will automatically recompile the distribution files on any src js change.
 
 
-
 ## Type Support
 
 While `mvdom` is written in pure JS, it does provide typescript types for typescript, flow, and intellisense supports. See `types/` folder. 
@@ -413,19 +550,7 @@ While `mvdom` is written in pure JS, it does provide typescript types for typesc
 #### In a TypeScript project. 
 
 ```ts
-import * as mvdom from "mvdom";
-// or
-import mvdom = require("mvdom");
-
-// and then, you should have all type
-mvdom.display....
-```
-
-As of 0.5.3, you can display a view from a Function Constructor without having to register it. 
-
-
-```ts
-import mvdom = require("mvdom");
+import { display, remove, View } from "mvdom";
 
 class MyView implements View{
   id: string; // will be set by mvdom (will be unique)
@@ -444,7 +569,7 @@ class MyView implements View{
   }
 }
 
-mvdom.display(MyView, "body");
+display(MyView, "body");
 ```
 
 
