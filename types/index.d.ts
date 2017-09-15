@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////
-/// Mvdom Types 
+/// mvdom Types 
 
 // --------- Type Helpers --------- //
 type Append = "first" | "last" | "empty" | "before" | "after";
@@ -104,8 +104,7 @@ export function register(name: string, viewController: ViewController, config?: 
 
 export function register<T extends ViewController>(viewControllerClass: { new(): T; }): void;
 
-/** Create a new view instanced for this given name and append it to the parentEl
- * 
+/** Create a new view instance by registered name and append it to the parentEl
  *  @param viewName The view type name to be instantiated 
  *  @param parentEl Either a document element or a query selector that will be the parent
  *  @param data An optional data object to be passed to the view instance. Need to be null if config is present.
@@ -113,7 +112,16 @@ export function register<T extends ViewController>(viewControllerClass: { new():
 */
 export function display(viewName: string, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<View>;
 
-export function display<C extends View>(viewController: { new(): C; }, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<C>;
+/** Create by viewConstructor function
+ *  @param viewConstructor: The function constructor ( new viewCoonstructor will be called)
+ */
+export function display<C extends View>(viewConstructor: { new(): C; }, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<C>;
+
+/** Append by viewInstance
+ *  @param viewInstance: The view instance
+ */
+export function display<V extends View>(viewInstance: V, parentEl: string | HTMLElementOrNull, data?: any | null, config?: Config | Append): Promise<V>;
+
 
 /** Register a HookCallback function that will be called when any view reach this lifecycle stage */
 export function hook(hookStage: HookStage, cb: (view: View) => void): void;

@@ -63,10 +63,10 @@ function register(nameOrConstructor, archetypeOrConfig, config){
 	viewDefDic[name] = viewDef;
 }
 
-function display(nameOrConstructor, parentEl, data, config){
+function display(nameOrConstructorOrInstance, parentEl, data, config){
 	var self = this;
 
-	var view = doInstantiate(nameOrConstructor, data, config);
+	var view = doInstantiate(nameOrConstructorOrInstance, data, config);
 	
 	return doCreate(view, data)
 		.then(function(){
@@ -140,51 +140,80 @@ function removeEl(el, childrenOnly){
 
 // return the "view" instance
 // TODO: need to be async as well and allowed for loading component if not exist
-function doInstantiate(nameOrConstructor, data, config){
+function doInstantiate(nameOrConstructorOrInstance, data, config){
 
 	// if the config is a string, then assume it is the append directive.
 	if (typeof config === "string"){
 		config = {append: config};
 	}
 
-	var name, constructor; 
+	var name, constructor, instance = null; 
 
-	if (typeof nameOrConstructor === "function"){
-		name = nameOrConstructor.name;
-		constructor = nameOrConstructor;
+	// if we instantiate by a registered name
+	if (typeof nameOrConstructorOrInstance === "string"){
+		name = nameOrConstructorOrInstance;
+	}
+	// if we instantiate by a construsctor function
+	else if (typeof nameOrConstructorOrInstance === "function"){
+		name = nameOrConstructorOrInstance.name;
+		constructor = nameOrConstructorOrInstance;
+	}
+	// if we have an instance object
+	else if (typeof nameOrConstructorOrInstance === "object"){
+		instance = nameOrConstructorOrInstance;
+		if (instance.name != null){
+			name = instance.name;
+		}else if (nameOrConstructorOrInstance.constructor){
+			// for now, we assume the name is the constructor name
+			name = nameOrConstructorOrInstance.constructor.name;
+		}else{
+			throw new Error("MVDOM ERROR - This view instance does not have .name or .constructor.name, not a valid view");
+		}
 	}else{
-		name = nameOrConstructor;
+		throw new Error("MVDOM ERROR - not valid display argument (should be string, function constructor, or instance object) but it is: " + nameOrConstructorOrInstance);
 	}
 
-	// get the view def from the dictionary
-	var viewDef = viewDefDic[name];
-
-	// if we display by constructor
-	if (constructor != null){
-		// check that if we have a viewDef for the constructor name, it matches. 
-		if (viewDef && viewDef.constructor !== constructor){
-			throw new Error("MVDOM ERROR - Constructor function to display " + name + 
-			" does match what it was registered. Registered named should be unique as they can be displayed by name." );
+	var viewDef = null;
+	// if we need to instantiate
+	if (instance === null){
+		// get the view def from the dictionary
+		viewDef = viewDefDic[name];
+	
+		// if we display by constructor
+		if (constructor != null){
+			// check that if we have a viewDef for the constructor name, it matches. 
+			if (viewDef && viewDef.constructor !== constructor){
+				throw new Error("MVDOM ERROR - Constructor function to display " + name + 
+				" does match what it was registered. Registered named should be unique as they can be displayed by name." );
+			}
+			// if we do not have a viewDef, we can create one on the fly
+			if (!viewDef){
+				viewDef = {
+					name: name,
+					constructor: constructor
+				};
+			}
 		}
-		// if we do not have a viewDef, we can create one on the fly
+		// if viewDef not found, throw an exception (Probably not registered)
 		if (!viewDef){
-			viewDef = {
-				name: name,
-				constructor: constructor
-			};
-		}
-
+			throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
+		}		
+	}
+	// if we have an instance, we can create the viewDef on the fly
+	else{
+		viewDef = {
+			name: name,
+			instance: instance
+		};
 	}
 
-	// if viewDef not found, throw an exception (Probably not registered)
-	if (!viewDef){
-		throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
-	}
 
-	var view = null;
 	var viewConfig = Object.assign({}, defaultConfig, viewDef.config, config);
 
-	if (viewDef.archetype){
+	var view = null;
+	if (viewDef.instance){
+		view = viewDef.instance;
+	}else if (viewDef.archetype){
 		view = Object.assign({}, viewDef.archetype);
 	}else if (viewDef.constructor){
 		view = new viewDef.constructor(data, config); 

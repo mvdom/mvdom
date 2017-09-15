@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>MVDOM Test: View</title>
+	<title>MVDOM Test: View Inheritance</title>
 
 	<script src="../dist/mvdom.js"></script>
 	<script src="./common/test.js"></script>
@@ -37,7 +37,7 @@
 			this.hubEvents.push({
 				"dataHub; Todo; update": function(){
 					outs.push("dataHub.Todo.update from SubView");
-				}				
+				}
 			});
 
 			this.events.push({
@@ -54,7 +54,7 @@
 		}
 
 		SubView.prototype = Object.create(BaseView.prototype);
-		SubView.prototype.contructor = SubView;
+		SubView.prototype.constructor = SubView;
 
 		SubView.prototype.create = function () {
 			return '<div class="SubView rect sm">SubView</div>';
@@ -94,7 +94,19 @@
 				d.remove(d.first(".SubView"));
 				d.hub("dataHub").pub("Todo", "update", true);
 				assertEquals([], outs)
-			}			
+			}, 
+
+			testViewAddByInstance: function () {
+				var testContentEl = d.first(".test-content");
+
+				return d.display(new SubView(), testContentEl, { name: "02" }).then(function (view) {
+					view.el.click();
+					assertEquals(["click BaseView handler - Object: SubView", 
+												"click SubView handler - Object: SubView",
+												"click .body - document handler"], 
+												outs);
+				});				
+			}
 
 		};
 	</script>
