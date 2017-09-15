@@ -1,9 +1,9 @@
-`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it. 
+**`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it.**
 
 ## Hello World (es2015)
 
-`main.js`
 ```js
+// main.js
 import { display } from 'mvdom';
 
 class HelloWorld {
@@ -20,8 +20,8 @@ Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull
 
 ## Example (es2015)
 
-`FirstView.js`
 ```js
+// FirstView.js
 class FirstView{
   create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
     return `<div class='FirstView'>My First View, data: ${data}</div>`
@@ -29,8 +29,8 @@ class FirstView{
 }
 ```
 
-`main.js`
 ```js
+// main.js
 import { display, first, hub } from 'mvdom';
 import { FirstView } from './FirstView';
 
@@ -137,7 +137,7 @@ mvdom.display ...
 > Note 1: While mvdom is written in pure js, it does provide typescript types. See [Typescript and/or Intellisense Support](#Type-Support)
 
 
-See [#building] to build the distribution manually. 
+See [building](#building) to build the distribution manually. 
 
 ## API Overview
 
