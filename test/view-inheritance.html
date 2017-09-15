@@ -97,9 +97,7 @@
 			}, 
 
 			testViewAddByInstance: function () {
-				var testContentEl = d.first(".test-content");
-
-				return d.display(new SubView(), testContentEl, { name: "02" }).then(function (view) {
+				return d.display(new SubView(), ".test-content", { name: "02" }).then(function (view) {
 					view.el.click();
 					assertEquals(["click BaseView handler - Object: SubView", 
 												"click SubView handler - Object: SubView",

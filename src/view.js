@@ -279,6 +279,11 @@ function doInit(view, data){
 }
 
 function doDisplay(view, refEl, data){
+	// if we have a selector, assume it is a selector from document.
+	if (typeof refEl === "string"){
+		refEl = dom.first(refEl);
+	}
+
 	performHook("willDisplay", view);
 
 	try{		

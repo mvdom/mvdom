@@ -1,3 +1,6 @@
+
+## MVDOM: DOM that Scale.
+
 **`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it.**
 
 ## Hello World (es2015)
@@ -12,7 +15,7 @@ class HelloWorld {
   }
 }
 
-display(new HelloWorld(), {name: "John"});
+display(new HelloWorld(), "body", {name: "John"});
 ```
 
 Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **14kb min and ZERO depedency (beside the DOM)**!
