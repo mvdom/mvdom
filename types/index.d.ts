@@ -4,8 +4,9 @@
 // --------- Type Helpers --------- //
 type Append = "first" | "last" | "empty" | "before" | "after";
 type HookStage = "willCreate" | "didCreate" | "willInit" | "didInit" | "willDisplay" | "didDisplay" | "willPostDisplay" | "didPostDisplay" | "willRemove" | "didRemove";
-type EventTargetOrMoreOrNull = EventTarget | NodeList | [HTMLElement] | null;
-type HTMLElementOrNull = HTMLElement | null | undefined;
+type EventTargetOrMoreOrNull = EventTarget | NodeList | [Node] | null;
+type HTMLNode = HTMLElement | DocumentFragment;
+
 // --------- /Type Helpers --------- //
 
 declare interface Config {
@@ -126,8 +127,8 @@ export function display<V extends View>(viewInstance: V, refEl: string | HTMLEle
 /** Register a HookCallback function that will be called when any view reach this lifecycle stage */
 export function hook(hookStage: HookStage, cb: (view: View) => void): void;
 
-export function empty(el: HTMLElementOrNull): void;
-export function remove(el: HTMLElementOrNull): void;
+export function empty(el: HTMLNode | null | undefined): void;
+export function remove(el: HTMLNode | null | undefined): void;
 // --------- /View --------- //
 
 // --------- DOM Event Helpers --------- //
@@ -144,30 +145,30 @@ export function trigger(els: EventTargetOrMoreOrNull, eventName: string, info?: 
 // --------- /DOM Event Helpers --------- //
 
 // --------- DOM Query Helpers --------- //
-export function all(el: HTMLElementOrNull, selector: string): NodeListOf<HTMLElement>;
+export function all(el: HTMLNode | null | undefined, selector: string): NodeListOf<HTMLElement>;
 export function all(selector: string): NodeListOf<HTMLElement>;
 
 /** Shortchut to el.querySelector, but allow el to be null (in which case will return null) */
-export function first(el: HTMLElementOrNull, selector: string): HTMLElementOrNull;
+export function first(el: HTMLNode | null | undefined, selector: string): HTMLElement | null;
 /** Shortcut for document.querySelector */
-export function first(selector: string): HTMLElementOrNull;
+export function first(selector: string): HTMLElement | null;
 /** find the firstElementChild (even from fragment for borwsers that do not support it) */
-export function first(el: HTMLElementOrNull): HTMLElementOrNull;
+export function first(el: HTMLNode | null | undefined): HTMLElement | null;
 
-/** Returns the next sibling element matching an optional selector (returns null if none)*/
-export function next(el: HTMLElementOrNull, selector?: string): HTMLElementOrNull;
-/** Returns the previous sibling element matching an optional selector (return null if none)*/
-export function prev(el: HTMLElementOrNull, selector?: string): HTMLElementOrNull;
+/** Returns the next sibling element matching an optional selector (returns null if none. returns Element not Node)*/
+export function next(el: HTMLElement | null | undefined, selector?: string): HTMLElement | null;
+/** Returns the previous sibling element matching an optional selector (returns null if none. returns Element not Node)*/
+export function prev(el: HTMLElement | null | undefined, selector?: string): HTMLElement | null;
 
-/** Find the closest HTMLElement from this element given a selector (including el if match). */
-export function closest(el: HTMLElementOrNull, selector: string): HTMLElementOrNull;
+/** Find the closest ELement from this element given a selector (including el if match). */
+export function closest(el: HTMLElement | null | undefined, selector: string): HTMLElement | null;
 // --------- /DOM Query Helpers --------- //
 
 // --------- DOM Helpers --------- //
 /** standard refEl.appendChild(newEl) (just here for symmetry) 
  * @returns the newEl
 */
-export function append(refEl: HTMLElement, newEl: HTMLElement | DocumentFragment, append?: Append): HTMLElement;
+export function append(refEl: HTMLNode, newEl: HTMLNode, append?: Append): HTMLElement;
 
 /** Create a DocumentFragment from a string. (Use template.content with fallback on older browser) */
 export function frag(html: string): DocumentFragment;

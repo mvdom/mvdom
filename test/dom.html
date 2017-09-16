@@ -108,7 +108,29 @@
 				d.append(testContentEl, d.frag("<div>NEW EL</div>EE"), "empty");
 				var txt = testContentEl.innerText.replace(/\s/g,"_");
 				assertEquals("NEW_EL_EE", txt);
+			}, 
+
+			testFirstFromFrag: function(){
+				var el;
+				var fragment = d.frag('<div class="first"> <span class="second"></span></div>');
+
+				el = d.first(fragment);
+				assertEquals("first", el.getAttribute("class"));
+
+				el = d.first(fragment, ".second");
+				assertEquals("second", el.getAttribute("class"));
+			}, 
+
+			thisAppendToFrag: function(){
+				var fragment = d.frag('<div class="first"> <span class="second"></span></div>');
+				d.append(fragment, d.frag('<div class="other">one</div><div class="other">two</div>'));
+				d.append(fragment, d.frag('<div class="last">three</div>'), "first");
+				
+				// .last should be first
+				assertEquals('last',d.first(fragment).getAttribute('class'));
+				assertEquals('one',d.all(fragment, '.other')[0].innerText);
 			}
+
 		};		
 		
 		function createEl(classNames, text){

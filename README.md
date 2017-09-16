@@ -1,5 +1,5 @@
 
-## MVDOM: DOM that Scale.
+## Making the DOM Scale.
 
 **`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it.**
 
@@ -10,7 +10,7 @@
 import { display } from 'mvdom';
 
 class HelloWorld {
-  create(){
+  create(data){
     return `<div class='HelloWorld'>Hello ${data.name}</div>`;
   }
 }
@@ -67,7 +67,7 @@ class MainView{
   }
 
   postDisplay(data){ // will be called once the MainView div is added (next tick)
-    // display by another view in the content
+    // display by constructor function
     display(data.contentViewClass, first(this.el, 'content'), data.contentData);
   }
 }
@@ -77,7 +77,7 @@ display(new MainView(), "body", {header: "My First Main View", contentViewClass:
   .then(function(view){
     console.log(`view ${view.name} with unique instance id ${view.id} has been created, init, added to the dom, and postDisplay has been run`);
 
-    // just for the example, after 3 second, assume the user is not present
+    // just for this example, after 3 seconds, assume the user is not present
     setTimeout(function(){
       hub("presenceHub").pub("change", false);
     }, 3000)
