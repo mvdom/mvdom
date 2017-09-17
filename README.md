@@ -63,14 +63,19 @@ class MainView{
     }
   }
 
-  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+  create(data){ // return string, DOMElement, or DocumentFragment (or a Promise resolving into one of those)
     return `<div class='MainView'>
       <header>${data.header}</header>
       <section class='content'></section>
     </div>`
   }
 
-  postDisplay(data){ // will be called once the MainView div is added (next tick)
+  init(data){ // (optional) called on the this.el is create but before it is added to the DOM
+    this.el; // manipulate the this.el before it get added,
+    // might return a promise if some async work needs to be done before adding to DOM
+  }
+
+  postDisplay(data){ // (optional) will be call after this.el is added to the DOM (in the next event loop)
     // display by constructor function
     display(data.contentViewClass, first(this.el, 'content'), data.contentData);
   }
