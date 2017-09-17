@@ -44,54 +44,61 @@ import { FirstView } from './FirstView';
 class MainView{
 
   constructor(){
-    this.events = { // dom event binds to view.el, with optional selector
+    this.events = { // bind dom events to view.el, with optional selector (for event bubling)
       "click; .MainView > header": () => {
         console.log("header clicked");
       }
     }
 
-    this.winEvents = { // will safely be un-bound on remove (use mvdom.remove or mvdom.empty on parents)
+    this.winEvents = { // bind dome events to dinwo, with optional selector (will unbind on remove)
       "resize": () => {
         console.log("Window is resizing")
       }
     }
 
-    this.hubEvents = { // pub/sub with hub. This view will unsubcribe to this hub on remove.
+    this.hubEvents = { // subscribe to a hub/topic[/label] message (will unsubscribe on remove)
       "presenceHub; change": (isPresent) => {
         console.log(`User is ${isPresent?'':'NOT '}present`);
       }
     }
   }
 
-  create(data){ // return string, DOMElement, or DocumentFragment (or a Promise resolving into one of those)
+  create(data){ // (required) must return string, DOMElement, or DocumentFragment (or a Promise resolving into one of those)
     return `<div class='MainView'>
       <header>${data.header}</header>
       <section class='content'></section>
     </div>`
   }
 
-  init(data){ // (optional) called on the this.el is create but before it is added to the DOM
+  init(data){ // (optional) called whe this.el, this.name and this.id has been set, but before it is added in the DOM. 
     this.el; // manipulate the this.el before it get added,
-    // might return a promise if some async work needs to be done before adding to DOM
+    // Can return a promise if some async work are needed to be done before adding to DOM
   }
 
-  postDisplay(data){ // (optional) will be call after this.el is added to the DOM (in the next event loop)
-    // display by constructor function
+  postDisplay(data){ // (optional) called after the view.el is added to the dom (in the next event loop)
+    // Good place to do non UI post work, or loading async views.
     display(data.contentViewClass, first(this.el, 'content'), data.contentData);
+  }
+
+  destroy(){ // (optinal) will be called in case cleanup are needed.
+    // Note: the eventual winEvents, docEvents, and hubEvents, bindings will be unbound by mvdom (assuming mvdom.remove or mvdom.empty was called on their respective parent),
+    //       no need to remove them. 
   }
 }
 
 // display by instance
-display(new MainView(), "body", {header: "My First Main View", contentViewClass: OtherView, contentData: "Hello from main view"})
-  .then(function(view){
-    console.log(`view ${view.name} with unique instance id ${view.id} has been created, 
-                 initialized, added to the dom`);
+var p = display(new MainView(), "body", {header: "My First Main View", contentViewClass: OtherView, contentData: "Hello from main view"})l
 
-    // just for this example, after 3 seconds, assume the user is not present
-    setTimeout(function(){
-      hub("presenceHub").pub("change", false);
-    }, 3000)
-  });
+// display returns a promise that is resolved with the view created and displayed, after postDisplay is performed. 
+p.then(function(view){
+  console.log(`view ${view.name} with unique instance id ${view.id} has been created, 
+                initialized, added to the dom`);
+
+  // just for this example, after 3 seconds, assume the user is not present
+  setTimeout(function(){
+    hub("presenceHub").pub("change", false);
+  }, 3000)
+});
 ```
 
 `mvdom` is syntactically `es5` written (IE11 and above), and fit very well es2015 class/module model and is fully typed if you are using TypeScript. It can also be used the traditional 'es5' Object by registering "object archetype" and display views by name. 
