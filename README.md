@@ -1,12 +1,14 @@
 
 ## Making the DOM Scale.
 
-**`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for MVC rather than working against it.**
+**`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC rather than working against it.**
 
-## Hello World (es2015)
+
+## Hello World
 
 ```js
-// main.js
+// main.js (es2015)
+
 import { display } from 'mvdom';
 
 class HelloWorld {
@@ -21,19 +23,21 @@ display(new HelloWorld(), "body", {name: "John"});
 Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **14kb min and ZERO depedency (beside the DOM)**!
 
 
-## Example (es2015)
+## Example 
 
 ```js
-// FirstView.js
+// FirstView.js (es2015)
+
 class FirstView{
-  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into any of those)
     return `<div class='FirstView'>My First View, data: ${data}</div>`
   }
 }
 ```
 
 ```js
-// main.js
+// main.js (es2015)
+
 import { display, first, hub } from 'mvdom';
 import { FirstView } from './FirstView';
 
@@ -75,7 +79,8 @@ class MainView{
 // display by instance
 display(new MainView(), "body", {header: "My First Main View", contentViewClass: OtherView, contentData: "Hello from main view"})
   .then(function(view){
-    console.log(`view ${view.name} with unique instance id ${view.id} has been created, init, added to the dom, and postDisplay has been run`);
+    console.log(`view ${view.name} with unique instance id ${view.id} has been created, 
+                 initialized, added to the dom`);
 
     // just for this example, after 3 seconds, assume the user is not present
     setTimeout(function(){
@@ -83,6 +88,8 @@ display(new MainView(), "body", {header: "My First Main View", contentViewClass:
     }, 3000)
   });
 ```
+
+`mvdom` is syntactically `es5` written (IE11 and above), and fit very well es2015 class/module model and is fully typed if you are using TypeScript. It can also be used the traditional 'es5' Object by registering "object archetype" and display views by name. 
 
 ## Concept 
 
@@ -95,6 +102,7 @@ display(new MainView(), "body", {header: "My First Main View", contentViewClass:
 - Frameworks come and go, languages and runtimes stay.
 - Size is a factor of complexity and starting small and simple will always scale better.
 - **Patterns over Frameworks**
+- **Simple scale better**
 
 **In Short**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
@@ -111,9 +119,9 @@ display(new MainView(), "body", {header: "My First Main View", contentViewClass:
 
 ## Compatibility
 
-- Written and tested on all modern browsers (Chrome, Safari, Mobile Safari, Firefox, Edge)
-- Requires Promise, Array.forEach (for IE11, can be polyfill with https://polyfill.io or core.js)
-- Using javascript syntax compatible with IE9+ (no transpilling needed)
+- Syntactically `es5` written (works on IE11 without transpiling)
+- Tested on all modern browsers (Chrome, Safari, Mobile Safari, Firefox, Edge)
+- IE11 - Requires Promise, Array.forEach (for IE11, can be polyfill with https://polyfill.io or core.js)
 
 
 ## Installation
