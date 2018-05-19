@@ -22,6 +22,8 @@ dev/
 # prevent the .map
 *.map
 
+# vscode
+.vscode
 
 # Ignore Sublime Text files
 *.sublime-project
