@@ -56,7 +56,7 @@ declare interface Hub {
 // --------- View Interfaces --------- //
 type eventBindings = { [name: string]: (this: AnyView, evt: Event) => void };
 type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
-	{ [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
+{ [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
 
 export declare interface ViewController {
 	create?(data?: any, config?: Config): string | HTMLElement | DocumentFragment;
@@ -132,13 +132,15 @@ export function remove(el: HTMLNode | null | undefined): void;
 // --------- /View --------- //
 
 // --------- DOM Event Helpers --------- //
+// For DocumentEvent and custom events that might have a .detail for the data
+type DomEventListener = (evt: DocumentEvent & { detail?: any }) => void;
 
 /** Direct event binding to one of more HTML Element */
-export function on(els: EventTargetOrMoreOrNull, types: string, listener: (evt: DocumentEvent) => void, opts?: EventOptions): void;
+export function on(els: EventTargetOrMoreOrNull, types: string, listener: DomEventListener, opts?: EventOptions): void;
 /** Selector based binding to one or more HTML ELement. Only one binding per els, but will use selector string to decide if the listener should be called (similar to jQuery.on) */
-export function on(els: EventTargetOrMoreOrNull, types: string, selector: string, listener: (evt: any) => void, opts?: EventOptions): void;
+export function on(els: EventTargetOrMoreOrNull, types: string, selector: string, listener: DomEventListener, opts?: EventOptions): void;
 
-export function off(els: EventTargetOrMoreOrNull, types: string, selector?: string, listener?: (evt: any) => void, nsObj?: NsObject): void;
+export function off(els: EventTargetOrMoreOrNull, types: string, selector?: string, listener?: DomEventListener, nsObj?: NsObject): void;
 export function off(els: EventTargetOrMoreOrNull, nsObj: { ns: string }): void;
 
 export function trigger(els: EventTargetOrMoreOrNull, eventName: string, info?: EventInfo): void;
