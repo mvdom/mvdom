@@ -10,7 +10,7 @@ require("./view-hub.js");
 
 module.exports = {
 	version: "0.5.6-SNAPSHOT",
-	
+
 	// view APIs
 	hook: view.hook,
 	register: view.register,
@@ -19,7 +19,7 @@ module.exports = {
 	empty: view.empty,
 
 	// event API
-	on: event.on, 
+	on: event.on,
 	off: event.off,
 	trigger: event.trigger,
 
@@ -50,8 +50,8 @@ module.exports = {
 
 // put this component in the global scope
 // TODO: We might want to have a index-global for putting this in the global scope and index.js not putting it in the global scope. 
-if (window){
-	window.mvdom = module.exports;	
+if (window) {
+	window.mvdom = module.exports;
 }
 
 
