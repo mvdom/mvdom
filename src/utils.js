@@ -21,22 +21,22 @@ var STR = "string";
 var OBJ = "object";
 
 // return true if value is null or undefined
-function isNull(v){
+function isNull(v) {
 	return (typeof v === UD || v === null);
 }
 
 // return true if the value is null, undefined, empty array, empty string, or empty object
-function isEmpty(v){
+function isEmpty(v) {
 	var tof = typeof v;
-	if (isNull(v)){
+	if (isNull(v)) {
 		return true;
 	}
 
-	if (v instanceof Array || tof === STR){
-		return (v.length === 0)?true:false;
+	if (v instanceof Array || tof === STR) {
+		return (v.length === 0) ? true : false;
 	}
 
-	if (tof === OBJ){
+	if (tof === OBJ) {
 		// apparently 10x faster than Object.keys
 		for (var x in v) { return false; }
 		return true;
@@ -57,8 +57,8 @@ function val(rootObj, pathToValue, value) {
 		return rootObj;
 	}
 	// if the pathToValue is already an array, do not parse it (this allow to support '.' in prop names)
-	var names = (pathToValue instanceof Array)?pathToValue:pathToValue.split(".");
-	
+	var names = (pathToValue instanceof Array) ? pathToValue : pathToValue.split(".");
+
 	var name, currentNode = rootObj, currentIsMap, nextNode;
 
 	var i = 0, l = names.length, lIdx = l - 1;
@@ -66,30 +66,30 @@ function val(rootObj, pathToValue, value) {
 		name = names[i];
 
 		currentIsMap = (currentNode instanceof Map);
-		nextNode = currentIsMap?currentNode.get(name):currentNode[name];
+		nextNode = currentIsMap ? currentNode.get(name) : currentNode[name];
 
-		if (setMode){
+		if (setMode) {
 			// if last index, set the value
-			if (i === lIdx){
-				if (currentIsMap){
-					currentNode.set(name,value);
-				}else{
+			if (i === lIdx) {
+				if (currentIsMap) {
+					currentNode.set(name, value);
+				} else {
 					currentNode[name] = value;
 				}
 				currentNode = value;
-			}else{
+			} else {
 				if (typeof nextNode === "undefined") {
 					nextNode = {};
-				} 
+				}
 				currentNode[name] = nextNode;
 				currentNode = nextNode;
 			}
-		}else{
+		} else {
 			currentNode = nextNode;
 			if (typeof currentNode === "undefined") {
 				currentNode = undefined;
 				break;
-			}			
+			}
 		}
 
 		// if (node == null) {
@@ -101,9 +101,9 @@ function val(rootObj, pathToValue, value) {
 		// 	return node;
 		// }
 	}
-	if (setMode){
+	if (setMode) {
 		return rootObj;
-	}else{
+	} else {
 		return currentNode;
 	}
 }
@@ -113,33 +113,33 @@ function val(rootObj, pathToValue, value) {
 // --------- ensureType --------- //
 // Make sure that this obj[propName] is a js Map and returns it. 
 // Otherwise, create a new one, set it, and return it.
-function ensureMap(obj, propName){
+function ensureMap(obj, propName) {
 	return _ensure(obj, propName, Map);
 }
 
 // Make sure that this obj[propName] is a js Set and returns it. 
 // Otherwise, create a new one, set it, and return it.
-function ensureSet(obj, propName){
+function ensureSet(obj, propName) {
 	return _ensure(obj, propName, Set);
 }
 
 // same as ensureMap but for array
-function ensureArray(obj, propName){
+function ensureArray(obj, propName) {
 	return _ensure(obj, propName, Array);
 }
 
-function _ensure(obj, propName, type){
+function _ensure(obj, propName, type) {
 	var isMap = (obj instanceof Map);
-	var v = (isMap)?obj.get(propName):obj[propName];
-	if (isNull(v)){
-		v = (type === Array)?[]:(new type);
-		if (isMap){
+	var v = (isMap) ? obj.get(propName) : obj[propName];
+	if (isNull(v)) {
+		v = (type === Array) ? [] : (new type);
+		if (isMap) {
 			obj.set(propName, v);
-		}else{
-			obj[propName] = v;	
-		}		
+		} else {
+			obj[propName] = v;
+		}
 	}
-	return v;	
+	return v;
 }
 
 // --------- /ensureType --------- //
@@ -150,21 +150,21 @@ function _ensure(obj, propName, type){
 // If the value is an array it is returned as is
 // If the value is a object with forEach/length will return a new array for these values
 // Otherwise return single value array
-function asArray(value){
-	if (!isNull(value)){
-		if (value instanceof Array){
+function asArray(value) {
+	if (!isNull(value)) {
+		if (value instanceof Array) {
 			return value;
 		}
 		// If it is a nodeList, copy the elements into a real array
-		else if (value.constructor && value.constructor.name === "NodeList"){
+		else if (value.constructor && value.constructor.name === "NodeList") {
 			return Array.prototype.slice.call(value);
-		} 
+		}
 		// if it is a function arguments
-		else if (value.toString() === "[object Arguments]"){
+		else if (value.toString() === "[object Arguments]") {
 			return Array.prototype.slice.call(value);
 		}
 		// otherwise we add value
-		else{
+		else {
 			return [value];
 		}
 	}
@@ -174,17 +174,17 @@ function asArray(value){
 // --------- /asType --------- //
 
 // --------- String Utils --------- //
-function splitAndTrim(str, sep){
-	if (str == null){
+function splitAndTrim(str, sep) {
+	if (str == null) {
 		return [];
 	}
-	if (str.indexOf(sep) === -1){
+	if (str.indexOf(sep) === -1) {
 		return [str.trim()];
 	}
 	return str.split(sep).map(trim);
 }
 
-function trim(str){
+function trim(str) {
 	return str.trim();
 }
 // --------- /String Utils --------- //
