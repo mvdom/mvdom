@@ -3,7 +3,8 @@ var _event = require("./event.js");
 var asArray = require("./utils.js").asArray;
 
 // --------- Events Hook --------- //
-_view.hook("willInit", function (view) {
+// Note: We bound events after the init (see #34)
+_view.hook("didInit", function (view) {
 	var opts = { ns: "view_" + view.id, ctx: view };
 	if (view.events) {
 		bindEvents(view.events, view.el, opts);

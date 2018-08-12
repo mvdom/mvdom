@@ -3,7 +3,8 @@ var _hub = require("./hub.js");
 var utils = require("./utils.js");
 
 // --------- Events Hook --------- //
-_view.hook("willInit", function (view) {
+// Note: We bound events after the init (see #34)
+_view.hook("didInit", function (view) {
 	var opts = { ns: "view_" + view.id, ctx: view };
 
 
