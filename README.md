@@ -438,7 +438,7 @@ Note: Similar to jquery.on, except that the event object (evt) are the native on
 
 ```js
 var baseEl = document;
-mvdom.on(document, "click", ".item", function(evt){
+mvdom.on(baseEl, "click", ".item", function(evt){
   evt.target; // can be the .sub-item or .item depending where the click occurs
   evt.currentTarget; // baseEl or document if not specified
   evt.selectTarget; // will always be .item element (even when .sub-item get clicked)

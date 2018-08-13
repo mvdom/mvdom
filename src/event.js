@@ -209,8 +209,9 @@ var customDefaultProps = {
 };
 
 function trigger(els, type, data) {
-	var evt = new CustomEvent(type, Object.assign({}, customDefaultProps, data));
+
 	utils.asArray(els).forEach(function (el) {
+		var evt = new CustomEvent(type, Object.assign({}, customDefaultProps, { selectTarget: el }, data));
 		el.dispatchEvent(evt);
 	});
 }

@@ -133,7 +133,10 @@ export function remove(el: HTMLNode | null | undefined): void;
 
 // --------- DOM Event Helpers --------- //
 // For DocumentEvent and custom events that might have a .detail for the data
-type DomEventListener = (evt: DocumentEvent & { detail?: any }) => void;
+// Note: For now, we add the "AndMore" trick as we do not want to limit which type of event/element 
+type AndMore = { [key: string]: any };
+type HTMLElementAndMore = HTMLElement & AndMore;
+type DomEventListener = (evt: DocumentEvent & { detail?: any, selectTarget: HTMLElementAndMore } & AndMore) => void;
 
 /** Direct event binding to one of more HTML Element */
 export function on(els: EventTargetOrMoreOrNull, types: string, listener: DomEventListener, opts?: EventOptions): void;
