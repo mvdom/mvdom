@@ -7,6 +7,14 @@ type HookStage = "willCreate" | "didCreate" | "willInit" | "didInit" | "willDisp
 type EventTargetOrMoreOrNull = EventTarget | NodeList | [Node] | null;
 type HTMLNode = HTMLElement | DocumentFragment;
 
+// The ExtendedDOMEventListener is an extended type to support eventual .detail from custom event, and .selectTarget which is always added by the binding api. 
+// Note: For now, we add the "AndMore" trick as we do not want to limit which type of event/element 
+type AndMore = { [key: string]: any };
+type HTMLElementAndMore = HTMLElement & AndMore;
+type ExtendedEvent = Event & { detail?: any, selectTarget: HTMLElementAndMore } & AndMore;
+export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
+
+
 // --------- /Type Helpers --------- //
 
 declare interface Config {
@@ -54,7 +62,7 @@ declare interface Hub {
 // --------- /Hub --------- //
 
 // --------- View Interfaces --------- //
-type eventBindings = { [name: string]: (this: AnyView, evt: Event) => void };
+type eventBindings = { [name: string]: ExtendedDOMEventListener };
 type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
 { [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
 
@@ -134,16 +142,13 @@ export function remove(el: HTMLNode | null | undefined): void;
 // --------- DOM Event Helpers --------- //
 // For DocumentEvent and custom events that might have a .detail for the data
 // Note: For now, we add the "AndMore" trick as we do not want to limit which type of event/element 
-type AndMore = { [key: string]: any };
-type HTMLElementAndMore = HTMLElement & AndMore;
-type DomEventListener = (evt: DocumentEvent & { detail?: any, selectTarget: HTMLElementAndMore } & AndMore) => void;
 
 /** Direct event binding to one of more HTML Element */
-export function on(els: EventTargetOrMoreOrNull, types: string, listener: DomEventListener, opts?: EventOptions): void;
+export function on(els: EventTargetOrMoreOrNull, types: string, listener: ExtendedDOMEventListener, opts?: EventOptions): void;
 /** Selector based binding to one or more HTML ELement. Only one binding per els, but will use selector string to decide if the listener should be called (similar to jQuery.on) */
-export function on(els: EventTargetOrMoreOrNull, types: string, selector: string, listener: DomEventListener, opts?: EventOptions): void;
+export function on(els: EventTargetOrMoreOrNull, types: string, selector: string, listener: ExtendedDOMEventListener, opts?: EventOptions): void;
 
-export function off(els: EventTargetOrMoreOrNull, types: string, selector?: string, listener?: DomEventListener, nsObj?: NsObject): void;
+export function off(els: EventTargetOrMoreOrNull, types: string, selector?: string, listener?: ExtendedDOMEventListener, nsObj?: NsObject): void;
 export function off(els: EventTargetOrMoreOrNull, nsObj: { ns: string }): void;
 
 export function trigger(els: EventTargetOrMoreOrNull, eventName: string, info?: EventInfo): void;
