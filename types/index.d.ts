@@ -32,7 +32,7 @@ declare interface EventOptions {
 type NsObject = { ns: string };
 
 declare interface EventInfo {
-	cancelable: true | false;
+	cancelable?: true | false;
 	detail: any;
 }
 
