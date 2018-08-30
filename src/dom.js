@@ -65,19 +65,22 @@ function prev(el, selector) {
 	return _sibling(false, el, selector);
 }
 
-// return the element closest in the hierarchy (up), including this el, matching this selector
+// By default use the document.closest (if not implemented, use the matches to mimic the logic) 
 // return null if not found
 function closest(el, selector) {
-	var tmpEl = el;
-
-	// use "!=" for null and undefined
-	while (tmpEl != null && tmpEl !== document) {
-		if (matchesFn.call(tmpEl, selector)) {
-			return tmpEl;
+	if (el.closest) {
+		return el.closest(selector);
+	} else {
+		var tmpEl = el;
+		// use "!=" for null and undefined
+		while (tmpEl != null && tmpEl !== document) {
+			if (matchesFn.call(tmpEl, selector)) {
+				return tmpEl;
+			}
+			tmpEl = tmpEl.parentElement;
 		}
-		tmpEl = tmpEl.parentElement;
+		return null;
 	}
-	return null;
 }
 
 // --------- /DOM Query Shortcuts --------- //
