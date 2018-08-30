@@ -43,6 +43,18 @@
 			return d.frag('<div class="SubView rect sm">ExtraView-_name_</div>'.replace("_name_", data.name));
 		}
 
+
+		class BaseView{}
+
+		class ClassView extends BaseView{
+			constructor(){
+				super();
+			}
+			create(){
+				return d.frag('<div class="ClassView rect sm">the Class based View</div>');
+			}
+		}
+
 		// --------- MainView (object way) --------- //
 		d.register("MainView", {
 			create: function () {
@@ -56,10 +68,13 @@
 
 			postDisplay: function () {
 				var containerEl = d.first(this.el, ".sub-views");
+				// by constructor
 				return d.display(SubView, containerEl, { label: "A" }).then(function (viewA) {
+					// by name
 					return d.display("SubView", containerEl, { label: "B" }, { append: "first" }).then(function (viewB) {
-						return d.display("SubView", viewA.el, { label: "C" }, "before").then(function (viewC) {
-							outs.push("MainView.postDisplay");
+						// bind new
+						return d.display(new SubView(), viewA.el, { label: "C" }, "before").then(function (viewC) {
+							outs.push("MainView.postDisplay" );
 						});
 					});
 				});
@@ -221,7 +236,15 @@
 					assertEquals("ExtraView", view.name);
 					assertEquals("ExtraView-01", view.el.innerText);
 				});
-			},			
+			},
+
+			testDisplayClassInstance: function(){
+				var testContentEl = d.first(".test-content");
+
+				return d.display(new ClassView(), testContentEl).then(function(view){
+					assertEquals("ClassView", view.name);
+				});
+			},
 			// TODO: need to test nested view remove
 		};
 	</script>
