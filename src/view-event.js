@@ -14,8 +14,9 @@ _view.hook("didInit", function (view) {
 		bindEvents(view.docEvents, document, opts);
 	}
 
+	// TODO: need to have test for win events
 	if (view.winEvents) {
-		bindEvents(view.windEvents, document, opts);
+		bindEvents(view.winEvents, window, opts);
 	}
 
 	// TODO: need to allow closest binding.
