@@ -35,7 +35,7 @@ _view.hook("willRemove", function (view) {
 });
 
 /**
- * @param {*} hubEvents cloud be {"hubName; topics[; labels]": fn} 
+ * @param {*} hubEvents could be {"hubName; topics[; labels]": fn} 
  * 											or {hubName: {"topics[; labels]": fn}}
  * @returns [{hub, topics, labels}]
  */

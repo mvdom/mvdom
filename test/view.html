@@ -35,12 +35,20 @@
 				outs.push("CUSTOM " + this.name + " " + this.id);
 			}
 		}
+
+		SubView.prototype.closestEvents = {
+			".MainView; click": function (evt) {
+				console.log(">>>>>")
+				outs.push("closestEvents click on .MainView " + this.name + " " + this.id);
+			}
+		}
+
 		d.register(SubView);
 		// --------- /SubView (prototype way) --------- //
 
 		function ExtraView(){};
 		ExtraView.prototype.create = function(data){
-			return d.frag('<div class="SubView rect sm">ExtraView-_name_</div>'.replace("_name_", data.name));
+			return d.frag('<div class="ExtraView rect sm">ExtraView-_name_</div>'.replace("_name_", data.name));
 		}
 
 
@@ -109,18 +117,6 @@
 
 			winEvents: {
 
-			},
-
-			parentEvents: { // NOT Supported yet
-				"TopView; click": function (evt) {
-
-				}
-			},
-
-			closestEvents: {
-				".container; click": function (evt) {
-
-				}
 			}
 		});
 		// --------- /MainView (object way) --------- //

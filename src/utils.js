@@ -7,6 +7,7 @@ module.exports = {
 	ensureMap: ensureMap,
 	ensureSet: ensureSet,
 	ensureArray: ensureArray,
+	ensureObject: ensureObject,
 
 	// asType
 	asArray: asArray, // public
@@ -111,6 +112,9 @@ function val(rootObj, pathToValue, value) {
 // --------- /Object Utils --------- //
 
 // --------- ensureType --------- //
+function ensureObject(obj, propName) {
+	return _ensure(obj, propName);
+}
 // Make sure that this obj[propName] is a js Map and returns it. 
 // Otherwise, create a new one, set it, and return it.
 function ensureMap(obj, propName) {
@@ -132,7 +136,7 @@ function _ensure(obj, propName, type) {
 	var isMap = (obj instanceof Map);
 	var v = (isMap) ? obj.get(propName) : obj[propName];
 	if (isNull(v)) {
-		v = (type === Array) ? [] : (new type);
+		v = (type == null) ? {} : (type === Array) ? [] : (new type);
 		if (isMap) {
 			obj.set(propName, v);
 		} else {
