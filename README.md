@@ -340,7 +340,7 @@ mvdom.register("MainView",{
         }
     }, 
 
-    // (optional) same format as above, but bind on document 
+    // (optional) same format as above, but bind on document. Will be automatically unbound on view destroy.
     // - support array of bindings as well)
     // - will unbind on destroy when calling d.remove on this element or parents or d.empty on any parent
     docEvents: {
@@ -349,11 +349,22 @@ mvdom.register("MainView",{
         }
     }, 
 
-    // (optional) same as docEvents but on window object. 
+    // (optional) same as docEvents but on window object. Will be automatically unbound on view destroy.
     winEvents: {
         "resize": function(evt){
             // do something when window is resize
         }
+    }, 
+
+    // (optional) allows to bind to select parent elements, and still have the sub selector capabilities. Will be automatically unbound on view destroy (if the elements still exist)
+    closestEvents =  { 
+      '.container; click': function(evt){}, // this will look for the closest ".conatiner" and bind the click event on it. 
+      
+      '.container; click; .button.add': function(evt){}, // this will binding to the closest ".container" and tricker only when the target element match ".button.add" (sub selector as event binding).
+
+      '.container': { // closest selectors can be grouped in one object
+          'click; .button.add': function(evt){} // same as above 
+      }
     }, 
 
     // (optional) subscribe to a hub by hub name, topic(s), and optional label(s)

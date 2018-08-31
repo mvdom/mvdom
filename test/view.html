@@ -36,13 +36,6 @@
 			}
 		}
 
-		SubView.prototype.closestEvents = {
-			".MainView; click": function (evt) {
-				console.log(">>>>>")
-				outs.push("closestEvents click on .MainView " + this.name + " " + this.id);
-			}
-		}
-
 		d.register(SubView);
 		// --------- /SubView (prototype way) --------- //
 
@@ -57,9 +50,15 @@
 		class ClassView extends BaseView{
 			constructor(){
 				super();
+
+				this.closestEvents = {
+					"body; click; .ExtraView": function (evt) {
+						outs.push(this.name + ".closestEvents");
+					}
+				}
 			}
 			create(){
-				return d.frag('<div class="ClassView rect sm">the Class based View</div>');
+				return d.frag('<div class="ClassView rect sm">ClassView</div>');
 			}
 		}
 
@@ -234,13 +233,22 @@
 				});
 			},
 
-			testDisplayClassInstance: function(){
+			testClosestEvents: function(){
 				var testContentEl = d.first(".test-content");
 
 				return d.display(new ClassView(), testContentEl).then(function(view){
 					assertEquals("ClassView", view.name);
+
+					outs = []; 
+					// ClassView.closestEvents = "body; click; .ExtraView"
+					d.first("body").click();
+					assertEquals([], outs); // We see nothing
+
+					outs = [];
+					d.first(".ExtraView").click();
+					assertEquals(["ClassView.closestEvents"], outs); // now we see the closesnt Event
 				});
-			},
+			},			
 			// TODO: need to test nested view remove
 		};
 	</script>

@@ -30,13 +30,14 @@ _view.hook("willPostDisplay", function (view) {
 	var opts = { ns: "view_" + view.id, ctx: view };
 
 	if (view.closestEvents) {
-		// [closest_selector, binding_string, fn]
-		const allClosestBindings = collectClosestBinding(view.closestEvents);
+		// [closest_selector, binding_string, fn][]
+		let allClosestBindings = collectClosestBinding(view.closestEvents);
 		// elBySelector cache
-		const elBySelector = {};
+		let elBySelector = {};
 
+		// binding: [closest_selector, binding_string, fn]
 		allClosestBindings.forEach(function (binding) {
-			const closestSelector = binding[0];
+			let closestSelector = binding[0];
 
 			// get the closestEl
 			let closestEl = elBySelector[closestSelector];
@@ -48,7 +49,7 @@ _view.hook("willPostDisplay", function (view) {
 
 			// if not fond, we still ignore the binding (might warn later in console)
 			if (closestEl) {
-
+				bindEvent(closestEl, binding[1], binding[2], opts);
 			}
 
 		})
@@ -60,17 +61,32 @@ _view.hook("willRemove", function (view) {
 	_event.off(document, ns);
 	_event.off(window, ns);
 
-	// if (view.closestEvents) {
-	// 	const bindingByClosestSelector = collectClosestBinding(view.closestEvents);
-	// 	let closestSelector;
-	// 	for (closestSelector in bindingByClosestSelector) {
-	// 		let closestEl = dom.closest(view.el, closestSelector);
-	// 		if (closestEl) { // if not found, we silently ignore by design.
-	// 			_event.off(closestEl, ns);
-	// 		}
-	// 	}
-	// }
-	// TODO: need to unbind closest/parents binding
+
+	if (view.closestEvents) {
+		let allClosestBindings = collectClosestBinding(view.closestEvents);
+		// we keep a cache of what has been done to not do it twice
+		let closestSelectorDone = {};
+		// binding: [closest_selector, binding_string, fn]
+		allClosestBindings.forEach(function (binding) {
+			let closestSelector = binding[0];
+
+			// if done, we abort
+			if (closestSelectorDone[closestSelector]) {
+				return;
+			}
+
+			// we mark it done (regardless of what happen after)
+			closestSelectorDone[closestSelector] = true; // we mark it done
+
+			let closestEl = dom.closest(view.el, closestSelector);
+			if (closestEl) {
+				_event.off(closestEl, ns);
+			}
+
+		});
+
+	}
+
 });
 
 
@@ -82,7 +98,7 @@ _view.hook("willRemove", function (view) {
  */
 function collectClosestBinding(events) {
 	events = asArray(events);
-	const acc = []; // array of {[closest_selector: string] : {[binding_string: string]: fn}}
+	let acc = []; // array of {[closest_selector: string] : {[binding_string: string]: fn}}
 
 	events.forEach(function (item) {
 
@@ -90,7 +106,7 @@ function collectClosestBinding(events) {
 
 		for (key in item) {
 
-			const val = item[key];
+			let val = item[key];
 
 			// if the value is a function, then, we have a full "closest_selector; event_types[; target_selector]"
 			if (typeof val == "function") {
@@ -118,7 +134,6 @@ function collectClosestBinding(events) {
 
 function bindEvents(eventDics, el, opts) {
 	eventDics = asArray(eventDics); // make we have an array of eventDic
-
 	var eventSelector; // e.g., "click; button.add"
 
 	var i,
@@ -130,12 +145,9 @@ function bindEvents(eventDics, el, opts) {
 		for (eventSelector in eventDic) {
 			bindEvent(el, eventSelector, eventDic[eventSelector], opts);
 		}
-
 	}
-
-
 }
-// TODO: need to unbind on "willDestroy"
+
 
 function bindEvent(el, eventSelector, fn, opts) {
 	let selectorSplitted = eventSelector.trim().split(";"); // e.g., ["click", " button.add"]
