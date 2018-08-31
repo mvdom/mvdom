@@ -2,8 +2,8 @@ const { router } = require("cmdrouter");
 const browserify = require("browserify");
 const fs = require("fs-extra-plus");
 const exorcist = require("exorcist");
-const UglifyJS = require("uglify-js");
 const chokidar = require("chokidar");
+const Terser = require("terser");
 
 const srcFile = "./src/index.js";
 const distBase = "./dist/mvdom", distJs = distBase + ".js", distMin = distBase + ".min.js";
@@ -22,12 +22,15 @@ async function compile(mode) {
 	await fs.saferRemove([distJs]);
 
 	await browserifyFiles(srcFile, distJs);
+	const distStat = await fs.stat(distJs);
+	console.log(`Browserified ${distJs} - ${distStat.size / 1000}kb`);
 
 	var content = await fs.readFile(distJs, "utf8");
-	var minContent = UglifyJS.minify(content);
-
-	console.log("minify " + distMin);
+	const minContent = Terser.minify(content);
 	await fs.writeFile(distMin, minContent.code, "utf8");
+	const minStat = await fs.stat(distMin);
+	console.log(`Minified ${distMin} - ${minStat.size / 1000}kb`);
+
 }
 
 async function watch() {
@@ -45,7 +48,6 @@ async function watch() {
 
 // --------- Utils --------- //
 async function browserifyFiles(entries, distFile) {
-	console.log("browserify - " + distFile);
 
 	var mapFile = distFile + ".map";
 
