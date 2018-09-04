@@ -12,25 +12,28 @@
 import { display } from 'mvdom';
 
 class HelloWorld {
-  create(data){
-    return `<div class='HelloWorld'>Hello ${data.name}</div>`;
+  constructor(userName){
+    this.userName = userName;
+  }
+  create(opts){
+    return `<div class='HelloWorld'>Hello ${this.userName}</div>`;
   }
 }
 
-display(new HelloWorld(), "body", {name: "John"});
+display(new HelloWorld('John'), 'body'); // by default will append to body
 ```
 
-Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **14kb min and ZERO depedency (beside the DOM)**!
+Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **15kb min and ZERO depedency (beside the DOM)**!
 
 
 ## Example 
 
 ```js
-// FirstView.js (es2015)
+// SubView.js
 
-class FirstView{
-  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into any of those)
-    return `<div class='FirstView'>My First View, data: ${data}</div>`
+class SubView{
+  create(){ // return string, DOMElement, or DocumentFragment (or promise resolving into any of those)
+    return `<div class='SubView'>My Sub View</div>`; // here just a best practice, css class name == js class name
   }
 }
 ```
@@ -39,55 +42,58 @@ class FirstView{
 // main.js (es2015)
 
 import { display, first, hub } from 'mvdom';
-import { FirstView } from './FirstView';
+import { SubView } from './SubView';
 
 class MainView{
 
-  constructor(){
-    this.events = { // bind dom events to view.el, with optional selector (for event bubling)
-      "click; .MainView > header": () => {
+  constructor(data){
+    this.header = (data && data.header) ? data.header : 'No Header';
+
+    this.events = { // bind dom events to view.el (i.e., .MainView), with optional selector (using event bubling)
+      'click; .MainView > header': () => {
         console.log("header clicked");
       }
     }
 
     this.winEvents = { // bind dome events to dinwo, with optional selector (will unbind on remove)
-      "resize": () => {
-        console.log("Window is resizing")
+      'resize': () => {
+        console.log('Window is resizing')
       }
     }
 
     this.hubEvents = { // subscribe to a hub/topic[/label] message (will unsubscribe on remove)
-      "presenceHub; change": (isPresent) => {
+      'presenceHub; change': (isPresent) => {
         console.log(`User is ${isPresent?'':'NOT '}present`);
       }
     }
   }
 
-  create(data){ // (required) must return string, DOMElement, or DocumentFragment (or a Promise resolving into one of those)
-    return `<div class='MainView'>
-      <header>${data.header}</header>
-      <section class='content'></section>
+  create(){ // (required) must return string, DOMElement, or DocumentFragment (or a Promise resolving into one of those)
+    return `<div class="MainView">
+      <header>${this.header}</header>
+      <section class="content"></section>
     </div>`
   }
 
-  init(data){ // (optional) called whe this.el, this.name and this.id has been set, but before it is added in the DOM. 
+  init(){ // (optional) called whe this.el, this.name and this.id has been set, but before it is added in the DOM. 
     this.el; // manipulate the this.el before it get added,
     // Can return a promise if some async work are needed to be done before adding to DOM
   }
 
-  postDisplay(data){ // (optional) called after the view.el is added to the dom (in the next event loop)
-    // Good place to do non UI post work, or loading async views.
-    display(data.contentViewClass, first(this.el, 'content'), data.contentData);
+  postDisplay(){ // (optional) called after the view.el is added to the dom (in the next event loop)
+    // Good place to do non UI post work, or loading/displaying async views.
+    // NOTE: for 0.6.x, still have to have the null before Config (here 'empty'), later will be removed
+    display(new SubView(), first(this.el, 'content'), null, 'empty');
   }
 
   destroy(){ // (optinal) will be called in case cleanup are needed.
     // Note: the eventual winEvents, docEvents, and hubEvents, bindings will be unbound by mvdom (assuming mvdom.remove or mvdom.empty was called on their respective parent),
-    //       no need to remove them. 
+    //       no need to unbind them.
   }
 }
 
 // display by instance
-var p = display(new MainView(), "body", {header: "My First Main View", contentViewClass: OtherView, contentData: "Hello from main view"})l
+var p = display(new MainView({header: 'My First Main View'}), 'body', 'empty'); // "empty" will empty the body before adding the MainView (default is 'append', can be 'first' to append first)
 
 // display returns a promise that is resolved with the view created and displayed, after postDisplay is performed. 
 p.then(function(view){
@@ -101,7 +107,7 @@ p.then(function(view){
 });
 ```
 
-`mvdom` is syntactically `es5` written (IE11 and above), and fit very well es2015 class/module model and is fully typed if you are using TypeScript. It can also be used the traditional 'es5' Object by registering "object archetype" and display views by name. 
+`mvdom` is syntactically `es5` written (IE11 and above), and fit very well es2015 class/module model and is fully typed if you are using TypeScript. 
 
 ## Concept 
 
@@ -167,19 +173,25 @@ See [building](#building) to build the distribution manually.
 ```js
 // --------- View APIs --------- //
 // display a view in this DOM element el 
-mvdom.display(viewInstance, parentEl [, data,  config]); 
-mvdom.display(viewConstructor, parentEl [, data,  config]); 
+mvdom.display(viewInstance, parentEl [, config]); 
 
-// register a hook at a specific stage (willCreate, didCreate, willInit, ...)
+// register a hook at a specific stage for all views (willCreate, didCreate, willInit, ...)
 mvdom.hook("willCreate", fn(view){}); 
 
 mvdom.empty(el); // will empty all children of an element, and also "destroy" the eventual views
 mvdom.remove(el); // will remove this element, and also "destroy" the eventual attached view and the sub views
 
-// register a view controller (async lifecycle)
+// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
 mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config])
-mvdom.register(ViewConstructor, [, config]); 
+// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
 mvdom.display("ViewName", parentEl [, config]); 
+
+// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
+mvdom.register(ViewConstructor, [, config]); 
+
+// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
+mvdom.display(viewConstructor, parentEl [, config]); 
+
 // --------- /View APIs --------- //
 
 // --------- DOM Event Helpers --------- //
@@ -252,112 +264,59 @@ For full API spec, see [Typescript index.d.ts](types/index.d.ts)
 
 ## View Display
 
-#### `mvdom.display(viewInstance, refEl: string | HTMLElement, data?: any, config?: {append}])`
+#### `mvdom.display(viewInstance, refEl: string | HTMLElement, config?: string | Config)`
 ```js
 import { display } from 'mvdom';
 
 class MyView{
-  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
-    return `<div class='MyView'>${data.title}</div>`
+  constructor(title){
+    this.title = title;
+  }
+  create(){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
+    return `<div class='MyView'>${this.title}</div>`
   }
 }
 
 // display by instance
-display(new MyView(), "body", {title: "My First View"})
+display(new MyView('My First View'), 'body')
 ```
 
-#### `mvdom.display(viewConstructorFunction, refEl: string | HTMLElement, data?: any, config?: {append}])`
+#### View Example
 
 ```js
-display(MyView, "body", {title: "My First View"})
-```
-
-#### `mvdom.display(viewName, refEl, [data, config])`
-
-Display a view by name `mvdom.display` (view definition must have been registered beforehand) for example: 
-
-```js
-// mvdom.display(viewName, refEl, data)
-display("MainView", mvdom.first("body"), {message:"hello from mvdom"});
-// Note: mvdom.first is just a shortcut to document.querySelector
-```
-
-## View Register
-
-Note: Register is only require when display by name is needed than display by function constructor or instance
-
-#### `mvdom.register(viewName, archetype [, config])`
-
-Register a new view "archetype" (i.e js object that will be clone for each instantiation) by name `mvdom.register`. The "controller" part of a view definition, see below, will be called during the lifecycle of the view ( everything is asynchronous based). The only required method is `.create([data, config])` which is reponsible to return the HTML.
-
-```js
-
-// register a view archetype
-mvdom.register("MainView",{
-    // Returns a HTML String, Document Element, or Document Fragment
-    // Can return a Promise that resolve in one of those three object time
-    // Must be one Dome Element
-    create: function(data, config){
-        return `<div class='MainView'>
-                  <div class=".but">${data.message}</div>
-                </div>`;
-    }, 
-
-    // (optional) init() will be called after the component element is created
-    // but before it is added to the screen (i.e. added to the parent)
-    init: function(data, config){
-        var view = this; // best practice
-        view.el; // this is the top parent element created for this view
-        // if return a Promise, the flow will wait until the promise is resolved
-    }, 
-
-    // (optional) postDisplay() will be called after the component element is added to the dom
-    // and in another event (used a setTimeout 0). 
-    // Best Practice: This is a good place to add bindings that are not related to UI layout, or need to be done
-    // after the component is displayed
-    postDisplay: function(data, config){
-        // some non UI layout related, or actions that need to be performed after the component is displaye
-
-        // if return a promise, the mvdom.display(...).then will resolve when the return promise will be resolve. 
-        // however, the mvdom.display(...) promise resolution will always be this view, regardless of the object or promise returns by this function.
-    }, 
-
-    // (optional) will be called when this view is deleted (from d.remove or d.empty on a parent)
-    // will be called after the view.el is removed from parent.
-    // info: {parentEl} Simple js object containing the parentEl property.
-    destroy: function(info){
-        
-    }
+class MyView{
+  constructor(data){
+    this.data = data;
 
     // (optional) events: {eventSelector: handlerFunction} | 
     //                    {eventSelector: handlerFunction}[]
     // 
     // Can be an array of eventBinding as well
-    events: {
+    this.events = {
         "click; .but": function(evt){
             var view = this; // this is the view
             console.log("click on .but", evt, view);
         }
-    }, 
+    }
 
     // (optional) same format as above, but bind on document. Will be automatically unbound on view destroy.
     // - support array of bindings as well)
     // - will unbind on destroy when calling d.remove on this element or parents or d.empty on any parent
-    docEvents: {
+    this.docEvents = {
         "click; .do-logoff": function(evt){
             var view = this;            
         }
-    }, 
+    }
 
     // (optional) same as docEvents but on window object. Will be automatically unbound on view destroy.
-    winEvents: {
+    this.winEvents = {
         "resize": function(evt){
             // do something when window is resize
         }
-    }, 
+    }
 
     // (optional) allows to bind to select parent elements, and still have the sub selector capabilities. Will be automatically unbound on view destroy (if the elements still exist)
-    closestEvents =  { 
+    this.closestEvents =  { 
       '.container; click': function(evt){}, // this will look for the closest ".conatiner" and bind the click event on it. 
       
       '.container; click; .button.add': function(evt){}, // this will binding to the closest ".container" and tricker only when the target element match ".button.add" (sub selector as event binding).
@@ -365,11 +324,11 @@ mvdom.register("MainView",{
       '.container': { // closest selectors can be grouped in one object
           'click; .button.add': function(evt){} // same as above 
       }
-    }, 
+    }
 
     // (optional) subscribe to a hub by hub name, topic(s), and optional label(s)
     // - support array of bindings as well.
-    hubEvents: {
+    this.hubEvents = {
         dataServiceHub: {
             // subscribe on the dataServiceHub on the topic Task and any labels "create" "update" or "delete"
             "Task; create, update, delete": function(data, info){
@@ -384,23 +343,42 @@ mvdom.register("MainView",{
            // same binding as above
         }
     }
+  }
 
-})
-```
+  // Returns a HTML String, Document Element, or Document Fragment
+  // Can return a Promise that resolve in one of those three object time
+  // Must be one Dome Element
+  create(){
+      return `<div class='MainView'>
+                <div class=".but">${data.message}</div>
+              </div>`;
+  }, 
 
-#### `mvdom.register(viewConstructorFunction [, config])`
+  // (optional) init() will be called after the component element is created
+  // but before it is added to the screen (i.e. added to the parent)
+  init(){
+      var view = this; // best practice
+      view.el; // this is the top parent element created for this view
+      // if return a Promise, the flow will wait until the promise is resolved
+  }, 
 
-Can also register a constructorFunction, and the `constructorFunction.name` will become the name of this registered view definition. 
+  // (optional) postDisplay() will be called after the component element is added to the dom
+  // and in another event (used a setTimeout 0). 
+  // Best Practice: This is a good place to add bindings that are not related to UI layout, or need to be done
+  // after the component is displayed
+  postDisplay(){
+      // some non UI layout related, or actions that need to be performed after the component is displaye
 
-```js
-import { register } from 'mvdom';
-class MyView{
-  create(data){ // return string, DOMElement, or DocumentFragment (or promise resolving into those)
-    return `<div class='MyView'>${data.title}</div>`
+      // if return a promise, the mvdom.display(...).then will resolve when the return promise will be resolve. 
+      // however, the mvdom.display(...) promise resolution will always be this view, regardless of the object or promise returns by this function.
+  }, 
+
+  // (optional) will be called when this view is deleted (from d.remove or d.empty on a parent)
+  // will be called after the view.el is removed from parent.
+  // info: {parentEl} Simple js object containing the parentEl property.
+  destroy(info){
   }
 }
-
-register(MyView, {append: first});
 ```
 
 

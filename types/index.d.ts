@@ -19,6 +19,7 @@ export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
 
 declare interface Config {
 	append?: Append;
+	data?: any;
 }
 
 // --------- Hub --------- //
@@ -105,7 +106,8 @@ export declare interface AnyView extends View {
 /// mvdom API
 
 // --------- View --------- //
-/** Register a new view controller with a name (used in mvdom.display(name, ...)) 
+/** @deprecated register has been deprecated in favor of display by instance (display(new ...))
+ *  Register a new view controller with a name (used in mvdom.display(name, ...)) 
  *  @param name the name of the view controller type. Usually camel case (e.g., "MyView")
  *  @param viewController the controller object that will be used to instanatiate the view
 */
@@ -113,7 +115,8 @@ export function register(name: string, viewController: ViewController, config?: 
 
 export function register<T extends ViewController>(viewControllerClass: { new(): T; }): void;
 
-/** Create a new view instance by registered name and append it to the refEl
+/** @deprecated display by name has been deprecated in favor display by instance (display(new ...))
+ *  Create a new view instance by registered name and append it to the refEl
  *  @param viewName The view type name to be instantiated 
  *  @param refEl Either a document element or a document query selector that will be the parent or reference element (when append is )
  *  @param data An optional data object to be passed to the view instance. Need to be null if config is present.
@@ -121,7 +124,8 @@ export function register<T extends ViewController>(viewControllerClass: { new():
 */
 export function display(viewName: string, refEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<View>;
 
-/** Create by viewConstructor function
+/** @deprecated display by constructor has been deprecated in favor of display by instance
+ *  Create by viewConstructor function
  *  @param viewConstructor: The function constructor ( new viewCoonstructor will be called)
  */
 export function display<C extends View>(viewConstructor: { new(): C; }, refEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<C>;

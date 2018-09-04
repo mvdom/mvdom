@@ -36,6 +36,7 @@ function hook(name, fun) {
 }
 
 function register(nameOrConstructor, archetypeOrConfig, config) {
+
 	var name = null;
 	var constructor = null;
 	var archetype = null;
@@ -52,6 +53,8 @@ function register(nameOrConstructor, archetypeOrConfig, config) {
 		name = nameOrConstructor;
 		archetype = archetypeOrConfig;
 	}
+
+	utils.printOnce(`DEPRECATED - register ${name}`);
 
 	var viewDef = {
 		name: name,
@@ -152,10 +155,12 @@ function doInstantiate(nameOrConstructorOrInstance, data, config) {
 	// if we instantiate by a registered name
 	if (typeof nameOrConstructorOrInstance === "string") {
 		name = nameOrConstructorOrInstance;
+		utils.printOnce(`DEPRECATED - display by name ${name}`);
 	}
 	// if we instantiate by a construsctor function
 	else if (typeof nameOrConstructorOrInstance === "function") {
 		name = nameOrConstructorOrInstance.name;
+		utils.printOnce(`DEPRECATED - display by construtor ${name}`);
 		constructor = nameOrConstructorOrInstance;
 	}
 	// if we have an instance object

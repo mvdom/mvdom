@@ -13,7 +13,9 @@ module.exports = {
 	asArray: asArray, // public
 
 	// string utils
-	splitAndTrim: splitAndTrim
+	splitAndTrim: splitAndTrim,
+
+	printOnce: printOnce
 };
 
 // --------- Object Utils --------- //
@@ -192,3 +194,11 @@ function trim(str) {
 	return str.trim();
 }
 // --------- /String Utils --------- //
+
+var _printOnceDone = {};
+function printOnce(msg) {
+	if (!_printOnceDone[msg]) {
+		console.log.apply(console.log, arguments);
+		_printOnceDone[msg] = true;
+	}
+}
