@@ -31,8 +31,10 @@
 
 		}
 
-		function SubView() {
+		function SubView(label) {
 			BaseView.call(this);
+
+			this.label = label;
 
 			this.hubEvents.push({
 				"dataHub; Todo; update": function(){
@@ -72,7 +74,7 @@
 			testSimpleEventsAndDocEvents: function () {
 				var testContentEl = d.first(".test-content");
 
-				return d.display(SubView, testContentEl, { name: "01" }).then(function (view) {
+				return d.display(new SubView('01'), testContentEl).then(function (view) {
 					view.el.click();
 					assertEquals(["click BaseView handler - Object: SubView", 
 												"click SubView handler - Object: SubView",
@@ -97,7 +99,7 @@
 			}, 
 
 			testViewAddByInstance: function () {
-				return d.display(new SubView(), ".test-content", { name: "02" }).then(function (view) {
+				return d.display(new SubView('02'), ".test-content").then(function (view) {
 					view.el.click();
 					assertEquals(["click BaseView handler - Object: SubView", 
 												"click SubView handler - Object: SubView",

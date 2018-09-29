@@ -18,14 +18,17 @@
 		// --------- SubView (prototype way) --------- //
 		// a View the "class" way (class will work as well)
 		// var SubView = function () { }; // this will work as well
-		function SubView() {};
+		function SubView(label) {
+			this.label = label;
+		};
+
 		SubView.prototype.create = function (data) {
 			return d.frag('<div class="SubView rect sm">SubView</div>');
 		}
 
 		SubView.prototype.init = function (data) {
-			this.el.classList.add("subview-" + data.label);
-			this.el.innerHTML = "SubView-" + data.label;
+			this.el.classList.add("subview-" + this.label);
+			this.el.innerHTML = "SubView-" + this.label;
 		}
 		SubView.prototype.destroy = function (info) {
 			outs.push("SubView.destroy");
@@ -35,8 +38,6 @@
 				outs.push("CUSTOM " + this.name + " " + this.id);
 			}
 		}
-
-		d.register(SubView);
 		// --------- /SubView (prototype way) --------- //
 
 		function ExtraView(){};
@@ -63,7 +64,9 @@
 		}
 
 		// --------- MainView (object way) --------- //
-		d.register("MainView", {
+		const MainViewArch = {
+			name: 'MainView',
+
 			create: function () {
 				outs.push("MainView.create");
 				return `<div class='MainView'>Main View ${this.id} 
@@ -76,11 +79,11 @@
 			postDisplay: function () {
 				var containerEl = d.first(this.el, ".sub-views");
 				// by constructor
-				return d.display(SubView, containerEl, { label: "A" }).then(function (viewA) {
+				return d.display(new SubView("A"), containerEl).then(function (viewA) {
 					// by name
-					return d.display("SubView", containerEl, { label: "B" }, { append: "first" }).then(function (viewB) {
+					return d.display(new SubView("B"), containerEl, { append: "first" }).then(function (viewB) {
 						// bind new
-						return d.display(new SubView(), viewA.el, { label: "C" }, "before").then(function (viewC) {
+						return d.display(new SubView("C"), viewA.el, "before").then(function (viewC) {
 							outs.push("MainView.postDisplay" );
 						});
 					});
@@ -117,7 +120,7 @@
 			winEvents: {
 
 			}
-		});
+		}
 		// --------- /MainView (object way) --------- //
 
 		d.hook("willCreate", view => {
@@ -133,7 +136,7 @@
 			},
 
 			testSimpleMainViewAndHook: function () {
-				return d.display("MainView", d.first(".test-content")).then(function (view) {
+				return d.display(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
 					assertEquals(["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay"], outs);
 				});
 			},
@@ -161,7 +164,7 @@
 			},
 
 			testAddMainView: function () {
-				return d.display("MainView", d.first(".test-content")).then(function (view) {
+				return d.display(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
 					d.trigger(document, "CUSTOM");
 					var expected = ["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", "CUSTOM MainView 4", "CUSTOM SubView 5", "CUSTOM SubView 6", "CUSTOM SubView 7"];
 					assertEquals(expected, outs);
@@ -192,32 +195,12 @@
 				assertEquals(["MainView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3"], outs);
 			},
 
-			// we test that creating a view with element, works (text and fragment are already tested with MainView and SubView)
-			testCreateWithElement: function () {
-				var testContentEl = d.first(".test-content");
 
-				d.register("OtherViewA", {
-					create: function () {
-						var el = document.createElement("div");
-						el.classList.add("OtherViewA");
-						el.classList.add("rect");
-						el.innerHTML = "Other View A<b class='rect sm'>b tag</b>";
-						return el;
-					}
-				});
-
-				return d.display("OtherViewA", testContentEl).then(function (view) {
-					var testEl = d.first(".OtherViewA");
-					// here remove the \n otherwise, can't compare somehow.
-					assertEquals("Other View A_b tag", testEl.innerText.replace(/\n/g, "_"));
-				});
-			},
-
-			testDisplayWithEmptyDirective: function () {
+			testDisplayWith: function () {
 				var testContentEl = d.first(".test-content");
 				var containerEl = d.first(d.frag("<div class='rect'>some content</div>"));
 				d.append(testContentEl, containerEl);
-				return d.display("SubView", containerEl, { label: "test" }, "empty").then(function (view) {
+				return d.display(new SubView('test'), containerEl, "empty").then(function (view) {
 					var txt = containerEl.innerText.replace(/\s/g, "_");
 					assertEquals("SubView-test", txt);
 				});
@@ -227,7 +210,7 @@
 			testDisplayViewByConstructor: function(){
 				var testContentEl = d.first(".test-content");
 
-				return d.display(ExtraView, testContentEl, {name: "01"}).then(function(view){
+				return d.display(new ExtraView(), testContentEl, {name: "01"}).then(function(view){
 					assertEquals("ExtraView", view.name);
 					assertEquals("ExtraView-01", view.el.innerText);
 				});

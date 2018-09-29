@@ -1,13 +1,27 @@
 
 ## Making the DOM Scale.
 
-**`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC rather than working against it.**
+`mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC rather than working against it.
+
+Fully **async view lifecycle**, simple but powerful Component **View DOM binding/unbinding**, dom push/pull, **pub/sub**, and more, all for < 15kb minimized (**< 7kb gzipped**) and **ZERO depedency** (beside the DOM)!
+
+- **Simple Scale Better**.
+
+- **Size is a statement of implicity** 
+
+- **Embrace the DOM, Don't Fight it**, 
+
+- **Real DOM** is where the **puck is going to be**.
+
+<br />
+
+> _Note: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). Keep It Simple is about continuous simplification._
 
 
 ## Hello World
 
 ```js
-// main.js (es2015)
+// main.js
 
 import { display } from 'mvdom';
 
@@ -20,10 +34,12 @@ class HelloWorld {
   }
 }
 
-display(new HelloWorld('John'), 'body'); // by default will append to body
-```
+display(new HelloWorld('John'), 'body'); // by default will append last ('last') to body
 
-Seems too simple, but fully async, DOM binding/unbinding, pub/sub, dom push/pull, and more, all for **15kb min and ZERO depedency (beside the DOM)**!
+// or to empty the parent (here 'body') container 
+display(new HelloWorld('John'), 'body', 'empty'); 
+
+```
 
 
 ## Example 
@@ -39,7 +55,7 @@ class SubView{
 ```
 
 ```js
-// main.js (es2015)
+// main.js
 
 import { display, first, hub } from 'mvdom';
 import { SubView } from './SubView';
@@ -83,7 +99,7 @@ class MainView{
   postDisplay(){ // (optional) called after the view.el is added to the dom (in the next event loop)
     // Good place to do non UI post work, or loading/displaying async views.
     // NOTE: for 0.6.x, still have to have the null before Config (here 'empty'), later will be removed
-    display(new SubView(), first(this.el, 'content'), null, 'empty');
+    display(new SubView(), first(this.el, 'content'), 'empty');
   }
 
   destroy(){ // (optinal) will be called in case cleanup are needed.
@@ -181,16 +197,6 @@ mvdom.hook("willCreate", fn(view){});
 mvdom.empty(el); // will empty all children of an element, and also "destroy" the eventual views
 mvdom.remove(el); // will remove this element, and also "destroy" the eventual attached view and the sub views
 
-// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
-mvdom.register("ViewName", {create,init,postDisplay,destroy}[, config])
-// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
-mvdom.display("ViewName", parentEl [, config]); 
-
-// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
-mvdom.register(ViewConstructor, [, config]); 
-
-// DEPRECATED (will be deprecated in 0.6.0 and removed in 0.7.0)
-mvdom.display(viewConstructor, parentEl [, config]); 
 
 // --------- /View APIs --------- //
 
@@ -395,9 +401,7 @@ The optional mvdom view `config` argument allow to customize the way the view is
 
 By default, the `config.append = "last"` which means the refEl will be the parent and the view element will be added at the end (using `refEl.appendChild(view.el)`)
 
-If no data, but config, pass null like `mvdom.display("MainView", parentEl, null, {append:"first"})`
-
-In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as the `append` property. So the line above is equivalent to `mvdom.display("MainView", parentEl, null, "first")`.
+In the context of `mvdom.display`, `config` can be a string, and in this case it will be interpreted as the `append` property. So the line above is equivalent to `mvdom.display("MainView", parentEl, "first")`.
 
 
 ## Dom Event Binding

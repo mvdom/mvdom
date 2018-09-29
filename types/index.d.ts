@@ -17,13 +17,13 @@ export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
 
 // --------- /Type Helpers --------- //
 
-declare interface Config {
+interface Config {
 	append?: Append;
 	data?: any;
 }
 
 // --------- Hub --------- //
-declare interface EventOptions {
+interface EventOptions {
 	/** The context with which the call back will be called (i.e. this context) */
 	ctx?: object,
 	/** The namespace used to bind this event, which will allow to remove all of the binding done with this namespace with .off */
@@ -32,19 +32,19 @@ declare interface EventOptions {
 
 type NsObject = { ns: string };
 
-declare interface EventInfo {
-	cancelable?: true | false;
-	detail: any;
+interface EventInfo {
+	cancelable?: true | false; // default will be true
+	detail?: any;
 }
 
-declare interface HubEventInfo {
+interface HubEventInfo {
 	topic: string;
 	label: string;
 }
 
 type HubSubHandler = (data: any, info: any) => void;
 
-declare interface Hub {
+interface Hub {
 
 	/** Subscribe a new hanlder to one or more topics ("," separated) */
 	sub(topics: string, handler: HubSubHandler, opts?: EventOptions): void;
@@ -67,10 +67,10 @@ type eventBindings = { [name: string]: ExtendedDOMEventListener };
 type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
 { [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
 
-export declare interface ViewController {
-	create?(data?: any, config?: Config): string | HTMLElement | DocumentFragment;
-	init?(data?: any, config?: Config): any;
-	postDisplay?(data?: any, config?: Config): any;
+export interface ViewController {
+	create(config?: Config): string | HTMLElement | DocumentFragment;
+	init?(config?: Config): any;
+	postDisplay?(config?: Config): any;
 	destroy?(): any;
 
 	events?: eventBindings | eventBindings[];
@@ -84,56 +84,36 @@ export declare interface ViewController {
 }
 
 // for now, the View extends the ViewContoller (single object)
-export declare interface View extends ViewController {
+export interface View extends ViewController {
 	/** Unique id of the view. Used in namespace binding and such.  */
-	id: string;
+	id: number;
 
 	/** The view name or "class name". */
 	name: string;
 
 	/** The htmlElement created */
-	el?: HTMLElement;
+	el: HTMLElement;
 }
 
-export declare interface AnyView extends View {
+// type PreView = 
+// Minimum 
+
+export interface AnyView extends View {
 	[name: string]: any;
 }
-// --------- /View Interfaces --------- //
 
+
+// --------- /View Interfaces --------- //
 
 
 //////////////////////////////////////////////////////////////////
 /// mvdom API
 
 // --------- View --------- //
-/** @deprecated register has been deprecated in favor of display by instance (display(new ...))
- *  Register a new view controller with a name (used in mvdom.display(name, ...)) 
- *  @param name the name of the view controller type. Usually camel case (e.g., "MyView")
- *  @param viewController the controller object that will be used to instanatiate the view
-*/
-export function register(name: string, viewController: ViewController, config?: Config): void;
-
-export function register<T extends ViewController>(viewControllerClass: { new(): T; }): void;
-
-/** @deprecated display by name has been deprecated in favor display by instance (display(new ...))
- *  Create a new view instance by registered name and append it to the refEl
- *  @param viewName The view type name to be instantiated 
- *  @param refEl Either a document element or a document query selector that will be the parent or reference element (when append is )
- *  @param data An optional data object to be passed to the view instance. Need to be null if config is present.
- *  @param config An optional config telling more information or append type
-*/
-export function display(viewName: string, refEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<View>;
-
-/** @deprecated display by constructor has been deprecated in favor of display by instance
- *  Create by viewConstructor function
- *  @param viewConstructor: The function constructor ( new viewCoonstructor will be called)
- */
-export function display<C extends View>(viewConstructor: { new(): C; }, refEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<C>;
-
 /** Append by viewInstance
  *  @param viewInstance: The view instance
  */
-export function display<V extends View>(viewInstance: V, refEl: string | HTMLElement, data?: any | null, config?: Config | Append): Promise<V>;
+export function display<V extends View>(viewInstance: ViewController & { [n: string]: any }, refEl: string | HTMLElement, config?: Config | Append): Promise<typeof viewInstance & View>;
 
 
 /** Register a HookCallback function that will be called when any view reach this lifecycle stage */

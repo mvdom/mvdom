@@ -14,8 +14,32 @@
 		var d = mvdom;
 		var outs = [];
 
-		d.register("MainView",{
-			create: function(){
+		class MainView {
+
+			constructor() {
+				this.hubEvents = {
+					// flat binding, with hub name as part of the binding string.
+					"dsHub; Task": function(data, info){
+						outs.push("dsHub; Task >> " + data);
+					},				
+					"dsHub; Task; create": function(data, info){
+						outs.push("dsHub; Task; create >> " + data);
+					},
+
+					"dsHub; Task; delete": function(data, info){
+						outs.push("dsHub; Task; delete >> " + data);
+					},
+
+					// hub by hub binding (with name as hubEvents property)
+					dsHub: {
+						"Task; update": function(data, info){
+							outs.push("dsHub: {'Task; update'} >> " + data);
+						}
+					}
+				}				
+			}
+
+			create(){
 				outs.push("MainView.create");
 				return `<div class='MainView'>Main View ${this.id} 
 									<div class="but but-1">.but-1</div>
@@ -24,37 +48,19 @@
 										<div class="rect sm item item-2">Item 2</div>
 									<div>
 								</div>`;
-			},
-
-			postDisplay: function(){
-				outs.push("MainView.postDisplay");
-			},
-
-			hubEvents: {
-				// flat binding, with hub name as part of the binding string.
-				"dsHub; Task": function(data, info){
-					outs.push("dsHub; Task >> " + data);
-				},				
-				"dsHub; Task; create": function(data, info){
-					outs.push("dsHub; Task; create >> " + data);
-				},
-
-				"dsHub; Task; delete": function(data, info){
-					outs.push("dsHub; Task; delete >> " + data);
-				},
-
-				// hub by hub binding (with name as hubEvents property)
-				dsHub: {
-					"Task; update": function(data, info){
-						outs.push("dsHub: {'Task; update'} >> " + data);
-					}
-				}
 			}
-		});
+
+			postDisplay(){
+				outs.push("MainView.postDisplay");
+			}
+
+
+		}
+
 
 		var tests = {
 			_init: function(){
-				return d.display("MainView",d.first(".test-content")).then(function(){
+				return d.display(new MainView(),d.first(".test-content")).then(function(){
 					
 				});				
 			},

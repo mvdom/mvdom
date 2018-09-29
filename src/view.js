@@ -3,7 +3,6 @@ var dom = require("./dom.js");
 
 module.exports = {
 	hook: hook,
-	register: register,
 	display: display,
 	remove: remove,
 	empty: empty
@@ -35,51 +34,35 @@ function hook(name, fun) {
 	hooks[name].push(fun);
 }
 
-function register(nameOrConstructor, archetypeOrConfig, config) {
-
-	var name = null;
-	var constructor = null;
-	var archetype = null;
-
-	if (nameOrConstructor instanceof Function) {
-
-		constructor = nameOrConstructor;
-		name = constructor.name;
-		if (!name || name === "function") {
-			throw new Error("MVDOM ERROR - Cannot register an anonymous function, must be a full constructor function or a class");
-		}
-		config = archetypeOrConfig;
-	} else {
-		name = nameOrConstructor;
-		archetype = archetypeOrConfig;
-	}
-
-	utils.printOnce(`DEPRECATED - register ${name}`);
-
-	var viewDef = {
-		name: name,
-		constructor: constructor,
-		archetype: archetype,
-		config: config
-	};
-
-	viewDefDic[name] = viewDef;
-}
-
-function display(nameOrConstructorOrInstance, parentEl, data, config) {
+function display(instance, parentEl, config) {
 	var self = this;
 
-	var view = doInstantiate(nameOrConstructorOrInstance, data, config);
+	const view = instance;
 
-	return doCreate(view, data)
+	// if the config is a string, then assume it is the append directive.
+	if (typeof config === "string") {
+		config = { append: config };
+	}
+	config = Object.assign({}, defaultConfig, config);
+	view.config = config;
+
+	// set the .name, if the instance does not have a name, get it from the constructor if present
+	if (view.name == null && view.constructor) {
+		view.name = view.constructor.name
+	}
+
+	// set the .id, set the unique
+	view.id = viewIdSeq++;
+
+	return doCreate(view, config)
 		.then(function () {
-			return doInit(view, data);
+			return doInit(view, config);
 		})
 		.then(function () {
-			return doDisplay.call(self, view, parentEl, data);
+			return doDisplay.call(self, view, parentEl, config);
 		})
 		.then(function () {
-			return doPostDisplay(view, data);
+			return doPostDisplay(view, config);
 		});
 
 }
@@ -139,109 +122,12 @@ function removeEl(el, childrenOnly) {
 
 }
 
-
-
-// return the "view" instance
-// TODO: need to be async as well and allowed for loading component if not exist
-function doInstantiate(nameOrConstructorOrInstance, data, config) {
-
-	// if the config is a string, then assume it is the append directive.
-	if (typeof config === "string") {
-		config = { append: config };
-	}
-
-	var name, constructor, instance = null;
-
-	// if we instantiate by a registered name
-	if (typeof nameOrConstructorOrInstance === "string") {
-		name = nameOrConstructorOrInstance;
-		utils.printOnce(`DEPRECATED - display by name ${name}`);
-	}
-	// if we instantiate by a construsctor function
-	else if (typeof nameOrConstructorOrInstance === "function") {
-		name = nameOrConstructorOrInstance.name;
-		utils.printOnce(`DEPRECATED - display by construtor ${name}`);
-		constructor = nameOrConstructorOrInstance;
-	}
-	// if we have an instance object
-	else if (typeof nameOrConstructorOrInstance === "object") {
-		instance = nameOrConstructorOrInstance;
-		if (instance.name != null) {
-			name = instance.name;
-		} else if (nameOrConstructorOrInstance.constructor) {
-			// for now, we assume the name is the constructor name
-			name = nameOrConstructorOrInstance.constructor.name;
-		} else {
-			throw new Error("MVDOM ERROR - This view instance does not have .name or .constructor.name, not a valid view");
-		}
-	} else {
-		throw new Error("MVDOM ERROR - not valid display argument (should be string, function constructor, or instance object) but it is: " + nameOrConstructorOrInstance);
-	}
-
-	var viewDef = null;
-	// if we need to instantiate
-	if (instance === null) {
-		// get the view def from the dictionary
-		viewDef = viewDefDic[name];
-
-		// if we display by constructor
-		if (constructor != null) {
-			// check that if we have a viewDef for the constructor name, it matches. 
-			if (viewDef && viewDef.constructor !== constructor) {
-				throw new Error("MVDOM ERROR - Constructor function to display " + name +
-					" does match what it was registered. Registered named should be unique as they can be displayed by name.");
-			}
-			// if we do not have a viewDef, we can create one on the fly
-			if (!viewDef) {
-				viewDef = {
-					name: name,
-					constructor: constructor
-				};
-			}
-		}
-		// if viewDef not found, throw an exception (Probably not registered)
-		if (!viewDef) {
-			throw new Error("mvdom ERROR - View definition for '" + name + "' not found. Make sure to call d.register(viewName, viewController).");
-		}
-	}
-	// if we have an instance, we can create the viewDef on the fly
-	else {
-		viewDef = {
-			name: name,
-			instance: instance
-		};
-	}
-
-
-	var viewConfig = Object.assign({}, defaultConfig, viewDef.config, config);
-
-	var view = null;
-	if (viewDef.instance) {
-		view = viewDef.instance;
-	} else if (viewDef.archetype) {
-		view = Object.assign({}, viewDef.archetype);
-	} else if (viewDef.constructor) {
-		view = new viewDef.constructor(data, config);
-	}
-
-	// set the config
-	view.config = viewConfig;
-
-	// set the id
-	view.id = viewIdSeq++;
-
-	// set the name
-	view.name = name;
-
-	return view;
-}
-
 // return a promise that resolve with nothing.
-function doCreate(view, data) {
+function doCreate(view, config) {
 	performHook("willCreate", view);
 
 	// Call the view.create
-	var p = Promise.resolve(view.create(data));
+	var p = Promise.resolve(view.create(config));
 
 	return p.then(function (html_or_node) {
 
@@ -271,19 +157,19 @@ function doCreate(view, data) {
 	});
 }
 
-function doInit(view, data) {
+function doInit(view, config) {
 	performHook("willInit", view);
 	var res;
 
 	if (view.init) {
-		res = view.init(data);
+		res = view.init(config);
 	}
 	return Promise.resolve(res).then(function () {
 		performHook("didInit", view);
 	});
 }
 
-function doDisplay(view, refEl, data) {
+function doDisplay(view, refEl, config) {
 	// if we have a selector, assume it is a selector from document.
 	if (typeof refEl === "string") {
 		refEl = dom.first(refEl);
@@ -293,7 +179,7 @@ function doDisplay(view, refEl, data) {
 
 	try {
 		// WORKAROUND: this needs tobe the mvdom, since we have cyclic reference between dom.js and view.js (on empty)
-		dom.append.call(this, refEl, view.el, view.config.append);
+		dom.append.call(this, refEl, view.el, config.append);
 	} catch (ex) {
 		throw new Error("mvdom ERROR - Cannot add view.el " + view.el + " to refEl " + refEl + ". Cause: " + ex.toString());
 	}
@@ -307,12 +193,12 @@ function doDisplay(view, refEl, data) {
 	});
 }
 
-function doPostDisplay(view, data) {
+function doPostDisplay(view, config) {
 	performHook("willPostDisplay", view);
 
 	var result;
 	if (view.postDisplay) {
-		result = view.postDisplay(data);
+		result = view.postDisplay(config);
 	}
 
 	return Promise.resolve(result).then(function () {
