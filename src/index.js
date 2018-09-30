@@ -9,7 +9,7 @@ require("./view-event.js");
 require("./view-hub.js");
 
 module.exports = {
-	version: "0.5.6-SNAPSHOT",
+	version: "0.7.0",
 
 	// view APIs
 	hook: view.hook,
