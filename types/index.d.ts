@@ -139,8 +139,8 @@ export function trigger(els: EventTargetOrMoreOrNull, eventName: string, info?: 
 // --------- /DOM Event Helpers --------- //
 
 // --------- DOM Query Helpers --------- //
-export function all(el: HTMLNode | null | undefined, selector: string): NodeListOf<HTMLElement>;
-export function all(selector: string): NodeListOf<HTMLElement>;
+export function all(el: HTMLNode | null | undefined, selector: string): HTMLElement[];
+export function all(selector: string): HTMLElement[];
 
 /** Shortchut to el.querySelector, but allow el to be null (in which case will return null) */
 export function first(el: HTMLNode | null | undefined, selector: string): HTMLElement | null;

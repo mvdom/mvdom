@@ -1,3 +1,5 @@
+var utils = require("./utils.js");
+
 module.exports = {
 	first: first,
 	all: all,
@@ -48,9 +50,10 @@ function first(el_or_selector, selector) {
 }
 
 // Shortcut for .querySelectorAll
-// return an nodeList of all of the elements element matching the selector from this el (or document if el is not given)
+// return an Array from the nodeList result )
 function all(el, selector) {
-	return _execQuerySelector(true, el, selector);
+	let nodeList = _execQuerySelector(true, el, selector);
+	return (nodeList != null) ? utils.listAsArray(nodeList) : [];
 }
 
 // return the first element next to the el matching the selector
@@ -186,7 +189,7 @@ function _sibling(next, el, selector) {
 // util: querySelector[All] wrapper
 function _execQuerySelector(all, el, selector) {
 	// if el is null or undefined, means we return nothing. 
-	if (typeof el === "undefined" || el === null) {
+	if (el == null) {
 		return null;
 	}
 	// if selector is undefined, it means we select from document and el is the document

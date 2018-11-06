@@ -12,6 +12,9 @@ module.exports = {
 	// asType
 	asArray: asArray, // public
 
+	// performance only
+	listAsArray: listAsArray,
+
 	// string utils
 	splitAndTrim: splitAndTrim,
 
@@ -94,15 +97,6 @@ function val(rootObj, pathToValue, value) {
 				break;
 			}
 		}
-
-		// if (node == null) {
-		// 	return undefined;
-		// }
-		// // get the next node
-		// node = (node instanceof Map)?node.get(name):node[name];
-		// if (typeof node === "undefined") {
-		// 	return node;
-		// }
 	}
 	if (setMode) {
 		return rootObj;
@@ -111,6 +105,15 @@ function val(rootObj, pathToValue, value) {
 	}
 }
 
+// Convert an indexed object to a pure array in the most efficient way (to-date)
+// See: https://jsperf.com/convert-nodelist-to-array, https://jsperf.com/array-from-to-nodelist
+function listAsArray(list) {
+	var arr = new Array(list.length);
+	for (let i = list.length - 1; i >= 0; i--) {
+		arr[i] = list[i];
+	}
+	return arr;
+}
 // --------- /Object Utils --------- //
 
 // --------- ensureType --------- //
