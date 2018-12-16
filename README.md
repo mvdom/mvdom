@@ -3,15 +3,15 @@
 
 `mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC rather than working against it.
 
-Fully **async view lifecycle**, simple but powerful Component **View DOM binding/unbinding**, dom push/pull, **pub/sub**, and more, all for < 15kb minimized (**< 7kb gzipped**) and **ZERO depedency** (beside the DOM)!
+Fully **async view lifecycle**, simple but powerful Component **View DOM binding/unbinding**, dom push/pull, **pub/sub**, and more, all for < 15kb minimized (**< 7kb gzipped**) and **ZERO dependency**!
 
 - **Simple Scale Better**.
 
-- **Size is a statement of implicity** 
+- **Small is a statement of simplicity** 
 
 - **Embrace the DOM, Don't Fight it**, 
 
-- **Real DOM** is where the **puck is going to be**.
+- **REAL DOM** is where the **puck is going to be**.
 
 <br />
 
@@ -97,8 +97,7 @@ class MainView{
   }
 
   postDisplay(){ // (optional) called after the view.el is added to the dom (in the next event loop)
-    // Good place to do non UI post work, or loading/displaying async views.
-    // NOTE: for 0.6.x, still have to have the null before Config (here 'empty'), later will be removed
+    // Good place to do non UI post work, or loading/displaying async sub views.
     display(new SubView(), first(this.el, 'content'), 'empty');
   }
 
@@ -185,6 +184,8 @@ mvdom.display ...
 See [building](#building) to build the distribution manually. 
 
 ## API Overview
+
+See [types/index.d.ts](types/index.d.ts) for full API definition.
 
 ```js
 // --------- View APIs --------- //
@@ -408,7 +409,7 @@ In the context of `mvdom.display`, `config` can be a string, and in this case it
 
 #### `mvdom.on([el,] eventType, [selector,] eventHander(evt){}[, opts])`
 
-Bind a eventHandler to a dom element(s) for an event type and optional selector. It also support name spacing, and custom context at binding time (i.e. the "this" of the eventHandler) 
+Bind a eventHandler to a dom element(s) for an event type and optional selector. It also supports namespacing, and custom context at binding time (i.e., the "this" of the eventHandler) 
 
 - el: (optional) (default document) The base document element to bind the event to. Can also be an array or nodeList of element. 
 - eventType: (required) Multiple are supported with "," (e.g., "webkitTransitionEnd, transitionend")
@@ -501,7 +502,7 @@ mvdom.push(myEl, updateData)
 
 `mvdom.push` and `mvdom.pull` work on a four step flow:
 
-1) First, the selector is used to select all of the dom element candidates for value extraction or injection. By default, we use the `".dx"` class selector, as class selection is much faster than any other attributes. Custom selector can be provided.
+1) First, the selector is used to select all of the dom element candidates for value extraction or injection. By default, we use the `".dx"` class selector, as class selection is much faster than any other attributes. A custom selector can be provided.
 2) Second, for each element candidate, mvdom extract the property path from the element, `name` attribute, or class name with the `dx-` prefix ('-' be translate to '.'), or with the html attribute `data-dx`. (see example above for an example of each).
 3) Third, it looks default and registered for the appropriate pusher or puller function to inject or extract the value. Default pushers/pullers support html form elements (input, textarea, checkbox, radio) and basic innerHTML set and get, but custom ones can be registered (and will take precedence) by specifying the element matching selector. 
     + `d.pusher(selector, pusherFun(value){this /* dom element*/});` Register pusher function set a value to a matching dom element
@@ -561,24 +562,23 @@ This library uses a gulp-and-webpack-free way of building distribution file, and
 
 ## Type Support
 
-While `mvdom` is written in pure JS, it does provide typescript types for typescript, flow, and intellisense supports. See `types/` folder. 
+While `mvdom` is written in pure JS, it does provide typescript types. See [types/index.d.ts](types/index.d.ts). 
 
-#### In a TypeScript project. 
 
 ```ts
 import { display, remove, View } from "mvdom";
 
 class MyView implements View{
-  id: string; // will be set by mvdom (will be unique)
-  name: string; // will be set as well (will be MyView)
-  el?: HTMLElement; // will be set by mvdom
+  id!: string; // will be set before .create (will be unique)
+  name!: string; // will be set before .create (will be MyView)
+  el!: HTMLElement; // will be set after  .create 
 
   create(){
     return `<div>My First mvdom View <span class="but">click to remove me</span></div>`;
   }, 
 
   events = {
-    "click; .but": () => {
+    "click; .but": (evt) => {
       console.log("This button has been clicked");
       mvdom.remove(this.el); // this will remove the div and unbind
     }
@@ -589,5 +589,6 @@ display(MyView, "body");
 ```
 
 
+> Note: For convenience, we use TypeScript `!` property declaration modifier to specify that those values can be considered as set in the 'construction' phase.  
 
 

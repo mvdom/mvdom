@@ -5,7 +5,7 @@
 //       a typescript project (/src/index.d.ts)
 {
   "compilerOptions": {
-    "allowJs": true,
+    "allowJs": false,
     "strict": true  /* Enable all strict type-checking options. */
   }
 }
