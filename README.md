@@ -3,19 +3,19 @@
 
 `mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC rather than working against it.
 
-Fully **async view lifecycle**, simple but powerful Component **View DOM binding/unbinding**, dom push/pull, **pub/sub**, and more, all for < 15kb minimized (**< 7kb gzipped**) and **ZERO dependency**!
+Fully **async view lifecycle**, simple but powerful **View DOM binding/unbinding**, dom push/pull, **pub/sub**, and more, all for < 15kb minimized (**< 7kb gzipped**) and **ZERO dependency**!
 
 - **Simple Scale Better**.
 
-- **Small is a statement of simplicity** 
+- **Small is a statement of simplicity**.
 
-- **Embrace the DOM, Don't Fight it**, 
+- **Embrace the DOM, Don't Fight it**.
 
 - **REAL DOM** is where the **puck is going to be**.
 
 <br />
 
-> _Note: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). Keep It Simple is about continuous simplification._
+> _Note: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). _"Keep It Simple"_ is about continuous simplification._
 
 
 ## Hello World
@@ -178,7 +178,7 @@ var mvdom = require("mvdom");
 mvdom.display ...
 ```
 
-> Note 1: While mvdom is written in pure js, it does provide typescript types. See [Typescript and/or Intellisense Support](#Type-Support)
+> **Note:** While mvdom is written in pure js, it does provide typescript types. See Typescript [types/index.d.ts](types/index.d.ts) declaration file. 
 
 
 See [building](#building) to build the distribution manually. 
@@ -419,7 +419,8 @@ Bind a eventHandler to a dom element(s) for an event type and optional selector.
     + ctx: eventHandler context (i.e. this)
     + ns: Binding namespace
 
-Note: Similar to jquery.on, except that the event object (evt) are the native ones, and that the selector are plain HTML5 selectors. 
+> **Note:** Similar to jquery.on, except that the event object (evt) are the native ones, and that the selector are plain HTML5 selectors. `.selectTarget` property is added to the original event which point to  the element pointed by the eventual 'selector'. 
+
 
 ###### Examples
 
