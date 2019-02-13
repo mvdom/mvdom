@@ -67,6 +67,12 @@
 					outs.push(evt.currentTarget.className);
 					outs.push(evt.selectTarget.className);
 				});
+
+				d.on(el, "click", ".do-capture", function(evt){
+					outs.push('capture');
+					evt.stopPropagation();
+				},{capture: true, passive: false});
+
 			},
 
 			_beforeEach: function(){
@@ -134,7 +140,14 @@
 				d.trigger(el, "custom1");
 
 				assertEquals(["MainView click", "click.do-multi", "custom1.do-multi"], outs);
-			}			
+			},
+			
+			testCapture: function(){
+				var el = d.first(".do-capture");
+				el.click();
+				el.click();
+				console.log(outs);
+			}
 
 		};		
 		
@@ -158,6 +171,7 @@
 				<div class="but do-other">.do-other</div>
 				<div class="but do-select">.do-select <div class="but do-select-sub">sub</div></div>
 				<div class="but do-multi">.do-multi</div>
+				<div class="but do-capture">.do-capture</div>
 			</div>
 		</div>		
 	</body>

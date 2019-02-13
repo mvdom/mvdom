@@ -13,7 +13,8 @@ module.exports = {
 // - type: event type (like 'click' or can be custom event).
 // - selector: (optional) query selector which will be tested on the target element. 
 // - listener: function which will get the "event" as first parameter
-// - opts: (optional) {ns,ctx} optional namespace and ctx (i.e. this)
+// - opts: (optional) {capture, passive, ctx, ns} optional namespace (ns) and ctx (i.e. this) 
+//   Note: Today we do not support 'once' as it does not work as expected (probably because of )
 function on(els, types, selector, listener, opts) {
 
 	// if the "selector" is a function, then, it is the listener and there is no selector
@@ -21,6 +22,18 @@ function on(els, types, selector, listener, opts) {
 		listener = selector;
 		selector = null;
 		opts = listener;
+	}
+
+	// AddEventListenerOptions	
+	let eventOptions;
+	if (opts && (opts.passive != null || opts.capture != null)) {
+		eventOptions = {};
+		if (opts.passive != null) {
+			eventOptions.passive = opts.passive;
+		}
+		if (opts.capture != null) {
+			eventOptions.capture = opts.capture;
+		}
 	}
 
 	types = utils.splitAndTrim(types, ",");
@@ -98,7 +111,7 @@ function on(els, types, selector, listener, opts) {
 			listenerRefByListener.set(listener, listenerRef);
 
 			// do the binding
-			el.addEventListener(type, _listener);
+			el.addEventListener(type, _listener, eventOptions);
 
 			return this;
 
@@ -198,7 +211,6 @@ function off(els, type, selector, listener) {
 			// remove it from the map
 			listenerRefMapByListener.delete(listener);
 		}
-
 
 	});
 }

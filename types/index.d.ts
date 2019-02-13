@@ -23,11 +23,18 @@ interface Config {
 }
 
 // --------- Hub --------- //
+/**
+ * Extends the DOM AddEventListenerOptions for .once, .capture, .passive
+ */
 interface EventOptions {
-	/** The context with which the call back will be called (i.e. this context) */
+	/** The context with which the call back will be called (i.e. 'this' context) */
 	ctx?: object,
 	/** The namespace used to bind this event, which will allow to remove all of the binding done with this namespace with .off */
-	ns?: string
+	ns?: string,
+	/** AddEventListenerOptions.capture */
+	capture?: boolean,
+	/** AddEventListenerOptions.passive */
+	passive?: boolean,
 }
 
 type NsObject = { ns: string };
