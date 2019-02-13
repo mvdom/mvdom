@@ -7,6 +7,7 @@ node_modules/
 package-lock.json
 
 dist/
+*.tgz
 
 #ignore all all paths that start with ~ (personal folder/files)
 ~*
