@@ -122,14 +122,12 @@ p.then(function(view){
 });
 ```
 
-`mvdom` is syntactically `es5` written (IE11 and above), and fit very well es2015 class/module model and is fully typed if you are using TypeScript. 
-
 ## Concept 
 
-**Key concept:** `ComponentView !== ComponentElement`, use mvdom for composite views (the big ones), regular DOM for component elements with native DOM event model for components intercomunications. Event based architecture always scale better, and the DOM has one for us.
+**Key concept:** `ComponentView !== ComponentElement`, use mvdom for composite views (the big ones), regular DOM for component elements with native DOM event model for components intercommunications. Event-based architecture always scale better, and the DOM has one for us.
 
 - The DOM is your friend, don't fight it, embrace it. 
-- Used right, the DOM can be a great foundation for a simple and scalable MVC model.
+- Used right, the DOM can be an excellent foundation for a scalable and straightforward MVC model.
 - Over componentization is as bad as under componentization.
 - Black magic always come with a hidden cost.
 - Frameworks come and go, languages and runtimes stay.
@@ -391,7 +389,7 @@ class MyView{
 
 ## View Config
 
-The optional mvdom view `config` argument allow to customize the way the view is handled. It can be set at the registration phase, as well as overriden for each display. For now, it is a single property config, `.append`, which tells how to add the new view.el to the DOM.
+The optional mvdom view `config` argument allows to customize the way the view is handled. It can be set at the registration phase, as well as overridden for each display. For now, it is a single property config, `.append`, which tells how to add the new view.el to the DOM.
 
 - append: ("last", "first", "before", "empty", "after"). 
     + **"last"**: The __refEl__ is interpreted as the parent, and the append will use `refEl.appendChild(view.el)`
@@ -409,7 +407,7 @@ In the context of `mvdom.display`, `config` can be a string, and in this case it
 
 #### `mvdom.on([el,] eventType, [selector,] eventHander(evt){}[, opts])`
 
-Bind a eventHandler to a dom element(s) for an event type and optional selector. It also supports namespacing, and custom context at binding time (i.e., the "this" of the eventHandler) 
+Bind a event handler to a dom element(s) for an event type and optional selector. It also supports namespacing, and custom context at binding time (i.e., the "this" of the eventHandler) 
 
 - el: (optional) (default document) The base document element to bind the event to. Can also be an array or nodeList of element. 
 - eventType: (required) Multiple are supported with "," (e.g., "webkitTransitionEnd, transitionend")
@@ -450,7 +448,7 @@ mvdom.on(someEl, "webkitTransitionEnd, transitionend", ...)
 
 #### `mvdom.off(els, [type, selector, listener][, opts])`
 
-Unbind event binding that have been bound by `mvdom.on`. 
+Unbind event binding that has been bound by `mvdom.on`. 
 
 - `.off(els)` Unbind all bindings added via .on
 - `.off(els, type)` Unbind all bindings of type added via .on
@@ -460,7 +458,7 @@ Unbind event binding that have been bound by `mvdom.on`.
 
 ## Dom Data eXchange (push/pull)
 
-`mvdom.push` and `mvdom.pull` provides a simple and extensible way to extract or inject data from and to a DOM sub tree. 
+`mvdom.push` and `mvdom.pull` provides a simple and extensible way to extract or inject data from and to a DOM subtree. 
 
 #### `mvdom.push(el, [selector,] data);` 
 Will inject data  to the matching selector (default ".dx") elements. By default, selector is ".dx". 
@@ -501,9 +499,9 @@ mvdom.push(myEl, updateData)
 
 ##### More Info (internals)
 
-`mvdom.push` and `mvdom.pull` work on a four step flow:
+`mvdom.push` and `mvdom.pull` work on a four-step flow:
 
-1) First, the selector is used to select all of the dom element candidates for value extraction or injection. By default, we use the `".dx"` class selector, as class selection is much faster than any other attributes. A custom selector can be provided.
+1) First, the selector is used to select all of the dom element candidates for value extraction or injection. By default, we use the `".dx"` class selector, as the class selection is much faster than any other attributes. A custom selector can be provided.
 2) Second, for each element candidate, mvdom extract the property path from the element, `name` attribute, or class name with the `dx-` prefix ('-' be translate to '.'), or with the html attribute `data-dx`. (see example above for an example of each).
 3) Third, it looks default and registered for the appropriate pusher or puller function to inject or extract the value. Default pushers/pullers support html form elements (input, textarea, checkbox, radio) and basic innerHTML set and get, but custom ones can be registered (and will take precedence) by specifying the element matching selector. 
     + `d.pusher(selector, pusherFun(value){this /* dom element*/});` Register pusher function set a value to a matching dom element
