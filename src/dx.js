@@ -99,6 +99,12 @@ function push(el, selector_or_data, data) {
 	utils.asArray(dxEls).forEach(function (dxEl) {
 
 		var propPath = getPropPath(dxEl);
+
+		// if we do not have a prop path, we skip this element
+		if (!propPath) {
+			return;
+		}
+
 		var value = utils.val(data, propPath);
 		var i = 0, pusherSelector, fun, l = _pushers.length;
 		for (; i < l; i++) {
@@ -160,7 +166,8 @@ function getPropPath(dxEl) {
 		path = dxEl.getAttribute("data-dx");
 	}
 	if (!path) {
-		path = dxEl.getAttribute("name"); // last fall back, assume input field
+		// last fall back, assume input field or custom element with 'name' attribute
+		path = dxEl.getAttribute("name");
 	}
 	return path;
 }
