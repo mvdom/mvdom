@@ -115,7 +115,7 @@
 			testEmptyProperties: function(){
 				var el = d.first(".empty-props");
 
-				d.push(el, {a:null, b:null});
+				d.push(el, {a:null, b:null, c: undefined});
 
 				var data = d.pull(el);
 				assertEquals({a: "", b: "", c: "c1", d: "d1"}, data);

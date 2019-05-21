@@ -27,19 +27,19 @@ var _pushers = [
 	}],
 
 	["input", function (value) {
-		if (typeof value !== "undefined") this.value = value;
+		this.value = value;
 	}],
 
 	["select", function (value) {
-		if (typeof value !== "undefined") this.value = value;
+		this.value = value;
 	}],
 
 	["textarea", function (value) {
-		if (typeof value !== "undefined") this.value = value;
+		this.value = value;
 	}],
 
 	["*", function (value) {
-		if (typeof value !== "undefined") this.innerHTML = value;
+		this.innerHTML = value;
 	}]
 ];
 
@@ -106,15 +106,19 @@ function push(el, selector_or_data, data) {
 		}
 
 		var value = utils.val(data, propPath);
-		var i = 0, pusherSelector, fun, l = _pushers.length;
-		for (; i < l; i++) {
-			pusherSelector = _pushers[i][0];
-			if (dom._matchesFn.call(dxEl, pusherSelector)) {
-				fun = _pushers[i][1];
-				fun.call(dxEl, value);
-				break;
+
+		if (typeof value !== 'undefined') {
+			var i = 0, pusherSelector, fun, l = _pushers.length;
+			for (; i < l; i++) {
+				pusherSelector = _pushers[i][0];
+				if (dom._matchesFn.call(dxEl, pusherSelector)) {
+					fun = _pushers[i][1];
+					fun.call(dxEl, value);
+					break;
+				}
 			}
 		}
+
 	});
 }
 
