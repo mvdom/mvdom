@@ -11,11 +11,15 @@ Fully **async view lifecycle**, simple but powerful **View DOM binding/unbinding
 
 - **Embrace the DOM, Don't Fight it**.
 
-- **REAL DOM** is where the **puck is going to be**.
+- **REAL DOM IS BACK!** 
+
+- Embrace **Native Web Components** in your **MVDOM Views**.
 
 <br />
 
-> _Note: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). _"Keep It Simple"_ is about continuous simplification._
+> _Note 1: **No IE11 tax**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Edge)._
+
+> _Note 2: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). _"Keep It Simple"_ is about continuous simplification._
 
 
 ## Hello World
@@ -25,12 +29,15 @@ Fully **async view lifecycle**, simple but powerful **View DOM binding/unbinding
 
 import { display } from 'mvdom';
 
-class HelloWorld {
+class HelloView {
   constructor(userName){
     this.userName = userName;
   }
   create(opts){
-    return `<div class='HelloWorld'>Hello ${this.userName}</div>`;
+    return `<div class='HelloView'>
+      <h1>Hello ${this.userName}. Here your todos:<h2>
+      <todo-list></todo-list>
+    </div>`;
   }
 }
 
@@ -591,3 +598,4 @@ display(MyView, "body");
 > Note: For convenience, we use TypeScript `!` property declaration modifier to specify that those values can be considered as set in the 'construction' phase.  
 
 
+[changlogs](CHANGELOG.md)
