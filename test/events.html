@@ -73,11 +73,23 @@
 					evt.stopPropagation();
 				},{capture: true, passive: false});
 
+				d.on(document, "CUSTOM_WITH_NS123", () => {
+					outs.push('CUSTOM_WITH_NS123');
+				}, {ns: 'ns123'});
 			},
 
 			_beforeEach: function(){
 				outs = [];
 			}, 
+
+			docNs: function(){
+				d.trigger(document,'CUSTOM_WITH_NS123');
+				assertEquals(["CUSTOM_WITH_NS123"],outs);
+				outs = [];
+				d.off(document, {ns: 'ns123'});
+				d.trigger(document,'CUSTOM_WITH_NS123');
+				assertEquals([],outs);
+			},
 
 			// test event binding with custom event after
 			clickOnDoSave: function(){
@@ -146,7 +158,6 @@
 				var el = d.first(".do-capture");
 				el.click();
 				el.click();
-				console.log(outs);
 			}
 
 		};		

@@ -19,9 +19,9 @@ function on(els, types, selector, listener, opts) {
 
 	// if the "selector" is a function, then, it is the listener and there is no selector
 	if (selector instanceof Function) {
+		opts = listener;
 		listener = selector;
 		selector = null;
-		opts = listener;
 	}
 
 	// AddEventListenerOptions	
@@ -99,6 +99,7 @@ function on(els, types, selector, listener, opts) {
 			// If we have a namespace, they add it to the Ref, and to the listenerRefsByNs
 			// TODO: need to add listenerRef in a nsDic if if there a opts.ns
 			if (opts && opts.ns) {
+
 				listenerRef.ns = opts.ns;
 				var listenerRefSetByNs = utils.ensureMap(el, "listenerRefsByNs");
 				var listenerRefSet = utils.ensureSet(listenerRefSetByNs, opts.ns);
