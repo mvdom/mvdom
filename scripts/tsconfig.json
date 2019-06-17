@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		// For browser client, we target edge and above (use es2016 for [].includes for example)
-		"target": "es2016",
+		// This is for the node/scripts mode, so we can target esNext
+		"target": "esNext",
 
-		// For now we resolve to commonjs for maximum compatiblity (with TS and pure JS/node)
+		// For the node.js context, so, target commonjs otherwise, cannot run in node
 		"module": "commonjs",
 
 		// This is important to support 3rd party modules that are still in a node.js/commonjs way
@@ -20,18 +20,20 @@
 
 		"declaration": true,
 
+		// Definitely wants sourcemapp
 		"sourceMap": true, /* Generates corresponding '.map' file. */
 
-		"outDir": "./dist/", /* Redirect output structure to the directory. */
+		"outDir": "./~out/", /* Redirect output structure to the directory. */
 
 		// allow to import moment like: import moment from "moment"
 		"allowSyntheticDefaultImports": true
 	},
-
+	
 	// We want more control about which code we will compile and exclude
 	"include": [
 		"./src/**/*.ts"
 	],
+	
 
 	"exclude": [
 		"node_modules",

@@ -1,9 +1,8 @@
 {
   "name": "mvdom",
-  "version": "0.8.0-SNAPSHOT",
+  "version": "0.8.0-next-1",
   "description": "DOM Centric MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
-  "main": "src/index.js",
-  "typings": "types/index.d.ts",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mvdom/mvdom.git"
@@ -26,12 +25,19 @@
     "cmdrouter": "^0.3.1",
     "exorcist": "^1.0.1",
     "fs-extra-plus": "^0.5.5",
-    "terser": "^3.17.0"
+    "rollup": "^1.15.6",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-node-resolve": "^5.0.3",
+    "rollup-plugin-typescript2": "^0.21.2",
+    "terser": "^3.17.0",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./scripts/build.js",
-    "watch": "node ./scripts/build.js watch"
+    "prepare": "rm -Rf ./dist && tsc",
+    "test": "echo \"Start server here, and test via browser http://localhost:8888/test \" && exit 0",
+    "build": "./node_modules/.bin/ts-node --files --project ./scripts/tsconfig.json  ./scripts/src/cmds.ts build",
+    "watch": "./node_modules/.bin/ts-node --files --project ./scripts/tsconfig.json  ./scripts/src/cmds.ts watch"
   },
   "author": "Jeremy Chone <jeremy.chone@gmail.com> (http://jeremychone.com)",
   "license": "MIT"

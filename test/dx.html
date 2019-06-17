@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>MVDOM Test: DX</title>
 
-		<script src="../dist/mvdom.js"></script>
+		<script src="./dist/mvdom.js"></script>
 		<script src="./common/test.js"></script>
 
 		<link href="./common/test.css" rel="stylesheet">
@@ -35,13 +35,13 @@
 		</style>
 		<script>
 		/* global assertEquals */
-		var d = mvdom;
-		var outs = [];
+		const d = mvdom;
+		let outs = [];
 
-		var expectedStringify = '{"a":"a-val","b":"b-val","c1":"c1-val","c3":["c3-val-a","c3-val-b"],' + 
+		const expectedStringify = '{"a":"a-val","b":"b-val","c1":"c1-val","c3":["c3-val-a","c3-val-b"],' + 
 														'"c4":"c4-val-a","c5":true,"r1":"r1-val-a","r2":"r2-val-a","d":"d-val","e":"e-val"}';
 
-		var tests = {
+		const tests = {
 
 			_init: function(){
 			},
@@ -61,11 +61,10 @@
 				var data = d.pull(formEl);
 
 				// clean the form
-				d.asArray(d.all(".form .dx")).forEach(function(el){
-					var matchesFn = el.matches || el.webkitMatchesSelector;
-					if (matchesFn.call(el, "input[type='checkbox'], input[type='radio']")){
+				d.all(".form .dx").forEach(function(el){
+					if (el.matches("input[type='checkbox'], input[type='radio']")){
 						el.checked = null;
-					}else if (matchesFn.call(el,"input")){
+					}else if (el.matches("input")){
 						el.value = null;
 					}else {
 						el.innerHTML = "";
@@ -73,7 +72,7 @@
 				});
 
 				// pull the empty form, and change it matches.
-				var expectedEmptyFormStringify = '{"a":"","b":"","d":"","e":""}';
+				const expectedEmptyFormStringify = '{"a":"","b":"","d":"","e":""}';
 				assertEquals(expectedEmptyFormStringify, JSON.stringify(d.pull(formEl)));
 
 				// push the orginal data, and then, pull and make sure it matches
@@ -82,30 +81,30 @@
 			}, 
 
 			selectorPull: function(){
-				var el = d.first(".custom-form");
+				const el = d.first(".custom-form");
 
 				// test the pull on the .edit .dx
-				var editData = d.pull(el, ".edit .dx");
+				const editData = d.pull(el, ".edit .dx");
 				assertEquals({firstName: "firstName1", lastName: "lastName1"}, editData);
 
 				// test the pull on the .view .dx
-				var viewData = d.pull(el, ".view .dx");
+				const viewData = d.pull(el, ".view .dx");
 				assertEquals({firstName: "aaa", lastName: "bbb"}, viewData);
 			},
 
 			selectorPush: function(){
-				var el = d.first(".custom-form");
+				const el = d.first(".custom-form");
 
 				// NOTE: This test assume the test data properties are in the same order
 				//       as the dom element, as the assertEquals just use a stringify to compare object
 
 				// test the push on the .edit .dx
-				var editData = {firstName: "firstName2", lastName: "lastName2"};
+				const editData = {firstName: "firstName2", lastName: "lastName2"};
 				d.push(el,".edit .dx", editData);
 				
 
 				// test the push on the .view .dx
-				var viewData = {firstName: "ccc", lastName: "ddd"};
+				const viewData = {firstName: "ccc", lastName: "ddd"};
 				d.push(el,".view .dx", viewData);
 
 				assertEquals(editData, d.pull(el,".edit .dx"));
@@ -113,11 +112,11 @@
 			}, 
 
 			testEmptyProperties: function(){
-				var el = d.first(".empty-props");
+				const el = d.first(".empty-props");
 
 				d.push(el, {a:null, b:null, c: undefined});
 
-				var data = d.pull(el);
+				const data = d.pull(el);
 				assertEquals({a: "", b: "", c: "c1", d: "d1"}, data);
 			}
 

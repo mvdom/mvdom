@@ -4,16 +4,16 @@
 		<meta charset="utf-8">
 		<title>MVDOM Test: DOM</title>
 
-		<script src="../dist/mvdom.js"></script>
+		<script src="./dist/mvdom.js"></script>
 		<script src="./common/test.js"></script>
 
 		<link href="./common/test.css" rel="stylesheet">
 
 		<script>
 		/* global assertEquals */
-		var d = mvdom;
+		const d = mvdom;
 
-		var tests = {
+		const tests = {
 			testFirst: function(){
 				assertEquals("A", d.first(".el-a").innerHTML);
 			},
@@ -35,7 +35,7 @@
 			}, 
 
 			testClosest: function(){
-				var barEl = d.first(".bar");
+				const barEl = d.first(".bar");
 
 				// should be same node
 				assertEquals(barEl,d.closest(barEl,".el-d"));
@@ -45,17 +45,17 @@
 			},
 
 			testNext: function(){
-				var firstEl = d.first(".rect.el-a");
+				const firstEl = d.first(".rect.el-a");
 				
 				// test just next one
-				var nextEl = d.next(firstEl,".rect");
+				let nextEl = d.next(firstEl,".rect");
 				assertEquals("B 1", nextEl.innerHTML);
 				
 				// test couple ahead
 				nextEl = d.next(firstEl,".rect.el-c");
 				assertEquals("C 1", nextEl.innerHTML);
 
-				var lastEl = d.next(firstEl, ".rect.el-f");
+				let lastEl = d.next(firstEl, ".rect.el-f");
 				assertEquals("rect el-f container", lastEl.classList.toString());				
 
 				nextEl = d.next(lastEl,".rect");
@@ -66,13 +66,13 @@
 			},
 
 			testPrev: function(){
-				var lastEl = d.first(".rect.el-d");
+				let lastEl = d.first(".rect.el-d");
 				
 				// test just prev one
-				var prevEl = d.prev(lastEl,".rect");
+				let prevEl = d.prev(lastEl,".rect");
 				assertEquals("C 3", prevEl.innerHTML);
 				
-				var firstEl = d.first(".rect.el-a");
+				let firstEl = d.first(".rect.el-a");
 				prevEl = d.prev(firstEl,".rect");
 				assertEquals(null, prevEl);
 
@@ -82,37 +82,36 @@
 
 			testAppendAndFrag: function(){
 
-				var testContentEl = d.first(".test-content");
+				const testContentEl = d.first(".test-content");
 
 
-				var eContainerEl = d.append(testContentEl, createEl("el-e container", "container text"));
-				var elA = d.append(eContainerEl, d.frag("<div class='rect el-e sm'>A</div>")); //createEl("el-3 sm a","A")
-				var elB = d.append(eContainerEl, createEl("el-e sm b","B"), "first");
-				var elC = d.append(elB, createEl("el-e sm c","C"), "before");
-				var elD = d.append(elC, createEl("el-e sm d","D"), "after");
-				var elE = d.append(eContainerEl, createEl("el-e sm E","E"), "last");
+				const eContainerEl = d.append(testContentEl, createEl("el-e container", "container text"));
+				const elA = d.append(eContainerEl, d.frag("<div class='rect el-e sm'>A</div>")); //createEl("el-3 sm a","A")
+				const elB = d.append(eContainerEl, createEl("el-e sm b","B"), "first");
+				const elC = d.append(elB, createEl("el-e sm c","C"), "before");
+				const elD = d.append(elC, createEl("el-e sm d","D"), "after");
+				const elE = d.append(eContainerEl, createEl("el-e sm E","E"), "last");
 
 				d.append(eContainerEl, d.frag("<div class='rect el-e sm'>F</div> TTT <div class='rect el-e sm'>G</div>"));
 
-				var out = [];
-				var nodes = eContainerEl.childNodes;
-				for (var node, i = 0; i < nodes.length; i++){
-					node = nodes[i];
+				const out = [];
+				const nodes = eContainerEl.childNodes;
+				for (const node of nodes){
 					out.push(node.innerText || node.nodeValue);
 				}
 				assertEquals(["container text", "C", "D", "B", "A", "E", "F", " TTT ", "G"], out);
 			}, 
 
 			testAppendEmpty: function(){
-				var testContentEl = d.first(".container.el-f");
+				const testContentEl = d.first(".container.el-f");
 				d.append(testContentEl, d.frag("<div>NEW EL</div>EE"), "empty");
-				var txt = testContentEl.innerText.replace(/\s/g,"_");
+				const txt = testContentEl.innerText.replace(/\s/g,"_");
 				assertEquals("NEW_EL_EE", txt);
 			}, 
 
 			testFirstFromFrag: function(){
-				var el;
-				var fragment = d.frag('<div class="first"> <span class="second"></span></div>');
+				let el;
+				const fragment = d.frag('<div class="first"> <span class="second"></span></div>');
 
 				el = d.first(fragment);
 				assertEquals("first", el.getAttribute("class"));
@@ -122,7 +121,7 @@
 			}, 
 
 			thisAppendToFrag: function(){
-				var fragment = d.frag('<div class="first"> <span class="second"></span></div>');
+				const fragment = d.frag('<div class="first"> <span class="second"></span></div>');
 				d.append(fragment, d.frag('<div class="other">one</div><div class="other">two</div>'));
 				d.append(fragment, d.frag('<div class="last">three</div>'), "first");
 				
@@ -134,7 +133,7 @@
 		};		
 		
 		function createEl(classNames, text){
-			var el = document.createElement("div");
+			const el = document.createElement("div");
 			el.setAttribute("class", "rect " + classNames);
 			el.innerText = text;
 			return el;

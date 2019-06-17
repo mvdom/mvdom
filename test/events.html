@@ -4,27 +4,27 @@
 		<meta charset="utf-8">
 		<title>MVDOM Test: Events</title>
 
-		<script src="../dist/mvdom.js"></script>
+		<script src="./dist/mvdom.js"></script>
 		<script src="./common/test.js"></script>
 
 		<link href="./common/test.css" rel="stylesheet">
 
 		<script>
 		/* global assertEquals */
-		var d = mvdom;
-		var outs = [];	
+		const d = mvdom;
+		let outs = [];	
 
-		var tests = {
+		const tests = {
 			_init: function(){
-				var el = d.first(".MainView");
+				const el = d.first(".MainView");
 
-				var doClickListener = function(evt){
+				const doClickListener = function(evt){
 					outs.push("MainView click");
 				};
 
 				d.on(el, "click", doClickListener);
 
-				var doSaveListener = function(evt){
+				const doSaveListener = function(evt){
 					outs.push(".do-save click");
 					d.trigger(evt.target, "DOSAVE",{detail:"some stuff"});
 				};
@@ -147,7 +147,7 @@
 			},
 
 			testMultiBinding: function(){
-				var el = d.first(".do-multi");
+				const el = d.first(".do-multi");
 				el.click();
 				d.trigger(el, "custom1");
 
@@ -155,7 +155,7 @@
 			},
 			
 			testCapture: function(){
-				var el = d.first(".do-capture");
+				const el = d.first(".do-capture");
 				el.click();
 				el.click();
 			}

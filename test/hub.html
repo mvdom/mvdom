@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>MVDOM Test: Hub</title>
 
-		<script src="../dist/mvdom.js"></script>
+		<script src="./dist/mvdom.js"></script>
 		<script src="./common/test.js"></script>
 
 		<link href="./common/test.css" rel="stylesheet">
@@ -55,7 +55,7 @@
 
 			unsubNs1: function(){
 				// we unbind the topic only binding, should have no event
-				hub1.unsub("ns1");				
+				hub1.unsub({ns: "ns1"});				
 				hub1.pub("HUB1_TOPIC_1","sendHub1Topic1");
 				assertEquals([],outs);
 
