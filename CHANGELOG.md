@@ -1,4 +1,9 @@
 
+### [v0.8.1](https://github.com/mvdom/mvdom/compare/v0.8.0...v0.8.1) June 18th 2019
+
+- Export `ExtendedEvent` as `Event & { detail?: any, selectTarget: HTMLElement }`
+  - 0.7.x change - Removed the `& {[key: string]: any}` from `EventExtended` (too wide).
+
 ### [v0.8.0](https://github.com/mvdom/mvdom/compare/v0.7.5...v0.8.0) June 18th 2019
 
 - Moved source code to typescript (API preserved)
