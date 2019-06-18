@@ -2,7 +2,7 @@
 
 - expose `bindDOMEvents` `bindDOMEvent` `DOMListenerBySelector` (useful to build custom web components)
 
-_size: mvdom.js 34.42K | mvdom.min.js 12.02K_
+_size: mvdom.js 34.42K | mvdom.min.js 12.03K_
 
 ### [v0.8.2](https://github.com/mvdom/mvdom/compare/v0.8.1...v0.8.2) June 18th 2019
 
