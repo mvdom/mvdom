@@ -1,23 +1,22 @@
-import { View, hook } from './view';
-import { off, EventOptions, on, ExtendedDOMEventListener } from './event';
 import { closest } from './dom';
+import { bindDOMEvent, bindDOMEvents, ExtendedDOMEventListener, DOMListenerBySelector, off } from './event';
+import { hook, View } from './view';
 
 
-// --------- Events Hook --------- //
 // Note: We bound events after the init (see #34)
 hook("didInit", function (view: View) {
 	const opts = { ns: "view_" + view.id, ctx: view };
 	if (view.events) {
-		bindEvents(view.events, view.el, opts);
+		bindDOMEvents(view.el, view.events, opts);
 	}
 
 	if (view.docEvents) {
-		bindEvents(view.docEvents, document, opts);
+		bindDOMEvents(document, view.docEvents, opts);
 	}
 
 	// TODO: need to have test for win events
 	if (view.winEvents) {
-		bindEvents(view.winEvents, window, opts);
+		bindDOMEvents(window, view.winEvents, opts);
 	}
 
 });
@@ -43,9 +42,9 @@ hook("willPostDisplay", function (view: View) {
 				elBySelector[closestSelector] = closestEl = closest(view.el, closestSelector);
 			}
 
-			// if not fond, we still ignore the binding (might warn later in console)
+			// if not found, we still ignore the binding (might warn later in console)
 			if (closestEl) {
-				bindEvent(closestEl, binding[1], binding[2], opts);
+				bindDOMEvent(closestEl, binding[1], binding[2], opts);
 			}
 
 		})
@@ -85,22 +84,21 @@ hook("willRemove", function (view: View) {
 
 });
 
-// Selector can be full 'closest_selector; event_types' or just event type
-type FnBySelector = { [selector: string]: ExtendedDOMEventListener };
-type FnByTypeBySelector = { [closestSelector: string]: { [typeSelector: string]: ExtendedDOMEventListener } };
 
+
+type FnByActionSelectorByClosestSelector = { [closestSelector: string]: { [typeSelector: string]: ExtendedDOMEventListener } };
 /**
  * 
- * @param {*} events an array of "closest_selector; event_types[; target_selector]": fn 
- * 											or array of {closest_selector: {"event_types[; target_selector]": fn}}
+ * @param {*} events an array of "closest_selector; event_types; target_selector": fn 
+ * 											or array of {closest_selector: {"event_types; target_selector": fn}}
  * @returns array of array [closest_selector, binding_string, fn]
  */
-function collectClosestBinding(bindings: FnBySelector | FnBySelector[] | FnByTypeBySelector | FnByTypeBySelector[]): [string, string, ExtendedDOMEventListener][] {
+function collectClosestBinding(bindings: DOMListenerBySelector | DOMListenerBySelector[] | FnByActionSelectorByClosestSelector | FnByActionSelectorByClosestSelector[]): [string, string, ExtendedDOMEventListener][] {
 	let bindingArray = (bindings instanceof Array) ? bindings : [bindings];
 
 	let acc: [string, string, ExtendedDOMEventListener][] = []; // array of {[closest_selector: string] : {[binding_string: string]: fn}}
 
-	bindingArray.forEach(function (item: FnBySelector | FnByTypeBySelector) {
+	bindingArray.forEach(function (item: DOMListenerBySelector | FnByActionSelectorByClosestSelector) {
 
 		let key;
 
@@ -132,27 +130,3 @@ function collectClosestBinding(bindings: FnBySelector | FnBySelector[] | FnByTyp
 
 	return acc;
 }
-
-
-
-function bindEvents(eventDics: FnBySelector | FnBySelector[], el: EventTarget, opts: EventOptions) {
-	eventDics = (eventDics instanceof Array) ? eventDics : [eventDics]; // make we have an array of eventDic
-	for (const eventDic of eventDics) {
-		for (const selector in eventDic) {
-			bindEvent(el, selector, eventDic[selector], opts);
-		}
-	}
-}
-
-
-function bindEvent(el: EventTarget, eventSelector: string, fn: ExtendedDOMEventListener, opts: EventOptions) {
-	let selectorSplitted = eventSelector.trim().split(";"); // e.g., ["click", " button.add"]
-	let type = selectorSplitted[0].trim(); // e.g., "click"
-	let selector = null; // e.g., "button.add"
-
-	if (selectorSplitted.length > 1) {
-		selector = selectorSplitted[1].trim();
-	}
-	on(el, type, selector, fn, opts);
-}
-// --------- /Events Hook --------- //

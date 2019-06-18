@@ -1,4 +1,4 @@
-import { ExtendedDOMEventListener } from './event';
+import { ExtendedDOMEventListener, DOMListenerBySelector } from './event';
 import { HubEventInfo } from './hub';
 import { Append, all, frag, first, append } from './dom';
 import { asNodeArray } from './utils';
@@ -30,7 +30,7 @@ interface Config {
 	data?: any;
 }
 
-type eventBindings = { [name: string]: ExtendedDOMEventListener };
+
 type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
 { [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
 
@@ -40,13 +40,13 @@ export interface ViewController {
 	postDisplay?(config?: Config): any;
 	destroy?(data?: { parentEl?: HTMLElement }): any;
 
-	events?: eventBindings | eventBindings[];
+	events?: DOMListenerBySelector | DOMListenerBySelector[];
 
-	closestEvents?: eventBindings | eventBindings[];
+	closestEvents?: DOMListenerBySelector | DOMListenerBySelector[];
 
-	docEvents?: eventBindings | eventBindings[];
+	docEvents?: DOMListenerBySelector | DOMListenerBySelector[];
 
-	winEvents?: eventBindings | eventBindings[];
+	winEvents?: DOMListenerBySelector | DOMListenerBySelector[];
 
 	hubEvents?: hubBindings | hubBindings[];
 

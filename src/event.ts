@@ -1,4 +1,4 @@
-import { asNodeArray, ensureMap, ensureSet, splitAndTrim, val } from './utils';
+import { asNodeArray, ensureMap, ensureSet, splitAndTrim } from './utils';
 
 type EventTargetOrMore = EventTarget | NodeList | [Node];
 
@@ -13,6 +13,9 @@ interface DetailEvent {
 export type ExtendedEvent = Event & SelectEvent & DetailEvent & KeyboardEvent & MouseEvent & TouchEvent & object;
 
 export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
+
+/** A key/value object representing a list of binding with the ky becase a typeAndSelector string */
+export type DOMListenerBySelector = { [selector: string]: ExtendedDOMEventListener };
 
 type ListenerDic = Map<string, Map<Function, ListenerRef>>;
 
@@ -313,8 +316,40 @@ export function trigger(els: EventTargetOrMore | null | undefined, type: string,
 		el.dispatchEvent(evt);
 	});
 }
-// --------- /Module APIs --------- //
 
+
+//#region    ---------- Convenient Multi Bind ---------- 
+/**
+ * Bind a list of bindings
+ *
+ * @param typeAndSelector e.g., `click` or `click; button.add`
+ */
+export function bindDOMEvents(el: EventTarget, eventDics: DOMListenerBySelector | DOMListenerBySelector[], opts: EventOptions) {
+	eventDics = (eventDics instanceof Array) ? eventDics : [eventDics]; // make we have an array of eventDic
+	for (const eventDic of eventDics) {
+		for (const selector in eventDic) {
+			bindDOMEvent(el, selector, eventDic[selector], opts);
+		}
+	}
+}
+
+/**
+ * Bind one event to a el by appropriately parsing the `typeAndSelector` might contains a selector;
+ * 
+ * @param typeAndSelector e.g., `click` or `click; button.add`
+ */
+export function bindDOMEvent(el: EventTarget, typeAndSelector: string, fn: ExtendedDOMEventListener, opts: EventOptions) {
+	let selectorSplitted = typeAndSelector.trim().split(";"); // e.g., ["click", " button.add"]
+	let type = selectorSplitted[0].trim(); // e.g., "click"
+	let selector = null; // e.g., "button.add"
+
+	if (selectorSplitted.length > 1) {
+		selector = selectorSplitted[1].trim();
+	}
+	on(el, type, selector, fn, opts);
+}
+
+//#endregion ---------- /Convenient Multi Bind ---------- 
 
 function buildTypeSelectorKey(type: string, selector?: string | null): string {
 	return (selector) ? (type + "--" + selector) : type;

@@ -1,10 +1,16 @@
+### [v0.8.3](https://github.com/mvdom/mvdom/compare/v0.8.2...v0.8.3) June 18th 2019
+
+- expose `bindDOMEvents` `bindDOMEvent` `DOMListenerBySelector` (useful to build custom web components)
+
+_size: mvdom.js 34.42K | mvdom.min.js 12.02K_
+
 ### [v0.8.2](https://github.com/mvdom/mvdom/compare/v0.8.1...v0.8.2) June 18th 2019
 
 - made ExtendedEvent wider
 - export EventInfo
 - optimize asNodeArray to return immutable empty array
 
-_size: mvdom.js 34K | mvdom.min.js 12K_
+_size: mvdom.js 34K | mvdom.min.js 11.99K_
 
 ### [v0.8.1](https://github.com/mvdom/mvdom/compare/v0.8.0...v0.8.1) June 18th 2019
 
