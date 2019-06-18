@@ -1,6 +1,6 @@
 export const version = '0.8.0';
 
-export { on, off, trigger, ExtendedDOMEventListener, } from './event';
+export { on, off, trigger, ExtendedDOMEventListener, ExtendedEvent } from './event';
 
 export { push, pull, pusher, puller } from './dx';
 

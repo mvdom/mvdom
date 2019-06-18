@@ -2,11 +2,7 @@ import { asNodeArray, ensureMap, ensureSet, splitAndTrim, val } from './utils';
 
 type EventTargetOrMore = EventTarget | NodeList | [Node];
 
-// The ExtendedDOMEventListener is an extended type to support eventual .detail from custom event, and .selectTarget which is always added by the binding api. 
-// Note: For now, we add the "AndMore" trick as we do not want to limit which type of event/element 
-type AndMore = { [key: string]: any };
-type HTMLElementAndMore = HTMLElement & AndMore;
-type ExtendedEvent = Event & { detail?: any, selectTarget: HTMLElementAndMore } & AndMore;
+export type ExtendedEvent = Event & { detail?: any, selectTarget: HTMLElement };
 
 export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
 
@@ -109,7 +105,7 @@ export function on(els: EventTargetOrMore | null, types: string, arg1: string | 
 			// if we have a selector, create the wrapper listener to do the matches on the selector
 			if (selector) {
 				_listener = function (evt) {
-					let tgt: HTMLElementAndMore | Document | null = null;
+					let tgt: HTMLElement | Document | null = null;
 					const target = evt.target;
 					const currentTarget = evt.currentTarget;
 					const ctx = (opts) ? opts.ctx : null;
@@ -124,12 +120,12 @@ export function on(els: EventTargetOrMore | null, types: string, arg1: string | 
 					// might match
 					else {
 						// TODO: type narrowing needed.
-						tgt = (evt.target as HTMLElement).parentNode as HTMLElementAndMore | Document | null;
+						tgt = (evt.target as HTMLElement).parentNode as HTMLElement | Document | null;
 						// TODO: might need to check that tgt is not undefined as well. 
 						while (tgt !== null && tgt !== currentTarget && tgt !== document) {
 							if ((<HTMLElement>tgt).matches(selector!)) { // selector is present here (see if above)
 								// Note: While mouseEvent are readonly for its properties, it does allow to add custom properties
-								evt.selectTarget = tgt as HTMLElementAndMore;
+								evt.selectTarget = tgt as HTMLElement;
 								listener.call(ctx, evt);
 								tgt = null;
 								break;
