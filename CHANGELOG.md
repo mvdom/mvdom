@@ -4,6 +4,8 @@
 - export EventInfo
 - optimize asNodeArray to return immutable empty array
 
+_size: mvdom.js 34K | mvdom.min.js 12K_
+
 ### [v0.8.1](https://github.com/mvdom/mvdom/compare/v0.8.0...v0.8.1) June 18th 2019
 
 - Export `ExtendedEvent` as `Event & { detail?: any, selectTarget: HTMLElement }`
@@ -16,6 +18,8 @@
 - `frag()` or `frag(null)` is valid now, and returns empty `DocumentFragment`.
 - `off(el, nsObj: {ns: string})` Now `off` for namespace must take a NsObject (i.e. `{ns: string}`)
 - deprecated `asArray`
+
+_size: mvdom.js 42K | mvdom.min.js 14K_
 
 ### [v0.7.5](https://github.com/mvdom/mvdom/compare/v0.7.4...v0.7.5) May 31st 2019
 

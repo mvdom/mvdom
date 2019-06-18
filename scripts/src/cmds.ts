@@ -1,4 +1,4 @@
-import { saferRemove, writeFile, glob } from 'fs-extra-plus';
+import { saferRemove, writeFile, readFile, stat } from 'fs-extra-plus';
 import * as rollup from 'rollup';
 import rollup_cjs = require('rollup-plugin-commonjs');
 import rollup_re = require('rollup-plugin-node-resolve');
@@ -6,7 +6,11 @@ import rollup_ts = require('rollup-plugin-typescript2');
 import { router } from 'cmdrouter';
 import * as Path from 'path';
 import { now } from './utils';
+import * as Terser from 'terser';
 
+
+const DIST_FILE = './test/dist/mvdom.js';
+const DIST_MIN_FILE = './test/dist/mvdom.min.js';
 const defaultOpts: RollupFilesOptions = {
 	ts: true,
 	watch: false,
@@ -17,6 +21,13 @@ router({ build, watch }).route();
 
 async function build() {
 	await _buildSrc();
+	const content = await readFile(DIST_FILE, "utf8");
+	const minContent = Terser.minify(content);
+	await writeFile(DIST_MIN_FILE, minContent.code, "utf8");
+	const file_size = (await stat(DIST_FILE)).size;
+	const file_min_size = (await stat(DIST_MIN_FILE)).size;
+	console.log(`${DIST_FILE} - ${file_size / 1000}K`);
+	console.log(`${DIST_MIN_FILE} - ${file_min_size / 1000}K`);
 	// await _buildTest();
 }
 
@@ -30,10 +41,7 @@ async function _buildSrc(watch = false) {
 		ts: true,
 		watch
 	}
-
-	const distFile = './test/dist/mvdom.js';
-	await rollupFiles(['src/index.ts'], distFile, opts);
-	console.log('done');
+	await rollupFiles(['src/index.ts'], DIST_FILE, opts);
 }
 
 
