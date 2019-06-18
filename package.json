@@ -1,6 +1,6 @@
 {
   "name": "mvdom",
-  "version": "0.8.0-next-1",
+  "version": "0.8.0",
   "description": "DOM Centric MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
   "main": "dist/index.js",
   "repository": {
@@ -33,6 +33,10 @@
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
   },
+  "files": [
+    "src/",
+    "dist/"
+  ],
   "scripts": {
     "prepare": "rm -Rf ./dist && tsc",
     "test": "echo \"Start server here, and test via browser http://localhost:8888/test \" && exit 0",

@@ -1,4 +1,4 @@
-export const version = '0.8.0-next-1';
+export const version = '0.8.0';
 
 export { on, off, trigger, ExtendedDOMEventListener, } from './event';
 
