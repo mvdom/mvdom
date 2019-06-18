@@ -17,9 +17,11 @@ Fully **async view lifecycle**, simple but powerful **View DOM binding/unbinding
 
 <br />
 
-> _Note 1: **No IE11 tax**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Edge)._
+> **No IE11 tax**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Edge).
 
-> _Note 2: Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). _"Keep It Simple"_ is about continuous simplification._
+> Version 0.8.0 source as been upgraded to TypeScript (more accurate typing)
+
+> Version 0.7.0 removed the deprecated `mvdom.register` and simplified the `mvdom.display` to `mvdom.display(instance, refElement, config | appendString)` (doc below updated). _"Keep It Simple"_ is about continuous simplification._
 
 
 ## Hello World

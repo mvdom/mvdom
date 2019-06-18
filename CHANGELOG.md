@@ -2,7 +2,7 @@
 
 - expose `bindDOMEvents` `bindDOMEvent` `DOMListenerBySelector` (useful to build custom web components)
 
-_size: mvdom.js 34.42K | mvdom.min.js 12.03K_
+size: _mvdom.js 34.42K_ | _mvdom.min.js 12.03K_
 
 ### [v0.8.2](https://github.com/mvdom/mvdom/compare/v0.8.1...v0.8.2) June 18th 2019
 
@@ -10,7 +10,7 @@ _size: mvdom.js 34.42K | mvdom.min.js 12.03K_
 - export EventInfo
 - optimize asNodeArray to return immutable empty array
 
-_size: mvdom.js 34K | mvdom.min.js 11.99K_
+size: _mvdom.js 34K_ | _mvdom.min.js 11.99K_
 
 ### [v0.8.1](https://github.com/mvdom/mvdom/compare/v0.8.0...v0.8.1) June 18th 2019
 
@@ -25,12 +25,14 @@ _size: mvdom.js 34K | mvdom.min.js 11.99K_
 - `off(el, nsObj: {ns: string})` Now `off` for namespace must take a NsObject (i.e. `{ns: string}`)
 - deprecated `asArray`
 
-_size: mvdom.js 42K | mvdom.min.js 14K_
+
 
 ### [v0.7.5](https://github.com/mvdom/mvdom/compare/v0.7.4...v0.7.5) May 31st 2019
 
 - Added for CHANGELOG.md
 - fix #46 events - namespaced undbinding (off) does not work for events bound without selector
+
+size: _mvdom.js 42K_ | _mvdom.min.js 14K_
 
 ### [v0.7.4](https://github.com/mvdom/mvdom/compare/v0.7.3...v0.7.4) May 20th 2019
 
