@@ -1,3 +1,8 @@
+### [v0.8.2](https://github.com/mvdom/mvdom/compare/v0.8.1...v0.8.2) June 18th 2019
+
+- made ExtendedEvent wider
+- export EventInfo
+- optimize asNodeArray to return immutable empty array
 
 ### [v0.8.1](https://github.com/mvdom/mvdom/compare/v0.8.0...v0.8.1) June 18th 2019
 
