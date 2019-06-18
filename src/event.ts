@@ -2,7 +2,15 @@ import { asNodeArray, ensureMap, ensureSet, splitAndTrim, val } from './utils';
 
 type EventTargetOrMore = EventTarget | NodeList | [Node];
 
-export type ExtendedEvent = Event & { detail?: any, selectTarget: HTMLElement };
+interface SelectEvent {
+	selectTarget: HTMLElement;
+}
+interface DetailEvent {
+	detail?: any;
+}
+
+/** The current strategy is to merge the common HTML events for convenient binding, and add &object to allow further casting */
+export type ExtendedEvent = Event & SelectEvent & DetailEvent & KeyboardEvent & MouseEvent & TouchEvent & object;
 
 export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
 
@@ -13,7 +21,7 @@ interface NodeExtension {
 	listenerRefsByNs?: Map<string, any>;
 }
 
-interface EventInfo {
+export interface EventInfo {
 	cancelable?: boolean; // default will be true
 	detail?: any;
 }

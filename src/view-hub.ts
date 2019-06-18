@@ -2,7 +2,6 @@ import { View, hook } from './view';
 import { HubSubHandler, Hub, hub as _hub } from './hub';
 import { splitAndTrim } from './utils';
 
-console.log('>>>>')
 // Note: We bound events after the init (see #34)
 hook("didInit", function (view: View) {
 	const opts = { ns: "view_" + view.id, ctx: view };

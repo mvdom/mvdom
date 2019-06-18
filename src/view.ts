@@ -109,19 +109,18 @@ export function display<V extends View>(this: any, viewInstance: ViewController 
 		.then(function () {
 			return doPostDisplay(view as View, config);
 		});
-
 }
 
-export function empty(els: HTMLElement | DocumentFragment | HTMLElement[]): void {
-	asNodeArray(els).forEach(function (el) {
+export function empty(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined): void {
+	for (const el of asNodeArray(els)) {
 		removeEl(el as HTMLElement, true); // true to say childrenOnly
-	});
+	}
 }
 
-export function remove(els: HTMLElement | DocumentFragment | HTMLElement[]) {
-	asNodeArray(els).forEach(function (el) {
+export function remove(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined) {
+	for (const el of asNodeArray(els)) {
 		removeEl(el as HTMLElement); // as HTMLElement for now. 
-	});
+	}
 }
 //#endregion ---------- /Lifycle Public APIs ---------- 
 

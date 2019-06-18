@@ -41,6 +41,7 @@ export function first(el_or_selector: HTMLElementOrFragment | string | null | un
 
 }
 
+// TODO: might need to return readonly HTMLElement[] to be consistent with asNodeArray
 /** Convenient and normalized API for .querySelectorAll. Return Array (and not node list) */
 export function all(el: HTMLElementOrFragment | null | undefined, selector: string): HTMLElement[];
 export function all(selector: string): HTMLElement[];

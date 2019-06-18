@@ -160,7 +160,12 @@ export function asArray(value: any) {
 	return [];
 }
 
-export function asNodeArray(value: EventTarget | NodeList | Node[]): Node[] {
+const emptyArray = Object.freeze([]);
+
+/**
+ * Returns a readonly Node array from EventTarget, NodeList, Node[], or empty readonly array for null and undefined. 
+ */
+export function asNodeArray(value: EventTarget | NodeList | Node[] | null | undefined): readonly Node[] {
 	if (value != null) {
 		if (value instanceof Array) {
 			return value;
@@ -175,8 +180,8 @@ export function asNodeArray(value: EventTarget | NodeList | Node[]): Node[] {
 			return [value as Node]; // Note: here we assume it the evenTarget is a node
 		}
 	}
-	// otherwise, return an empty array
-	return [];
+	// otherwise, return an empty array (readonly, so that we can )
+	return emptyArray;
 }
 // --------- /asType --------- //
 
