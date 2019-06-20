@@ -1,3 +1,9 @@
+### [v0.8.4](https://github.com/mvdom/mvdom/compare/v0.8.3...v0.8.4) June 20th 2019
+
+- expose `bindHubEvents` `unbindHubEvents` `HubBindings` (useful to build custom web components)
+- ! unexpose `bindDOMEvent` (not worthwhile, use bindDOMEvents or off(...))
+
+
 ### [v0.8.3](https://github.com/mvdom/mvdom/compare/v0.8.2...v0.8.3) June 18th 2019
 
 - expose `bindDOMEvents` `bindDOMEvent` `DOMListenerBySelector` (useful to build custom web components)
