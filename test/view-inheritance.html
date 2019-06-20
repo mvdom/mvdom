@@ -17,7 +17,8 @@
 
 		function BaseView() {
 			this.hubEvents = [{
-				"dataHub; Todo; update": function(){
+				"dataHub; Todo; update": () => {
+					console.log('>>>>!!!!')
 					outs.push("dataHub.Todo.update from BaseView");
 				}
 			}];

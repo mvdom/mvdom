@@ -9,6 +9,7 @@ interface DetailEvent {
 	detail?: any;
 }
 
+//#region    ---------- Public Types ---------- 
 /** The current strategy is to merge the common HTML events for convenient binding, and add &object to allow further casting */
 export type ExtendedEvent = Event & SelectEvent & DetailEvent & KeyboardEvent & MouseEvent & TouchEvent & object;
 
@@ -17,18 +18,10 @@ export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
 /** A key/value object representing a list of binding with the ky becase a typeAndSelector string */
 export type DOMListenerBySelector = { [selector: string]: ExtendedDOMEventListener };
 
-type ListenerDic = Map<string, Map<Function, ListenerRef>>;
-
-interface NodeExtension {
-	listenerDic?: ListenerDic;
-	listenerRefsByNs?: Map<string, any>;
-}
-
 export interface EventInfo {
 	cancelable?: boolean; // default will be true
 	detail?: any;
 }
-
 export interface EventOptions {
 	/** The context with which the call back will be called (i.e. 'this' context) */
 	ctx?: object,
@@ -39,6 +32,15 @@ export interface EventOptions {
 	/** AddEventListenerOptions.passive */
 	passive?: boolean,
 }
+//#endregion ---------- /Public Types ---------- 
+
+type ListenerDic = Map<string, Map<Function, ListenerRef>>;
+
+interface NodeExtension {
+	listenerDic?: ListenerDic;
+	listenerRefsByNs?: Map<string, any>;
+}
+
 
 interface OffOptions {
 	ns?: string;
@@ -52,7 +54,7 @@ interface ListenerRef {
 	_listener: (evt: ExtendedEvent) => void, // an eventual wrap of the listener, or just point listener.
 }
 
-// --------- Module APIs --------- //
+//#region    ---------- Public on API ---------- 
 /**
  * Bind one or more evevent type to one or more HTMLElements
  * @param els single or array of the base dom elements to bind the event listener upon.
@@ -187,8 +189,10 @@ export function on(els: EventTargetOrMore | null, types: string, arg1: string | 
 	}); // /types.forEach(function(type){
 
 }
+//#endregion ---------- /Public on API ---------- 
 
 
+//#region    ---------- Public off API ---------- 
 // remove the event binding
 // .off(els); remove all events added via .on
 // .off(els, type); remove all events of type added via .on
@@ -302,7 +306,10 @@ export function off(els: EventTargetOrMore | null, type_or_opts?: string | OffOp
 
 	});
 }
+//#endregion ---------- /Public off API ---------- 
 
+
+//#region    ---------- Public trigger API ---------- 
 const customDefaultProps = {
 	bubbles: true,
 	cancelable: true
@@ -316,9 +323,10 @@ export function trigger(els: EventTargetOrMore | null | undefined, type: string,
 		el.dispatchEvent(evt);
 	});
 }
+//#endregion ---------- /Public trigger API ---------- 
 
 
-//#region    ---------- Convenient Multi Bind ---------- 
+//#region    ---------- Public bindDOMEvents API ---------- 
 /**
  * Bind a list of bindings
  *
@@ -349,7 +357,8 @@ export function bindDOMEvent(el: EventTarget, typeAndSelector: string, fn: Exten
 	on(el, type, selector, fn, opts);
 }
 
-//#endregion ---------- /Convenient Multi Bind ---------- 
+//#endregion ---------- /Public bindDOMEvents API ---------- 
+
 
 function buildTypeSelectorKey(type: string, selector?: string | null): string {
 	return (selector) ? (type + "--" + selector) : type;

@@ -21,6 +21,7 @@ hook("didInit", function (view: View) {
 
 });
 
+// Note: we bind the closestEvents just before the postDisplay because it needs to be in the DOM to find it's parent.
 hook("willPostDisplay", function (view: View) {
 	const opts = { ns: "view_" + view.id, ctx: view };
 
@@ -60,7 +61,7 @@ hook("willRemove", function (view: View) {
 	if (view.closestEvents) {
 		let allClosestBindings = collectClosestBinding(view.closestEvents);
 		// we keep a cache of what has been done to not do it twice
-		let closestSelectorDone: { [selector: string]: HTMLElement | boolean } = {};
+		let closestSelectorDone: { [selector: string]: boolean } = {};
 		// binding: [closest_selector, binding_string, fn]
 		allClosestBindings.forEach(function (binding) {
 			let closestSelector = binding[0];

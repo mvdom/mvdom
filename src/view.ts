@@ -1,5 +1,5 @@
 import { ExtendedDOMEventListener, DOMListenerBySelector } from './event';
-import { HubEventInfo } from './hub';
+import { HubEventInfo, HubListenerByFullSelector, HubListenerByHubNameBySelector, HubBindings } from './hub';
 import { Append, all, frag, first, append } from './dom';
 import { asNodeArray } from './utils';
 
@@ -31,8 +31,9 @@ interface Config {
 }
 
 
-type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
-{ [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
+// type hubBindings = { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } |
+// { [hubName: string]: { [selector: string]: (this: AnyView, data: any, info: HubEventInfo) => void } }
+// type Hub
 
 export interface ViewController {
 	create(config?: Config): string | HTMLElement | DocumentFragment;
@@ -48,7 +49,7 @@ export interface ViewController {
 
 	winEvents?: DOMListenerBySelector | DOMListenerBySelector[];
 
-	hubEvents?: hubBindings | hubBindings[];
+	hubEvents?: HubBindings;
 
 }
 
