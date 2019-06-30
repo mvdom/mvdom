@@ -9,6 +9,19 @@
 
 ## releases
 
+### [v0.8.5](https://github.com/mvdom/mvdom/compare/v0.8.4...v0.8.5) June 30th 2019
+- Expose `SelectTarget` to be combined with other standar events when binding. 
+
+```ts
+@customElement('my-component')
+class MyComponent{
+  @onEvent('click') 
+  clicked(evt: MouseEvent & SelectTarget){ 
+    evt.selectTarget
+  }
+}
+```
+
 ### [v0.8.4](https://github.com/mvdom/mvdom/compare/v0.8.3...v0.8.4) June 20th 2019
 
 - expose `bindHubEvents` `unbindHubEvents` `HubBindings` (useful to build custom web components)
