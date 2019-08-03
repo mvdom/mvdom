@@ -9,10 +9,13 @@
 
 ## releases
 
-### [v0.8.5](https://github.com/mvdom/mvdom/compare/v0.8.4...v0.8.5) June 30th 2019
-- Expose `SelectTarget` to be combined with other standar events when binding. 
+### [v0.8.6](https://github.com/mvdom/mvdom/compare/v0.8.4...v0.8.6) Aug 3rd 2019
+- Expose `SelectTarget` to be combined with other standard events when binding. 
 
 ```ts
+import {SelectTarget} from 'mvdom';
+import { customElement, onEvent} from 'mvdom-xp';
+
 @customElement('my-component')
 class MyComponent{
   @onEvent('click') 
