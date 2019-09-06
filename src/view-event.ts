@@ -1,5 +1,5 @@
 import { closest } from './dom';
-import { bindDOMEvent, bindDOMEvents, ExtendedDOMEventListener, DOMListenerBySelector, off } from './event';
+import { bindDOMEvent, bindDOMEvents, DOMListenerBySelector, ExtendedDOMEventListener, off } from './event';
 import { hook, View } from './view';
 
 

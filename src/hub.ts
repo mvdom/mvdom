@@ -1,4 +1,4 @@
-import { splitAndTrim, ensureArray } from './utils';
+import { ensureArray, splitAndTrim } from './utils';
 
 // TODO: need a common one for DOM and Hub Events (same structure)
 interface NsObject {

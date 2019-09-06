@@ -1,6 +1,5 @@
-import { View, hook } from './view';
-import { HubListener, Hub, hub as _hub, HubListenerByFullSelector, HubListenerByHubNameBySelector, bindHubEvents, unbindHubEvents } from './hub';
-import { splitAndTrim } from './utils';
+import { bindHubEvents, unbindHubEvents } from './hub';
+import { hook, View } from './view';
 
 // Note: We bound events after the init (see #34)
 hook("didInit", function (view: View) {
