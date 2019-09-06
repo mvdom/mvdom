@@ -9,6 +9,10 @@
 
 ## releases
 
+### [v0.8.6](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
+
+- Added deprecation nodice for `display -> displayView` `remove -> removeView` `empty -> emptyView`
+
 ### [v0.8.6](https://github.com/mvdom/mvdom/compare/v0.8.4...v0.8.6) Aug 3rd 2019
 - Expose `SelectTarget` to be combined with other standard events when binding. 
 
