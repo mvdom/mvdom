@@ -1,7 +1,7 @@
 import { all, Append, append, first, frag } from './dom';
 import { DOMListenerBySelector } from './event';
 import { HubBindings } from './hub';
-import { asNodeArray } from './utils';
+import { asNodeArray, printOnce } from './utils';
 
 let viewIdSeq = 0;
 
@@ -79,10 +79,14 @@ const defaultConfig = {
 
 
 //#region    ---------- Lifycle Public APIs ---------- 
+export function display<V extends View>(this: any, viewInstance: ViewController & { [n: string]: any }, refEl: string | HTMLElement, config_or_append?: Config | Append): Promise<typeof viewInstance & View> {
+	printOnce("DEPRECATION NOTICE: Please rename 'display' to 'displayView'. 'display' function is being deprecated and renamed 'displayView' in the future 'mvdom-compat-view' compatibility library");
+	return displayView.call(this, viewInstance, refEl, config_or_append);
+}
 /** Append by viewInstance
  *  @param viewInstance: The view instance
  */
-export function display<V extends View>(this: any, viewInstance: ViewController & { [n: string]: any }, refEl: string | HTMLElement, config_or_append?: Config | Append): Promise<typeof viewInstance & View> {
+export function displayView<V extends View>(this: any, viewInstance: ViewController & { [n: string]: any }, refEl: string | HTMLElement, config_or_append?: Config | Append): Promise<typeof viewInstance & View> {
 	const self = this; // FIXME: This is because of the empty cyclic reference
 
 	const view = viewInstance;
@@ -113,12 +117,22 @@ export function display<V extends View>(this: any, viewInstance: ViewController 
 }
 
 export function empty(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined): void {
+	printOnce("DEPRECATION NOTICE: Please rename 'empty' to 'emptyView'. 'empty' function is being deprecated and renamed 'emptyView' in the future 'mvdom-compat-view' compatibility library");
+	emptyView(els);
+}
+
+export function emptyView(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined): void {
 	for (const el of asNodeArray(els)) {
 		removeEl(el as HTMLElement, true); // true to say childrenOnly
 	}
 }
 
 export function remove(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined) {
+	printOnce("DEPRECATION NOTICE: Please rename 'remove' to 'removeView'. 'remove' function is being deprecated and renamed 'removeView' in the future 'mvdom-compat-view' compatibility library");
+	removeView(els);
+}
+
+export function removeView(els: HTMLElement | DocumentFragment | HTMLElement[] | null | undefined) {
 	for (const el of asNodeArray(els)) {
 		removeEl(el as HTMLElement); // as HTMLElement for now. 
 	}
@@ -278,7 +292,7 @@ function doRemove(view: View) {
 		view.destroy({ parentEl: parentEl });
 	}
 
-	performHook("didRemove", view);
+	//performHook("didRemove", view);
 }
 
 

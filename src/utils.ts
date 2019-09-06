@@ -204,7 +204,7 @@ function trim(str: string): string {
 const _printOnceDone: { [msg: string]: boolean } = {};
 export function printOnce(msg: any) {
 	if (!_printOnceDone[msg]) {
-		console.log.call(console.log, arguments);
+		console.log(msg);
 		_printOnceDone[msg] = true;
 	}
 }
