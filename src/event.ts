@@ -2,28 +2,24 @@ import { asNodeArray, ensureMap, ensureSet, splitAndTrim } from './utils';
 
 type EventTargetOrMore = EventTarget | NodeList | [Node];
 
-export interface SelectTarget {
-	selectTarget: HTMLElement;
-}
 
-interface DetailEvent {
-	detail?: any;
+export interface OnEvent<T = any> {
+	selectTarget: HTMLElement;
+	detail?: T;
 }
 
 //#region    ---------- Public Types ---------- 
 /** The current strategy is to merge the common HTML events for convenient binding, and add &object to allow further casting */
-export type ExtendedEvent = Event & SelectTarget & DetailEvent & KeyboardEvent & MouseEvent & TouchEvent & object;
+//export type ExtendedEvent = Event & SelectTarget & DetailEvent & KeyboardEvent & MouseEvent & TouchEvent & object;
+// type ExtendedEvent = Event;
 
-export type ExtendedDOMEventListener = (evt: ExtendedEvent) => void;
+export type OnEventListener = (evt: Event & OnEvent) => void;
 
 /** A key/value object representing a list of binding with the ky becase a typeAndSelector string */
-export type DOMListenerBySelector = { [selector: string]: ExtendedDOMEventListener };
+export type OnListenerBySelector = { [selector: string]: OnEventListener };
 
-export interface EventInfo {
-	cancelable?: boolean; // default will be true
-	detail?: any;
-}
-export interface EventOptions {
+
+export interface OnEventOptions {
 	/** The context with which the call back will be called (i.e. 'this' context) */
 	ctx?: object,
 	/** The namespace used to bind this event, which will allow to remove all of the binding done with this namespace with .off */
@@ -49,10 +45,14 @@ interface OffOptions {
 
 interface ListenerRef {
 	type: string,
-	listener: (evt: ExtendedEvent) => void, // the listener as passed by the user
+	listener: OnEventListener, // the listener as passed by the user
 	selector?: string;
 	ns?: string,
-	_listener: (evt: ExtendedEvent) => void, // an eventual wrap of the listener, or just point listener.
+	_listener: OnEventListener, // an eventual wrap of the listener, or just point listener.
+}
+
+export function addOnEvents(target: OnListenerBySelector | undefined, source: OnListenerBySelector): OnListenerBySelector {
+	return Object.assign(target || {}, source);
 }
 
 //#region    ---------- Public on API ---------- 
@@ -63,7 +63,7 @@ interface ListenerRef {
  * @param listener function which will get the "event" as first parameter
  * @param opts (optional) {capture, passive, ctx, ns} optional namespace (ns) and ctx (i.e. this)
  */
-export function on(els: EventTargetOrMore | null, types: string, listener: ExtendedDOMEventListener, opts?: EventOptions): void;
+export function on(els: EventTargetOrMore | null, types: string, listener: OnEventListener, opts?: OnEventOptions): void;
 /**
  * Bind one or more evevent type to one or more HTMLElements matching a css selector
  * @param els single or array of the base dom elements to bind the event listener upon.
@@ -72,25 +72,25 @@ export function on(els: EventTargetOrMore | null, types: string, listener: Exten
  * @param listener function which will get the "event" as first parameter
  * @param opts (optional) {capture, passive, ctx, ns} optional namespace (ns) and ctx (i.e. this)
  */
-export function on(els: EventTargetOrMore | null, types: string, selector: string | null, listener: ExtendedDOMEventListener, opts?: EventOptions): void;
+export function on(els: EventTargetOrMore | null, types: string, selector: string | null, listener: OnEventListener, opts?: OnEventOptions): void;
 
-export function on(els: EventTargetOrMore | null, types: string, arg1: string | null | ExtendedDOMEventListener, arg2?: ExtendedDOMEventListener | EventOptions, arg3?: EventOptions): void {
-	let opts: EventOptions | undefined;
-	let listener: ExtendedDOMEventListener;
+export function on(els: EventTargetOrMore | null, types: string, arg1: string | null | OnEventListener, arg2?: OnEventListener | OnEventOptions, arg3?: OnEventOptions): void {
+	let opts: OnEventOptions | undefined;
+	let listener: OnEventListener;
 	let selector: string | undefined | null;
 
 	// arg1 is a function, then no selector, arg1 is the listener, and arg2 is the potential eventOptions
 	if (arg1 instanceof Function) {
 		listener = arg1;
-		opts = arg2 as EventOptions | undefined;
+		opts = arg2 as OnEventOptions | undefined;
 	} else {
 		selector = arg1 as string | null;
-		listener = arg2 as ExtendedDOMEventListener;
-		opts = arg3 as EventOptions | undefined;
+		listener = arg2 as OnEventListener;
+		opts = arg3 as OnEventOptions | undefined;
 	}
 
 	// AddEventListenerOptions	
-	let eventOptions: EventOptions;
+	let eventOptions: OnEventOptions;
 	if (opts && (opts.passive != null || opts.capture != null)) {
 		eventOptions = {};
 		if (opts.passive != null) {
@@ -203,10 +203,10 @@ export function on(els: EventTargetOrMore | null, types: string, arg1: string | 
 export function off(els: EventTargetOrMore | null): void;
 export function off(els: EventTargetOrMore | null, type: string): void;
 export function off(els: EventTargetOrMore | null, type: string, selector: string): void;
-export function off(els: EventTargetOrMore | null, type: string, listener?: ExtendedDOMEventListener): void;
-export function off(els: EventTargetOrMore | null, type: string, selector: string, listener?: ExtendedDOMEventListener): void;
+export function off(els: EventTargetOrMore | null, type: string, listener?: OnEventListener): void;
+export function off(els: EventTargetOrMore | null, type: string, selector: string, listener?: OnEventListener): void;
 export function off(els: EventTargetOrMore | null, opts?: OffOptions): void;
-export function off(els: EventTargetOrMore | null, type_or_opts?: string | OffOptions, selector_or_listener?: string | ExtendedDOMEventListener, maybe_listener?: ExtendedDOMEventListener) {
+export function off(els: EventTargetOrMore | null, type_or_opts?: string | OffOptions, selector_or_listener?: string | OnEventListener, maybe_listener?: OnEventListener) {
 	if (els == null) {
 		return;
 	}
@@ -216,13 +216,13 @@ export function off(els: EventTargetOrMore | null, type_or_opts?: string | OffOp
 	const type = (opts === null) ? type_or_opts as string : null;
 
 	let selector: string | null = null;
-	let listener: ExtendedDOMEventListener | undefined;
+	let listener: OnEventListener | undefined;
 
 	const tof = typeof selector_or_listener;
 
 	if (tof === 'function') {
 		selector = null;
-		listener = selector_or_listener as ExtendedDOMEventListener;
+		listener = selector_or_listener as OnEventListener;
 	}
 	else if (tof === 'string') {
 		selector = selector_or_listener as string;
@@ -316,11 +316,11 @@ const customDefaultProps = {
 	cancelable: true
 };
 
-export function trigger(els: EventTargetOrMore | null | undefined, type: string, info?: EventInfo): void {
+export function trigger(els: EventTargetOrMore | null | undefined, type: string, evtInit?: CustomEventInit): void {
 	if (els == null) { return; } // for now make it null/undefined proof
 
 	asNodeArray(els).forEach(function (el) {
-		const evt = new CustomEvent(type, Object.assign({}, customDefaultProps, { selectTarget: el }, info));
+		const evt = new CustomEvent(type, Object.assign({}, customDefaultProps, { selectTarget: el }, evtInit));
 		el.dispatchEvent(evt);
 	});
 }
@@ -333,11 +333,11 @@ export function trigger(els: EventTargetOrMore | null | undefined, type: string,
  *
  * @param typeAndSelector e.g., `click` or `click; button.add`
  */
-export function bindDOMEvents(el: EventTarget, eventDics: DOMListenerBySelector | DOMListenerBySelector[], opts: EventOptions) {
+export function bindOnEvents(el: EventTarget, eventDics: OnListenerBySelector | OnListenerBySelector[], opts: OnEventOptions) {
 	eventDics = (eventDics instanceof Array) ? eventDics : [eventDics]; // make we have an array of eventDic
 	for (const eventDic of eventDics) {
 		for (const selector in eventDic) {
-			bindDOMEvent(el, selector, eventDic[selector], opts);
+			bindOnEvent(el, selector, eventDic[selector], opts);
 		}
 	}
 }
@@ -347,7 +347,7 @@ export function bindDOMEvents(el: EventTarget, eventDics: DOMListenerBySelector 
  * 
  * @param typeAndSelector e.g., `click` or `click; button.add`
  */
-export function bindDOMEvent(el: EventTarget, typeAndSelector: string, fn: ExtendedDOMEventListener, opts: EventOptions) {
+export function bindOnEvent(el: EventTarget, typeAndSelector: string, fn: OnEventListener, opts: OnEventOptions) {
 	let selectorSplitted = typeAndSelector.trim().split(";"); // e.g., ["click", " button.add"]
 	let type = selectorSplitted[0].trim(); // e.g., "click"
 	let selector = null; // e.g., "button.add"

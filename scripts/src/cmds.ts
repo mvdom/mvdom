@@ -13,14 +13,15 @@ const DIST_FILE = './test/dist/mvdom.js';
 const DIST_MIN_FILE = './test/dist/mvdom.min.js';
 const defaultOpts: RollupFilesOptions = {
 	ts: true,
-	watch: false,
-	tsconfig: './tsconfig-test.json'
+	watch: false
 };
 
 router({ build, watch }).route();
 
 async function build() {
 	await _buildSrc();
+
+	// print the file size
 	const content = await readFile(DIST_FILE, "utf8");
 	const minContent = Terser.minify(content);
 	await writeFile(DIST_MIN_FILE, minContent.code, "utf8");
@@ -33,7 +34,7 @@ async function build() {
 
 async function watch() {
 	await _buildSrc(true);
-	// await _buildTest(true);
+	await _buildTest(true);
 }
 
 async function _buildSrc(watch = false) {

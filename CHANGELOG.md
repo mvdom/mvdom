@@ -1,15 +1,17 @@
-## Roadmap
 
-- **v0.9.x**, winter 2019
-  - Move to native web component model from the current custom view model (see [cloud-starter Web UI Architecture &amp; Patterns](https://github.com/BriteSnow/cloud-starter/blob/master/doc/ui.md)).
-  - Add the `mvdom-xp` [BaseHTMLElement](https://github.com/mvdom/mvdom-xp/blob/master/src/c-base.ts) base web component class to `mvdom`.
-  - Move view related types and methods, e.g., `display(...)` `remove(...)` `empty(...)` and `View` types to `mvdom-legacy` which can be imported on top of `mvdom` 0.9.x for deprecated view methods and types.
-  - Might move the `mvdom-xp` typescript decorators `@onEvent, @onDocEvent, @onWinEvent, @onHub` to `mvdom` (or might leave them on `mvdom-xp` as typescript decorators won't be standard, but the standard might take too long)
+## NEXT release (0.9.0-NEXT-..)
+
+- Full deprecation of the View APIs, to align with browsers **Native Web Component** model.
+- Add the `BaseHTMLElement` that extends the DOM native `HTMLElement` adding
+  - Simple lifecycle methods (e.g., `init` `preDisplay` `postDisplay`)
+  - Simple event (DOM and Hub) bindings (e.g., `@onEvent` `@onDoc` `@onWin` `@onHub`)
+- Move view related types and methods, e.g., `displayView(...)` `removeView(...)` `emptyView(...)` and `View` types to `mvdom-compat-view` which include the latest mvdom 0.9.x plus those legacy methods and types.
+- Added new DOM convenience APIS beyond 0.8.x first, all, ..., such as `attr(...)` and `style(...)` APIs.
 
 
-## releases
+## Stable Releases (0.8.x)
 
-### [v0.8.6](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
+### [v0.8.7](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
 
 - Added deprecation nodice for `display -> displayView` `remove -> removeView` `empty -> emptyView`
 

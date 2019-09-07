@@ -24,7 +24,7 @@ export function isEmpty(v: any) {
 }
 
 // TODO: need to document
-export function val(rootObj: any, pathToValue: any, value?: any): any {
+export function val(rootObj: any, pathToValue: null | undefined | string | string[], value?: any): any {
 	const setMode = (typeof value !== "undefined");
 
 	if (!rootObj) {

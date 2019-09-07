@@ -12,7 +12,7 @@ interface HubOptions {
 
 //#region    ---------- Public Types ---------- 
 
-export type HubListener = (data: any, info: any) => void;
+export type HubListener = (data: any, info: HubEventInfo) => void;
 export type HubListenerByFullSelector = { [selector: string]: HubListener };
 export type HubListenerByHubNameBySelector = { [hubName: string]: { [selector: string]: HubListener } };
 
@@ -38,6 +38,14 @@ export interface Hub {
 //#endregion ---------- /Public Types ---------- 
 
 //#region    ---------- Public bindHubEvents ---------- 
+
+export function addHubEvents(target: HubBindings | undefined, source: HubBindings) {
+	const t: HubBindings = (target == null) ? [] : (target instanceof Array) ? target : [target];
+	(source instanceof Array) ? t.push(...source) : t.push(source);
+	return t;
+}
+
+
 export function bindHubEvents(bindings: HubBindings, opts?: HubOptions) {
 
 	const bindingList = (bindings instanceof Array) ? bindings : [bindings];

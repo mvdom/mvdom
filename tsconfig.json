@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
 		// For browser client, we target edge and above (use es2016 for [].includes for example)
-		"target": "es2016",
+		"target": "es2018",
 
-		// For now we resolve to commonjs for maximum compatiblity (with TS and pure JS/node)
-		"module": "commonjs",
+		// Resolve to es module for rollup
+		"module": "es2015",
 
 		// This is important to support 3rd party modules that are still in a node.js/commonjs way
 		"moduleResolution": "node", 
@@ -25,7 +25,9 @@
 		"outDir": "./dist/", /* Redirect output structure to the directory. */
 
 		// allow to import moment like: import moment from "moment"
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+
+		"experimentalDecorators": true
 	},
 
 	// We want more control about which code we will compile and exclude
