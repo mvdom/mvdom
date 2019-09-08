@@ -5,7 +5,7 @@
 
 - < 13kb minimized (**< 5kb gzipped**) and **ZERO dependency**!
 
-- **The DOM IS the Framework!** (.i.e., `native customElement`)
+- **The DOM IS the Framework!** (i.e., `native customElement`)
 
 - **Simple Scale Better**
 
@@ -22,15 +22,14 @@
 > **mvdom 0.9.x** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). 
 
 
-
 _**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
 
 
 ## Hello World
 
 ```sh
-# Soon to be out of beta
-npm install mvdom@0.9.0-beta.3
+# should be > 0.9.0
+npm install mvdom
 ```
 
 `BaseHTMLElement` is a simple class that extends the browser native `HTMLElement` and provides expressive binding mechanism and lifecycle methods. 
@@ -154,7 +153,7 @@ class FullComponent extends BaseHTMLElement{
 
 ## Characteristics
 
-- **Zero dependency**, micro libary (< 15kb minimized, < 6kb gzip).
+- **Zero dependency**, micro libary (< 13kb minimized, < 5kb gzip).
 - Template agnostic (string templating friendly, e.g., JS Template Literals, Handlebars, LitHTML)
 - Minimalistic BaseHTMLElement which extends the browser native `HTMLElement`
 - Dead simple but powerfull DOM Navigation and Manimuplation wrapper APIs (e.g. on, first, all, style, attr, ...)
@@ -171,7 +170,7 @@ class FullComponent extends BaseHTMLElement{
 ## Installation
 
 ```
-npm install mvdom@0.9.0-beta.3
+npm install mvdom
 ```
 
 Typical usage in source file: 
@@ -379,7 +378,7 @@ Consequently, mvdom 0.9.x deprecates the View APIs in favor of native Browsers' 
 In short, the 0.8.x to 0.9.x
 
 - The MVDOM "View" model and APIs (.e.g, `display` `remove` ...) known in version <= 0.8.x are being completely deprecated in favor of browser custom elements. 
-- The future library `mvdom-compat-view` will include mvdom > 0.9.x as well as expose those legacy APIs and types for applications needed to use the latest mvdom > 0.9.x while still have the legacy view apis. 
+- The future library `mvdom@0.9.x-compat-view.1` will include mvdom > 0.9.x as well as expose those legacy APIs and types for applications needed to use the latest mvdom > 0.9.x while still have the legacy view apis. 
 - `mvdom`  also rename/remove the following **types** for consistency reasons (they will still be available via `mvdom-compat-view`)
   - **OnEvent**: Use the new `OnEvent` type now as `SelectTarget` `ExtendedEvent` has been removed.
   - **OnEventOptions**: `EventOptions` is renamed to `OnEventOptions` to be consistent with native binding event type convention. 

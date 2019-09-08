@@ -25,11 +25,11 @@
     "cmdrouter": "^0.3.1",
     "exorcist": "^1.0.1",
     "fs-extra-plus": "^0.5.9",
-    "rollup": "^1.20.3",
+    "rollup": "^1.21.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript2": "^0.24.0",
-    "terser": "^4.2.1",
+    "terser": "^4.3.0",
     "ts-node": "^8.3.0",
     "typescript": "^3.6.2"
   },

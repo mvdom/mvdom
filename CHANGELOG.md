@@ -1,15 +1,19 @@
 
-## NEXT release (0.9.0-beta.x)
+## Releases 0.9.x (updated with native custom element model)
+
+0.9.x is a major refactorization on the "view apis" side as mvdom now fully embraces the native DOM Web Component model (i.e., `customElement`). Most of the other APIs, such as `first`, `all`, `on`, `hub`, remained unchanged and 0.9.x even as some new convenient DOM manipulation light APIs such as `attr()` and `style()`
+
+### [v0.9.0](https://github.com/mvdom/mvdom/compare/v0.8.7...v0.9.0) Sept 8th 2019
 
 - Full deprecation of the View APIs, to align with browsers **Native Web Component** model.
 - Add the `BaseHTMLElement` that extends the DOM native `HTMLElement` adding
   - Simple lifecycle methods (e.g., `init` `preDisplay` `postDisplay`)
   - Simple event (DOM and Hub) bindings (e.g., `@onEvent` `@onDoc` `@onWin` `@onHub`)
-- Move view related types and methods, e.g., `displayView(...)` `removeView(...)` `emptyView(...)` and `View` types to `mvdom-compat-view` which include the latest mvdom 0.9.x plus those legacy methods and types.
+- Removed 0.8.x View apis (e.g., `remove/removeView` `empty/emptyView`, `display/displayView` and other types) (see [migrating from 0.8.x to 0.9.x](https://github.com/mvdom/mvdom#migration-from-08x-to-09x))
 - Added new DOM convenience APIS beyond 0.8.x first, all, ..., such as `attr(...)` and `style(...)` APIs.
 
 
-## Releases (0.8.x)
+## Releases 0.8.x branch (legacy View Apis)
 
 ### [v0.8.7](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
 
