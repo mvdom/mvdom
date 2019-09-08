@@ -23,7 +23,7 @@
 
 
 
-_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#Migration-from-0.8.x-to-0.9.x))._
+_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
 
 
 ## Hello World
@@ -381,6 +381,7 @@ In short, the 0.8.x to 0.9.x
 - The MVDOM "View" model and APIs (.e.g, `display` `remove` ...) known in version <= 0.8.x are being completely deprecated in favor of browser custom elements. 
 - The future library `mvdom-compat-view` will include mvdom > 0.9.x as well as expose those legacy APIs and types for applications needed to use the latest mvdom > 0.9.x while still have the legacy view apis. 
 - `mvdom`  also rename/remove the following **types** for consistency reasons (they will still be available via `mvdom-compat-view`)
+  - **OnEvent**: Use the new `OnEvent` type now as `SelectTarget` `ExtendedEvent` has been removed.
   - **OnEventOptions**: `EventOptions` is renamed to `OnEventOptions` to be consistent with native binding event type convention. 
   - **CustomEventInit**: Use the lib.dom.d.ts `CustomEventInit` rather than the removed `EventInfo` type. 
   - **OnEventListener**: `ExtendedDOMEventListener` is renamed to `OnEventListener`, and simalarely `DOMListenerBySelector` got renamed to `OnListenerBySelector`
