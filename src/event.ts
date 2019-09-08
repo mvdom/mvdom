@@ -3,7 +3,7 @@ import { asNodeArray, ensureMap, ensureSet, splitAndTrim } from './utils';
 type EventTargetOrMore = EventTarget | NodeList | [Node];
 
 
-export interface OnEvent<T = any> {
+export interface OnEvent<T = any> extends Event {
 	selectTarget: HTMLElement;
 	detail?: T;
 }
