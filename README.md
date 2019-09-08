@@ -26,9 +26,12 @@ Fully based on **Native Web Component** (customElements) with a lightweight but 
 _**IMPORTANT** Master is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#Migration-from-0.8.x-to-0.9.x)).
 
 
-
-
 ## Hello World
+
+```sh
+# Soon to be out of beta
+npm install mvdom@0.9.0-beta.2
+```
 
 `BaseHTMLElement` is a simple class that extends the browser native `HTMLElement` and provides expressive binding mechanism and lifecycle methods. 
 
@@ -168,7 +171,7 @@ class FullComponent extends BaseHTMLElement{
 ## Installation
 
 ```
-npm install mvdom
+npm install mvdom@0.9.0-beta.2
 ```
 
 Typical usage in source file: 
@@ -176,19 +179,6 @@ Typical usage in source file:
 ```js
 import {first, all, ...} from 'mvdom'
 ```
-
-or if still in common js
-
-```js
-// common js way
-const mvdom = require("mvdom");
-
-```
-
-> **Note:** While mvdom is written in pure js, it does provide typescript types. See Typescript [types/index.d.ts](types/index.d.ts) declaration file. 
-
-
-See [building](#building) to build the distribution manually. 
 
 ## DOM Navigation & Manipulation APIs Overview
 

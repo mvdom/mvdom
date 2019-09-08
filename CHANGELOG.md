@@ -1,5 +1,5 @@
 
-## NEXT release (0.9.0-NEXT-..)
+## NEXT release (0.9.0-beta.x)
 
 - Full deprecation of the View APIs, to align with browsers **Native Web Component** model.
 - Add the `BaseHTMLElement` that extends the DOM native `HTMLElement` adding
@@ -9,7 +9,7 @@
 - Added new DOM convenience APIS beyond 0.8.x first, all, ..., such as `attr(...)` and `style(...)` APIs.
 
 
-## Stable Releases (0.8.x)
+## Releases (0.8.x)
 
 ### [v0.8.7](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
 
