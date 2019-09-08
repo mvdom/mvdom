@@ -115,7 +115,7 @@ export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLEleme
 		if (position === "empty") {
 			// TODO: CIRCULAR dependency. Right now, we do need to call the view.empty to do the correct empty, but view also use dom.js
 			//       This works right now as all the modules get merged into the same object, but would be good to find a more elegant solution
-			this.empty(refEl);
+			this.emptyView(refEl);
 		}
 		parentEl!.appendChild(newEl);
 	}

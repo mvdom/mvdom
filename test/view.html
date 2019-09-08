@@ -79,18 +79,15 @@
 			postDisplay: function () {
 				var containerEl = d.first(this.el, ".sub-views");
 				// by constructor
-				return d.display(new SubView("A"), containerEl).then(function (viewA) {
+				return d.displayView(new SubView("A"), containerEl).then(function (viewA) {
 					// by name
-					return d.display(new SubView("B"), containerEl, { append: "first" }).then(function (viewB) {
+					return d.displayView(new SubView("B"), containerEl, { append: "first" }).then(function (viewB) {
 						// bind new
-						return d.display(new SubView("C"), viewA.el, "before").then(function (viewC) {
+						return d.displayView(new SubView("C"), viewA.el, "before").then(function (viewC) {
 							outs.push("MainView.postDisplay" );
 						});
 					});
 				});
-
-
-
 			},
 
 			destroy: function (info) {
@@ -136,7 +133,7 @@
 			},
 
 			testSimpleMainViewAndHook: function () {
-				return d.display(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
+				return d.displayView(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
 					assertEquals(["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay"], outs);
 				});
 			},
@@ -164,7 +161,7 @@
 			},
 
 			testAddMainView: function () {
-				return d.display(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
+				return d.displayView(Object.assign({}, MainViewArch), d.first(".test-content")).then(function (view) {
 					d.trigger(document, "CUSTOM");
 					var expected = ["hook.willCreate", "MainView.create", "hook.willCreate", "hook.willCreate", "hook.willCreate", "MainView.postDisplay", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", "CUSTOM MainView 4", "CUSTOM SubView 5", "CUSTOM SubView 6", "CUSTOM SubView 7"];
 					assertEquals(expected, outs);
@@ -181,7 +178,7 @@
 			},
 
 			testEmptySecondMainView: function () {
-				d.empty(d.all(".d-view.MainView")[1]);
+				d.emptyView(d.all(".d-view.MainView")[1]);
 				d.trigger(document, "CUSTOM");
 				assertEquals(["SubView.destroy", "SubView.destroy", "SubView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3", "CUSTOM MainView 4"], outs);
 			},
@@ -189,7 +186,7 @@
 			testRemoveSecondMainView: function () {
 
 				// we remove the second view (view1), and trigger a custom event
-				d.remove(d.all(".d-view.MainView")[1]);
+				d.removeView(d.all(".d-view.MainView")[1]);
 				d.trigger(document, "CUSTOM");
 				// here we should have only the view left that added the text in the outs
 				assertEquals(["MainView.destroy", "CUSTOM MainView 0", "CUSTOM SubView 1", "CUSTOM SubView 2", "CUSTOM SubView 3"], outs);
@@ -200,7 +197,7 @@
 				var testContentEl = d.first(".test-content");
 				var containerEl = d.first(d.frag("<div class='rect'>some content</div>"));
 				d.append(testContentEl, containerEl);
-				return d.display(new SubView('test'), containerEl, "empty").then(function (view) {
+				return d.displayView(new SubView('test'), containerEl, "empty").then(function (view) {
 					var txt = containerEl.innerText.replace(/\s/g, "_");
 					assertEquals("SubView-test", txt);
 				});
@@ -210,7 +207,7 @@
 			testDisplayViewByConstructor: function(){
 				var testContentEl = d.first(".test-content");
 
-				return d.display(new ExtraView(), testContentEl, {name: "01"}).then(function(view){
+				return d.displayView(new ExtraView(), testContentEl, {name: "01"}).then(function(view){
 					assertEquals("ExtraView", view.name);
 					assertEquals("ExtraView-01", view.el.innerText);
 				});
@@ -219,7 +216,7 @@
 			testClosestEvents: function(){
 				var testContentEl = d.first(".test-content");
 
-				return d.display(new ClassView(), testContentEl).then(function(view){
+				return d.displayView(new ClassView(), testContentEl).then(function(view){
 					assertEquals("ClassView", view.name);
 
 					outs = []; 

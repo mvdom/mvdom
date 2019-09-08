@@ -9,7 +9,7 @@
 
 ## releases
 
-### [v0.8.6](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.7) Sept 6th 2019
+### [v0.8.8](https://github.com/mvdom/mvdom/compare/v0.8.6...v0.8.8) Sept 6th 2019
 
 - Added deprecation nodice for `display -> displayView` `remove -> removeView` `empty -> emptyView`
 

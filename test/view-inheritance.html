@@ -18,7 +18,6 @@
 		function BaseView() {
 			this.hubEvents = [{
 				"dataHub; Todo; update": () => {
-					console.log('>>>>!!!!')
 					outs.push("dataHub.Todo.update from BaseView");
 				}
 			}];
@@ -75,7 +74,7 @@
 			testSimpleEventsAndDocEvents: function () {
 				var testContentEl = d.first(".test-content");
 
-				return d.display(new SubView('01'), testContentEl).then(function (view) {
+				return d.displayView(new SubView('01'), testContentEl).then(function (view) {
 					view.el.click();
 					assertEquals(["click BaseView handler - Object: SubView", 
 												"click SubView handler - Object: SubView",
@@ -94,13 +93,13 @@
 
 			// this assume that the view has been create
 			testViewRemove: function () {
-				d.remove(d.first(".SubView"));
+				d.removeView(d.first(".SubView"));
 				d.hub("dataHub").pub("Todo", "update", true);
 				assertEquals([], outs)
 			}, 
 
 			testViewAddByInstance: function () {
-				return d.display(new SubView('02'), ".test-content").then(function (view) {
+				return d.displayView(new SubView('02'), ".test-content").then(function (view) {
 					view.el.click();
 					assertEquals(["click BaseView handler - Object: SubView", 
 												"click SubView handler - Object: SubView",

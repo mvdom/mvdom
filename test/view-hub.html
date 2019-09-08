@@ -60,7 +60,7 @@
 
 		var tests = {
 			_init: function(){
-				return d.display(new MainView(),d.first(".test-content")).then(function(){
+				return d.displayView(new MainView(),d.first(".test-content")).then(function(){
 					
 				});				
 			},
@@ -86,7 +86,7 @@
 
 			testRemoveView: function(){
 				// remove the main view
-				d.remove(d.first(".MainView"));
+				d.removeView(d.first(".MainView"));
 				// do the publish the events
 				d.hub("dsHub").pub("Task", "pub(Task)");
 				d.hub("dsHub").pub("Task", "create", "pub(Task, create)");
