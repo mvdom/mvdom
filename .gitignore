@@ -17,10 +17,3 @@ dist/
 
 # vscode
 .vscode
-
-# remove tsc gen file
-test/test-types.js
-
-# Ignore Sublime Text files
-*.sublime-project
-*.sublime-workspace
