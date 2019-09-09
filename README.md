@@ -165,6 +165,7 @@ class MyComponent extends BaseHTMLElement{
   preDisplay(){
     console.log('-- preDisplay', this.data);
   }
+
   postDisplay(){
     console.log('-- postDisplay', this.data);
   }  
@@ -198,7 +199,7 @@ requireAnimationFrame(function(){
 
 ### Best Practices
 
-Here are three typical rendering scenerios.
+Here are three typical rendering scenarios.
 
 #### 1) Attribute / Content Rendering
 
@@ -236,7 +237,8 @@ class WhosHappy extends BaseHTMLElement{
   }
 }
 
-const el = document.createElement('ami-happy');
+// create element and add it to the DOM
+const el = document.createElement('whos-happy');
 const whosHappyEl = document.body.appendChild(el) as WhosHappy;
 
 whosHappyEl.data = {happy: ['John', 'Jen'], not: ['Mike']}; // <-- still before first paint, so NO flicker
