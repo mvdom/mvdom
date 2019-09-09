@@ -140,10 +140,9 @@ class FullComponent extends BaseHTMLElement{
 
 To fully understand the power of `BaseHTMLElement` it is important to understand the lifecycle of the DOM customElement elements. 
 
-In very short, the customElement class get instantiated for its registered class by the DOM ONLY when the element is added to the main `document`. Before that point, a , the DOM element is just a generic DOM Element. 
+In very short, the customElement class get instantiated for its registered tag name by the DOM ONLY when the element is added to the main `document`. Before that point, the DOM element is just a generic DOM Element. 
 
-`BaseHTMLElement` provides some convenient methods that enable to take full advantage of this lifecycle. 
-
+`BaseHTMLElement` provides some convenient methods that enable to take full advantage of this lifecycle. Here is a simple example showing this lifecyle.
 
 
 ```ts
@@ -199,9 +198,11 @@ requireAnimationFrame(function(){
 
 ### Best Practices
 
-Therefore, here are some best practices: 
+Here are three typical rendering scenerios.
 
-- If the component can infer its content soly from it's description (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
+#### 1) Attribute / Content Rendering
+
+If the component can infer its content soly from it's description (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
 
 ```ts
 @customElement('ami-happy') 
@@ -218,7 +219,9 @@ document.body.appendChild(el);
 // -- display --> <ami-happy>I am <strong>NOT</strong> happy</ami-happy>
 ```
 
-- If the component needs more complex data structure to render itself, but those data does not require any async, then, append the element to the document, and set the data, use `preDisplay()`.
+#### 2) Data Initialization Rendering
+
+If the component needs more complex data structure to render itself, but those data does not require any async, adding the component to the document to instanciate the component, and then, calling the data initializers will allow the `preDisplay()` to render those data before first paint.
 
 ```ts
 @customElement('whos-happy') 
@@ -235,28 +238,32 @@ class WhosHappy extends BaseHTMLElement{
 
 const el = document.createElement('ami-happy');
 const whosHappyEl = document.body.appendChild(el) as WhosHappy;
-whosHappyEl.data = {happy: ['John', 'Jen'], not: ['Mike']}; // <-- still before first paint, so NOT flicker
+
+whosHappyEl.data = {happy: ['John', 'Jen'], not: ['Mike']}; // <-- still before first paint, so NO flicker
 
 // -- display --> <whos-happy>Happy people: John, Jen <br /> Not happy: Mike</whos-happy>
 
 // Note: If we had done it at the init(), this.data would have been undefined.
 ```
 
-- If the components needs to get data asynchronously, then, `postDisplay()` is a good place, and usually set the structure of the component in `init()`.
+#### 3) Async Rendering
+
+When a component needs to get data asynchronously, then, `async postDisplay()` method is a good place to put this logic, and usually the component HTML structure get set at the `init()` method.
 
 ```ts
 @customElement('happy-message') 
 class HappyMessage extends BaseHTMLElement{
   init(){
     super.init();
-    this.innerHTML = '<h1></h1><p></p>'; 
-    // Tips: Layout this structure appropriately with css grid/flex-box to minimize layout reshuffling.
+    this.innerHTML = '<c-ico>happy-face</c-ico><h1></h1><p></p>'; 
+    // Tips: Layout this structure appropriately with css grid/flex-box to minimize layout reshuffling on data update.
   }
 
   async postDisplay(){
     const msg: {title: string, text: string} = await httpGet('/happy-message-of-the-day');
     first(this,'h1')!.textContent = msg.title;
     first(this,'p')!.textContent = msg.text;
+    // Note: Can use fancier templating, such as handlebars, lit-html, ...
   }
 }
 
@@ -266,39 +273,32 @@ const el = document.createElement('happy-message');
 // for first paint, and until httpGet gets resolved
 ```
 
-> Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always resolved after first paint anyway. use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
+> Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always be resolved after first paint anyway. use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
 
-## Concept 
+> `constructor()` v.s. `init()`: Many Web Component tutorials show how to create/attach `ShadowDom` at the constructor, but calling `this.innerHTML` at the constructor is not permitted. `init()` get called at the first `connectedCallback` and is a safe place to set the `this.innerHTML` value. This allows to decouple the ShadowDom requirements from the component model, making it optional. 
 
-**Key concept:** `mvdom` is a LIBRARY which promotes modern DOM implementations (e.g., browsers with native web component) to be used as a scalable framework for building small to big Web frontends.
+> `ShadowDom` is a good concept, but unfortunately the lack of effective ShadowDom styling (CSS piercing was removed and CSS Shadow Parts is still not well supported by modern browsers) makes it not a very pragmatic choice for now ([#SelfInflictedComplexity](https://twitter.com/jeremychone/status/1170378327116222464)). The good news is that the key componentization model comes from the `customElement` API, which is very mature and well supported, and ShadowDom is mostly a component implementation detail that can be added later when fully ready. 
 
-- **Simple scale better**
-- The DOM is your friend, don't fight it, embrace it. 
-- Used right, the DOM can be an excellent foundation for a scalable and straightforward MVC model.
-- Over componentization is as bad as under componentization.
-- Black magic always come with a hidden cost.
-- Frameworks come and go, languages and runtimes stay.
-- Size is a factor of complexity and starting small and simple will always scale better.
-- **Patterns over Frameworks**
-
-**In Short**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
 
 
 ## Characteristics
 
+`mvdom` is a LIBRARY which promotes modern DOM implementations (e.g., browsers with native web component) to be used as a scalable framework for building small to big Web frontends.
+
 - **Zero dependency**, micro libary (< 13kb minimized, < 5kb gzip).
-- Template agnostic (string templating friendly, e.g., JS Template Literals, Handlebars, LitHTML)
+- Template agnostic (string templating friendly, e.g., JS Template Literals, Handlebars, lit-html)
 - Minimalistic BaseHTMLElement which extends the browser native `HTMLElement`
 - Dead simple but powerfull DOM Navigation and Manimuplation wrapper APIs (e.g. on, first, all, style, attr, ...)
 - Enhanced DOM eventing (i.e., mvdom.on(el, type, selector, fn, {ns}) and off/trigger a la jquery, without wrappers)
 - Simple, extensible, and optimized DOM data exchange (`push(el, data)` & `const data = pull(el)`). 
 - Minimalistic but powerful pub/sub (hub) with topic and label selectors. 
 
+**Mantras**: Embrace the DOM, start simple, minimalistic, add only what is strictly needed to have a scalable MVC model, componentize only as needed, understand your runtime, avoid high-abstraction frameworks, favor focused libraries over all-in-one frameworks.
+
 ## Compatibility
 
 - Tested on all modern browsers (Chrome, Safari, Mobile Safari, Firefox, Chrominium Edge)
 - NO LEGACY BROWSER SUPPORT: While many frameworks are held in the past as they still support deprecated browsers, MVDOM focuses on using the DOM as the Framework, and targets modern browsers that are now ubiquitous anyway.  
-
 
 ## Installation
 
