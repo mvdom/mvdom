@@ -38,7 +38,7 @@ npm install mvdom
 // main.ts
 import { BaseHTMLElement, onEvent } from 'mvdom';
 
-@customElement('hello-world')
+@customElement('hello-world') // no magic, just call a customElement.register('my-component',MyComponent); 
 class HelloComponent extends BaseHTMLElement{
 
   get name() { return this.getAttribute('name') || 'World'}
@@ -63,8 +63,9 @@ document.body.innerHTML = '<hello-world name="John"></hello-world>';
 ```
 
 
-## Full Web Component Fifecycle 
+## Full BaseHTMLElement lifecycle and typescript decorators
 
+mvdom [BaseHTMLElement](src/c-base.ts) is just a base class that extends DOM native custom element class `HTMLElement` and add some minimalistic but expressive lifecycle methods as well as few typescript decorators (or properties) to allow safe event bindings (i.e., which will get unbound appropriately). 
 
 ```ts
 // full component
@@ -134,6 +135,138 @@ class FullComponent extends BaseHTMLElement{
 
 }
 ```
+
+## Understanding DOM customElement lifecycle
+
+To fully understand the power of `BaseHTMLElement` it is important to understand the lifecycle of the DOM customElement elements. 
+
+In very short, the customElement class get instantiated for its registered class by the DOM ONLY when the element is added to the main `document`. Before that point, a , the DOM element is just a generic DOM Element. 
+
+`BaseHTMLElement` provides some convenient methods that enable to take full advantage of this lifecycle. 
+
+
+
+```ts
+@customElement('my-component') // no magic, just call a customElement.register('my-component',MyComponent);
+class MyComponent extends BaseHTMLElement{
+  private _customData?: string;
+
+  set customData(data: string){ this._customData = data; }
+  get customData(){ return this.customData }
+
+  constructor(){
+    super(); // MUST, by DOM customElement spec
+    console.log('-- constructor', this.data);
+  }
+  init(){
+    super.init(); // not necessary, but good best practice
+    console.log('-- init ', this.data);
+  }
+
+  preDisplay(){
+    console.log('-- preDisplay', this.data);
+  }
+  postDisplay(){
+    console.log('-- postDisplay', this.data);
+  }  
+}
+
+const el = document.createElement('my-component'); 
+// NOTHING is printed, the element is not added to the dom. 
+// DO NOT call `el.customData = 'test data'` MyComponent is not instantiated
+
+document.body.appendChild(el);
+// -- print --> '-- constructor undefined'
+// -- print --> '-- init undefined'
+
+// now 'el' has been upgraded to MyComponent instance
+el.customData = 'test-data'; 
+
+// this will ask the browser to do a call back before first paint, but it will do after preDisplay, because the myComponent instance was created before
+requireAnimationFrame(function(){
+
+  // -- print --> '-- preDisplay test-data'
+
+  // this will ask the browser to register a callback for the upcoming paint (which is the one after this one).
+  // Since MyComponent had a postDisplay, it was also registered with a double requireAnimationFrame and will be called before
+  requireAnimationFrame(function(){
+
+    // -- print --> '-- postDisplay test-data'
+
+  });
+});
+```
+
+### Best Practices
+
+Therefore, here are some best practices: 
+
+- If the component can infer its content soly from it's description (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
+
+```ts
+@customElement('ami-happy') 
+class AmIHappy extends BaseHTMLElement{
+  init(){
+    super.init(); // optional, but good best practice
+    const happy = this.hasAttribute('happy');
+    this.innerHTML = `I am ${happy ? '<strong>NOT</strong>' : ''} happy`;
+  }
+}
+const el = document.createElement('ami-happy');
+document.body.appendChild(el);
+
+// -- display --> <ami-happy>I am <strong>NOT</strong> happy</ami-happy>
+```
+
+- If the component needs more complex data structure to render itself, but those data does not require any async, then, append the element to the document, and set the data, use `preDisplay()`.
+
+```ts
+@customElement('whos-happy') 
+class WhosHappy extends BaseHTMLElement{
+  data?: {happy: string[], not: string[]}
+
+  preDisplay(){
+    if (this.data){
+      this.innerHTML = `Happy people: ${this.happy.join(', ')} <br />
+                      Not happy: ${this.not.join(', ')}`;
+    }
+  }
+}
+
+const el = document.createElement('ami-happy');
+const whosHappyEl = document.body.appendChild(el) as WhosHappy;
+whosHappyEl.data = {happy: ['John', 'Jen'], not: ['Mike']}; // <-- still before first paint, so NOT flicker
+
+// -- display --> <whos-happy>Happy people: John, Jen <br /> Not happy: Mike</whos-happy>
+
+// Note: If we had done it at the init(), this.data would have been undefined.
+```
+
+- If the components needs to get data asynchronously, then, `postDisplay()` is a good place, and usually set the structure of the component in `init()`.
+
+```ts
+@customElement('happy-message') 
+class HappyMessage extends BaseHTMLElement{
+  init(){
+    super.init();
+    this.innerHTML = '<h1></h1><p></p>'; 
+    // Tips: Layout this structure appropriately with css grid/flex-box to minimize layout reshuffling.
+  }
+
+  async postDisplay(){
+    const msg: {title: string, text: string} = await httpGet('/happy-message-of-the-day');
+    first(this,'h1')!.textContent = msg.title;
+    first(this,'p')!.textContent = msg.text;
+  }
+}
+
+const el = document.createElement('happy-message');
+
+// -- display --> <happy-message><h1></h1><p></p></happy-message>
+// for first paint, and until httpGet gets resolved
+```
+
+> Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always resolved after first paint anyway. use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
 
 ## Concept 
 
