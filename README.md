@@ -3,32 +3,19 @@
 
 `mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC framework rather than working against it.
 
-- **The DOM IS the Framework!** (i.e., `native customElement`)
+- **The DOM IS the Framework!** (Fully based on `DOM native customElement` component model)
 
-- **Simple Scale Better**
+- **NO Virtual DOM** >> **_REAL DOM IS BACK!!!_**
 
-- < 13kb minimized (**< 5kb gzipped**) and **ZERO dependency**!
+- **ZERO IE TAX**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Chrominium Edge).
 
-- **Learn what matters**, because what matters last.
+- **< 5kb gzipped** (< 13kb minimized) and **ZERO dependency**!
 
-- ~~**NO Virtual DOM**~~ **REAL DOM IS BACK!** 
-
-<br />
-
-> Fully based on **Native Web Component** (customElements) with a lightweight but powerful `BaseHTMLElement extends HTMLElement` base class with some simple and highly productive DOM APIs allowing to unparallel productivity to build simple to big Web frontends.
-
-> **ZERO IE TAX**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Chrominium Edge).
-
-> **mvdom** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). However, all functionalities are available in pure JS as well.
-
-
-_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
-
+- **Simple Scale Better**, **Learn what matters**, because what matters last (i.e., avoid Frameworks of the year, and learn how to scale with modern DOM component model)
 
 ## Hello World
 
 ```sh
-# should be > 0.9.0
 npm install mvdom
 ```
 
@@ -61,6 +48,13 @@ class HelloComponent extends BaseHTMLElement{
 
 document.body.innerHTML = '<hello-world name="John"></hello-world>';
 ```
+
+> Fully based on **Native Web Component** (customElements) with a lightweight but powerful `BaseHTMLElement extends HTMLElement` base class with some simple and highly productive DOM APIs allowing to unparallel productivity to build simple to big Web frontends.
+
+> **mvdom** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). However, all functionalities are available in pure JS as well.
+
+
+_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
 
 
 ## Full BaseHTMLElement lifecycle and typescript decorators
@@ -203,7 +197,7 @@ Here are three typical rendering scenarios.
 
 #### 1) Attribute / Content Rendering
 
-If the component can infer its content soly from it's declaration (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
+If the component can infer its content soly from its declaration (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
 
 ```ts
 @customElement('ami-happy') 
