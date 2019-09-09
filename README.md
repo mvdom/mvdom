@@ -3,15 +3,15 @@
 
 `mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC framework rather than working against it.
 
-- < 13kb minimized (**< 5kb gzipped**) and **ZERO dependency**!
-
 - **The DOM IS the Framework!** (i.e., `native customElement`)
 
 - **Simple Scale Better**
 
+- < 13kb minimized (**< 5kb gzipped**) and **ZERO dependency**!
+
 - **Learn what matters**, because what matters last.
 
-- **REAL DOM IS BACK!** 
+- ~~**NO Virtual DOM**~~ **REAL DOM IS BACK!** 
 
 <br />
 
@@ -19,7 +19,7 @@
 
 > **ZERO IE TAX**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Chrominium Edge).
 
-> **mvdom 0.9.x** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). 
+> **mvdom** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). However, all functionalities are available in pure JS as well.
 
 
 _**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
@@ -38,7 +38,7 @@ npm install mvdom
 // main.ts
 import { BaseHTMLElement, onEvent } from 'mvdom';
 
-@customElement('hello-world') // no magic, just call a customElement.register('my-component',MyComponent); 
+@customElement('hello-world') // no magic, just call customElement.register('hello-world',HelloComponent); 
 class HelloComponent extends BaseHTMLElement{
 
   get name() { return this.getAttribute('name') || 'World'}
@@ -65,7 +65,7 @@ document.body.innerHTML = '<hello-world name="John"></hello-world>';
 
 ## Full BaseHTMLElement lifecycle and typescript decorators
 
-mvdom [BaseHTMLElement](src/c-base.ts) is just a base class that extends DOM native custom element class `HTMLElement` and add some minimalistic but expressive lifecycle methods as well as few typescript decorators (or properties) to allow safe event bindings (i.e., which will get unbound appropriately). 
+mvdom [BaseHTMLElement](src/c-base.ts) is just a base class that extends DOM native custom element class `HTMLElement` and add some minimalistic but expressive lifecycle methods as well as few typescript decorators (or properties for pure JS) to allow safe event bindings (i.e., which will get unbound appropriately). 
 
 ```ts
 // full component
@@ -151,7 +151,7 @@ class MyComponent extends BaseHTMLElement{
   private _customData?: string;
 
   set customData(data: string){ this._customData = data; }
-  get customData(){ return this.customData }
+  get customData(){ return this._customData }
 
   constructor(){
     super(); // MUST, by DOM customElement spec
@@ -203,7 +203,7 @@ Here are three typical rendering scenarios.
 
 #### 1) Attribute / Content Rendering
 
-If the component can infer its content soly from it's description (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
+If the component can infer its content soly from it's declaration (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
 
 ```ts
 @customElement('ami-happy') 
@@ -222,7 +222,7 @@ document.body.appendChild(el);
 
 #### 2) Data Initialization Rendering
 
-If the component needs more complex data structure to render itself, but those data does not require any async, adding the component to the document to instanciate the component, and then, calling the data initializers will allow the `preDisplay()` to render those data before first paint.
+If the component needs more complex data structure to render itself, but those data does not require any async, adding the component to the document to instantiate the component, and then, calling the data initializers will allow the `preDisplay()` to render those data before first paint.
 
 ```ts
 @customElement('whos-happy') 
@@ -257,7 +257,7 @@ When a component needs to get data asynchronously, then, `async postDisplay()` m
 class HappyMessage extends BaseHTMLElement{
   init(){
     super.init();
-    this.innerHTML = '<c-ico>happy-face</c-ico><h1></h1><p></p>'; 
+    this.innerHTML = '<c-ico>happy-face</c-ico><h1>loading...</h1><p>loading...</p>'; 
     // Tips: Layout this structure appropriately with css grid/flex-box to minimize layout reshuffling on data update.
   }
 
@@ -271,8 +271,13 @@ class HappyMessage extends BaseHTMLElement{
 
 const el = document.createElement('happy-message');
 
-// -- display --> <happy-message><h1></h1><p></p></happy-message>
+// -- display --> <happy-message><c-ico>happy-face</c-ico><h1>loading...</h1><p>loading...</p></happy-message>
 // for first paint, and until httpGet gets resolved
+
+// ... httpGet gets resolved
+
+// -- display --> <happy-message><c-ico>happy-face</c-ico><h1>title from server</h1>
+//                <p>text form server</p></happy-message>
 ```
 
 > Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always be resolved after first paint anyway. use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
@@ -285,7 +290,7 @@ const el = document.createElement('happy-message');
 
 ## Characteristics
 
-`mvdom` is a LIBRARY which promotes modern DOM implementations (e.g., browsers with native web component) to be used as a scalable framework for building small to big Web frontends.
+`mvdom` is a LIBRARY which promotes modern Native DOM componentization (e.g., browsers with native web component) to be used as a scalable framework for building small to big Web frontends.
 
 - **Zero dependency**, micro libary (< 13kb minimized, < 5kb gzip).
 - Template agnostic (string templating friendly, e.g., JS Template Literals, Handlebars, lit-html)
