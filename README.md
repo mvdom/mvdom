@@ -3,15 +3,20 @@
 
 `mvdom` is a minimalistic DOM CENTRIC MVC library, which uses the DOM as the foundation for scalable MVC framework rather than working against it.
 
-- **The DOM IS the Framework!** (Fully based on `DOM native customElement` component model)
-
-- **NO Virtual DOM** >> **_REAL DOM IS BACK!!!_**
-
-- **ZERO IE TAX**! MVDOM **targets modern browsers** (chrome, firefox, safari, tablet/mobile safari/chrome, and Chrominium Edge).
+- **Native DOM Component Model** based (i.e., customElement/WebComponent) 
 
 - **< 5kb gzipped** (< 13kb minimized) and **ZERO dependency**!
 
-- **Simple Scale Better**, **Learn what matters**, because what matters last (i.e., avoid Frameworks of the year, and learn how to scale with modern DOM component model)
+- **No Virtual DOM**, No Black Magic.
+
+- **ZERO IE TAX**! MVDOM **targets modern browsers** (PC & Mobile of Chrome, Firefox, Safari, and Chrominium Edge).
+
+- **Light and expressive** DOM **API** wrappers with lightweight pub/sub API. 
+
+- **Template agnostic** (e.g., [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), handlebars, and [lit-html](https://github.com/Polymer/lit-html) for full render/re-render model )
+
+> **Simple Scale Better** (i.e., where `scale = code & team & time`). **Learn what matters**, favor **pattern over frameworks**, avoid [high abstraction] frameworks of the year and focus on making your app code scale with modern DOM component model. **The DOM is the Framework!** === **Real DOM is Back!!!**
+
 
 ## Hello World
 
@@ -19,7 +24,7 @@
 npm install mvdom
 ```
 
-`BaseHTMLElement` is a simple class that extends the browser native `HTMLElement` and provides expressive binding mechanism and lifecycle methods. 
+`BaseHTMLElement` is a simple class that extends the browser native `HTMLElement` and provides expressive binding mechanisms and lifecycle methods. 
 
 ```ts
 // main.ts
@@ -193,11 +198,11 @@ requireAnimationFrame(function(){
 
 ### Best Practices
 
-Here are three typical rendering scenarios.
+Here are three typical rendering scenarios:
 
 #### 1) Attribute / Content Rendering
 
-If the component can infer its content soly from its declaration (e.g., attributes, content), then, set the `innerHTML` or `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
+If the component can infer its content soly from its declaration (i.e., attributes and content), then, set the `innerHTML` or call `appendChild`  in the `init()` method. Favor `this.innerHTML` or one  `this.appendChild` call (e.g., using the convenient `frag('<some-html>text</some-html>)` mvdom DocumentFragment builder function)
 
 ```ts
 @customElement('ami-happy') 
@@ -274,9 +279,9 @@ const el = document.createElement('happy-message');
 //                <p>text form server</p></happy-message>
 ```
 
-> Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always be resolved after first paint anyway. use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
+> Note: `init()` and `preDisplay()` could be marked as `async` but it would not change the lifecycle of the component as async calls will always be resolved after first paint anyway. Use `init()` and `preDisplay()` synchronous component initialization, and have the async work done in the `postDisplay()`.
 
-> `constructor()` v.s. `init()`: Many Web Component tutorials show how to create/attach `ShadowDom` at the constructor, but calling `this.innerHTML` at the constructor is not permitted. `init()` get called at the first `connectedCallback` and is a safe place to set the `this.innerHTML` value. This allows to decouple the ShadowDom requirements from the component model, making it optional. 
+> `constructor()` v.s. `init()`: Many Web Component tutorials show how to create/attach `ShadowDom` at the constructor, but calling `this.innerHTML` at the constructor is not permitted. `init()` get called at the first `connectedCallback` and is a safe place to set `this.innerHTML` value. This allows to decouple the ShadowDom requirements from the component model, making it optional. 
 
 > `ShadowDom` is a good concept, but unfortunately the lack of effective ShadowDom styling (CSS piercing was removed and CSS Shadow Parts is still not well supported by modern browsers) makes it not a very pragmatic choice for now ([#SelfInflictedComplexity](https://twitter.com/jeremychone/status/1170378327116222464)). The good news is that the key componentization model comes from the `customElement` API, which is very mature and well supported, and ShadowDom is mostly a component implementation detail that can be added later when fully ready. 
 
@@ -284,7 +289,7 @@ const el = document.createElement('happy-message');
 
 ## Characteristics
 
-`mvdom` is a LIBRARY which promotes modern Native DOM componentization (e.g., browsers with native web component) to be used as a scalable framework for building small to big Web frontends.
+`mvdom` is a **library** which promotes native DOM customElement as the component model, making the DOM the framework rather than over abstracting it.
 
 - **Zero dependency**, micro libary (< 13kb minimized, < 5kb gzip).
 - Template agnostic (string templating friendly, e.g., JS Template Literals, Handlebars, lit-html)
