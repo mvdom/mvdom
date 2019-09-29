@@ -1,4 +1,4 @@
-export const version = '0.9.0';
+export const version = '0.9.1';
 
 export { on, off, trigger, OnEvent, OnEventListener, bindOnEvents, OnListenerBySelector, addOnEvents } from './event';
 
