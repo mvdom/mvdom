@@ -56,6 +56,8 @@ export function addOnEvents(target: OnListenerBySelector | undefined, source: On
 }
 
 //#region    ---------- Public on API ---------- 
+
+export function on<K extends keyof HTMLElementEventMap>(els: EventTargetOrMore | null, type: K, listener: (this: HTMLElement, ev: { selectTarget: HTMLElement } & HTMLElementEventMap[K]) => void, opts?: OnEventOptions): void;
 /**
  * Bind one or more evevent type to one or more HTMLElements
  * @param els single or array of the base dom elements to bind the event listener upon.
@@ -64,6 +66,8 @@ export function addOnEvents(target: OnListenerBySelector | undefined, source: On
  * @param opts (optional) {capture, passive, ctx, ns} optional namespace (ns) and ctx (i.e. this)
  */
 export function on(els: EventTargetOrMore | null, types: string, listener: OnEventListener, opts?: OnEventOptions): void;
+
+export function on<K extends keyof HTMLElementEventMap>(els: EventTargetOrMore | null, type: K, selector: string | null, listener: (this: HTMLElement, ev: { selectTarget: HTMLElement } & HTMLElementEventMap[K]) => void, opts?: OnEventOptions): void;
 /**
  * Bind one or more evevent type to one or more HTMLElements matching a css selector
  * @param els single or array of the base dom elements to bind the event listener upon.

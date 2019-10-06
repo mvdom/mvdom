@@ -47,7 +47,6 @@ export function _init() {
 		out.push("DOSAVE");
 	});
 
-
 	on(el, "click, noexist,,, custom1", ".do-multi", function (evt) {
 		out.push(evt.type + ".do-multi");
 	});
@@ -58,7 +57,7 @@ export function _init() {
 		out.push((<HTMLElement>evt.selectTarget)!.className);
 	});
 
-	on(el, "click", ".do-capture", function (evt) {
+	on(el, "click", ".do-capture", function (evt: MouseEvent) {
 		out.push('capture');
 		evt.stopPropagation();
 	}, { capture: true, passive: false });
