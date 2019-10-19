@@ -4,7 +4,7 @@
 0.9.x is a major refactorization on the "view apis" side as mvdom now fully embraces the native DOM Web Component model (i.e., `customElement`). Most of the other APIs, such as `first`, `all`, `on`, `hub`, remained unchanged and 0.9.x even as some new convenient DOM manipulation light APIs such as `attr()` and `style()`
 
 
-### [v0.9.3](https://github.com/mvdom/mvdom/compare/v0.9.2...v0.9.3) Oct 19th 2019
+### [v0.9.4](https://github.com/mvdom/mvdom/compare/v0.9.2...v0.9.4) Oct 19th 2019
 
 - [#47 append - fix first HTML Element for DocumentFragment and add support HTML string as newEl](https://github.com/mvdom/mvdom/issues/47)
 
