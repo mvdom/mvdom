@@ -73,12 +73,7 @@ export function closest(el: HTMLElement | null | undefined, selector: string): H
 
 
 //#region    ---------- DOM Manipulation ---------- 
-// Returns the newEl
-export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElement, position?: Append): HTMLElement;
-// Returns the newEl documentFragment .firstElementChild as HTMLElement (might be null)
-export function append(this: any, refEl: HTMLElementOrFragment, newEl: DocumentFragment, position?: Append): HTMLElement | null;
-// Returns the .firstElementChild as HTMLElement from the documentFragment created from newEl HTML string (might be null)
-export function append(this: any, refEl: HTMLElementOrFragment, newEl: string, position?: Append): HTMLElement | null;
+export function append<T extends HTMLElement | DocumentFragment | string>(this: any, refEl: HTMLElementOrFragment, newEl: T, position?: Append): T extends HTMLElement ? HTMLElement : HTMLElement | null;
 
 export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElementOrFragment | string, position?: Append): HTMLElement | null {
 	let parentEl: HTMLElementOrFragment;

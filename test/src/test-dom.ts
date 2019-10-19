@@ -147,6 +147,18 @@ export function testAppendFragReturnValue() {
 	// add empty html string
 	const returnEl3 = append(testContentEl, '');
 	equal(returnEl3, null);
+
+	// test conditional typing
+	const elToAdd4: DocumentFragment | HTMLElement = createElOrFrag('<div class="rect test-append-frag-return-value-4">test-append-frag-return-value-4 content</div>');
+	if (elToAdd4 instanceof HTMLElement || elToAdd4 instanceof DocumentFragment) {
+		const returnEl4 = append(returnEl!, elToAdd4, 'after');
+	}
+
+}
+
+// to mimic union type
+function createElOrFrag(html: string): DocumentFragment | HTMLElement {
+	return frag(html);
 }
 
 function createEl(classNames: string, text: string) {
