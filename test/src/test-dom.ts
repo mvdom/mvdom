@@ -125,6 +125,29 @@ export function thisAppendToFrag() {
 	equal('one', all(fragment, '.other')[0].innerText);
 }
 
+export function testAppendElReturnValue() {
+	const testContentEl = first(".test-content")!;
+	const elToAdd = createEl('rect test-append-el-return-value', 'test-append-el-return-value content');
+	const returnEl = append(testContentEl, elToAdd);
+	equal(returnEl.classList.contains('test-append-el-return-value'), true);
+}
+
+export function testAppendFragReturnValue() {
+	const testContentEl = first(".test-content")!;
+
+	// add documentFragment
+	const elToAdd = frag('<div class="rect test-append-frag-return-value">test-append-frag-return-value content</div>');
+	const returnEl = append(testContentEl, elToAdd);
+	equal(returnEl!.classList.contains('test-append-frag-return-value'), true);
+
+	// add html string
+	const returnEl2 = append(returnEl!, '<div class="rect test-append-frag-return-value-2">test-append-frag-return-value-2 content</div>', 'before');
+	equal(returnEl2!.classList.contains('test-append-frag-return-value-2'), true);
+
+	// add empty html string
+	const returnEl3 = append(testContentEl, '');
+	equal(returnEl3, null);
+}
 
 function createEl(classNames: string, text: string) {
 	const el = document.createElement("div");

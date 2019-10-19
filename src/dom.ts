@@ -73,9 +73,31 @@ export function closest(el: HTMLElement | null | undefined, selector: string): H
 
 
 //#region    ---------- DOM Manipulation ---------- 
-export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElementOrFragment, position?: Append): HTMLElement {
+// Returns the newEl
+export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElement, position?: Append): HTMLElement;
+// Returns the newEl documentFragment .firstElementChild as HTMLElement (might be null)
+export function append(this: any, refEl: HTMLElementOrFragment, newEl: DocumentFragment, position?: Append): HTMLElement | null;
+// Returns the .firstElementChild as HTMLElement from the documentFragment created from newEl HTML string (might be null)
+export function append(this: any, refEl: HTMLElementOrFragment, newEl: string, position?: Append): HTMLElement | null;
+
+export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElementOrFragment | string, position?: Append): HTMLElement | null {
 	let parentEl: HTMLElementOrFragment;
 	let nextSibling: HTMLElement | null = null;
+
+	// make newEl a document fragment if string passed
+	if (typeof newEl === 'string') {
+		newEl = frag(newEl);
+	}
+
+	// firstEl to be returned
+	// NOTE: need to do it before we append in the case for DocumentFragment case.
+	// NOTE: we assume HTML element as per MVDOM current approach.
+	let firstEl: HTMLElement | null;
+	if (newEl instanceof DocumentFragment) {
+		firstEl = newEl.firstElementChild as HTMLElement | null;
+	} else {
+		firstEl = newEl;
+	}
 
 	// default is "last"
 	position = (position) ? position : "last";
@@ -125,8 +147,7 @@ export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLEleme
 		parentEl!.appendChild(newEl);
 	}
 
-	// FIXME: Here if newEl is a DocumentFragment this will return an empty doc fragment
-	return newEl as HTMLElement;
+	return firstEl as HTMLElement;
 }
 
 
