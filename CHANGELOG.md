@@ -1,6 +1,10 @@
 
 ## Releases 0.9.x - Native Web Components
 
+### [v0.9.5](https://github.com/mvdom/mvdom/compare/v0.9.4...v0.9.5) Oct 20th 2019
+
+- dx - add support for DocumentFragment for push/push
+
 ### [v0.9.4](https://github.com/mvdom/mvdom/compare/v0.9.2...v0.9.4) Oct 19th 2019
 
 - [#47 append - fix first HTML Element for DocumentFragment and add support HTML string as newEl](https://github.com/mvdom/mvdom/issues/47)
