@@ -54,12 +54,14 @@ class HelloComponent extends BaseHTMLElement{
 document.body.innerHTML = '<hello-world name="John"></hello-world>';
 ```
 
+HTML will be:
+```html
+<body><hello-world name="John">Hello <strong>John</strong></hello-world></body>
+```
+
 > Fully based on **Native Web Component** (customElements) with a lightweight but powerful `BaseHTMLElement extends HTMLElement` base class with some simple and highly productive DOM APIs allowing to unparallel productivity to build simple to big Web frontends.
 
 > **mvdom** is designed to scale from the get go and therefore fully embrace TypeScript types and makes a lightweight, expressive, and optional use of TypeScript decorators (JS decorator standard is still way off). However, all functionalities are available in pure JS as well.
-
-
-_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs. (see [0.8.x to 0.9.x Migration](#migration-from-08x-to-09x))._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
 
 
 ## Full BaseHTMLElement lifecycle and typescript decorators
@@ -81,14 +83,14 @@ class FullComponent extends BaseHTMLElement{
   }
 
   // bind a method to an document DOM event with an optional selector
-  // Note: will be correctly unbind when this element is removed from the Document
+  // Note: will be correctly unbound when this element is removed from the Document
   @onDoc('click', '.logoff')
   onDocumentLogoff(){
     console.log('.logoff element was clicked somewhere in the document');
   }
 
   // bind a method to an window DOM event
-  // Note: will be correctly unbind when this element is removed from the Document
+  // Note: will be correctly unbound when this element is removed from the Document
   @onWin('resize')
   onDocumentLogoff(){
     console.log('Window was resized');
@@ -147,10 +149,10 @@ In very short, the customElement class get instantiated for its registered tag n
 ```ts
 @customElement('my-component') // no magic, just call a customElement.register('my-component',MyComponent);
 class MyComponent extends BaseHTMLElement{
-  private _customData?: string;
+  private _data?: string;
 
-  set customData(data: string){ this._customData = data; }
-  get customData(){ return this._customData }
+  set data(data: string){ this._data = data; }
+  get data(){ return this._data }
 
   constructor(){
     super(); // MUST, by DOM customElement spec
@@ -509,12 +511,13 @@ This library uses a gulp-and-webpack-free way of building distribution file, and
 
 ## Migration from 0.8.x to 0.9.x 
 
-The wide browser support Native Custom Element / Web Component warrant some API refactoring rather than just contorting old APIs. 
+_**IMPORTANT** Master branch is now the 0.9.x branch which deprecates legacy View API in favor of browser native web component / custom element APIs._ _See [0.8.x branch](https://github.com/mvdom/mvdom/tree/v_08x) to continue to use 0.8.x_
 
-Consequently, mvdom 0.9.x deprecates the View APIs in favor of native Browsers' native custom element APIs. Other mvdom APIs (first, all, hub, push, pull ...) remained unchanged. A `mvdom-compat-view` library will be provided that will run on the latest `0.9.x` while still exposing most of the legacy APIs / types.
+The wide browser support Native Custom Element / Web Component warrants some API refactoring rather than just contorting old APIs. 
 
+Consequently, mvdom 0.9.x deprecates the View APIs in favor of native Browsers' native custom element APIs. Other mvdom APIs (first, all, hub, push, pull ...) remained unchanged as they have been designed to be fully DOM centric from the start. A `mvdom-compat-view` library will be provided that will run on the latest `0.9.x` while still exposing most of the legacy APIs / types.
 
-In short, the 0.8.x to 0.9.x
+Here are some guidelines to migrating code from 0.8.x to 0.9.x
 
 - The MVDOM "View" model and APIs (.e.g, `display` `remove` ...) known in version <= 0.8.x are being completely deprecated in favor of browser custom elements. 
 - The future library `mvdom@0.9.x-compat-view.1` will include mvdom > 0.9.x as well as expose those legacy APIs and types for applications needed to use the latest mvdom > 0.9.x while still have the legacy view apis. 
