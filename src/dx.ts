@@ -79,9 +79,9 @@ export function puller(selector: string, pullerFn: () => any): void {
 }
 
 
-export function push(el: HTMLElement, data: any): void;
-export function push(el: HTMLElement, selector: string, data: any): void;
-export function push(el: HTMLElement, selector_or_data: string | any, data?: any) {
+export function push(el: HTMLElement | DocumentFragment, data: any): void;
+export function push(el: HTMLElement | DocumentFragment, selector: string, data: any): void;
+export function push(el: HTMLElement | DocumentFragment, selector_or_data: string | any, data?: any) {
 	let selector;
 
 	// if data is null or undefined
@@ -120,7 +120,7 @@ export function push(el: HTMLElement, selector_or_data: string | any, data?: any
 	});
 }
 
-export function pull(el: HTMLElement, selector?: string, data?: any): any {
+export function pull(el: HTMLElement | DocumentFragment, selector?: string): any {
 	const obj = {};
 
 	selector = (selector) ? selector : ".dx";

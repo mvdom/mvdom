@@ -1,5 +1,5 @@
 import { equal } from './utils';
-import { first, pull, push, all } from '../../src';
+import { first, pull, push, all, frag } from '../../src';
 
 let outs = [];
 
@@ -82,4 +82,10 @@ export function testEmptyProperties() {
 
 	const data = pull(el);
 	equal(data, { a: "", b: "", c: "c1", d: "d1" });
+}
+
+export function testPushPullOnFrag() {
+	const content = frag('<input class="dx" name="name1" />');
+	push(content, { name1: 'val1' });
+	const result = pull(content);
 }
