@@ -322,6 +322,28 @@ export function _getAttrEl(el: HTMLElement, names: string | string[]): any | (st
 }
 //#endregion ---------- /attr ----------
 
+//#region    ---------- elem ---------- 
+
+/**
+ * Shorthand for document.createElement(name)
+ * @param name tag name 
+ */
+export function elem(name: string): HTMLElement;
+
+/**
+ * Create multiple HTMLElement via document.createElement
+ * @param names tag names
+ */
+export function elem(...names: string[]): HTMLElement[];
+export function elem(...names: string[]): HTMLElement | HTMLElement[] {
+	if (names.length === 1) {
+		return document.createElement(names[0]);
+	} else {
+		return names.map(n => { return document.createElement(n) });
+	}
+}
+//#endregion ---------- /elem ----------
+
 /**
  * Return the next or previous Element sibling
  * @param next
