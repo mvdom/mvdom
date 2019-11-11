@@ -137,16 +137,16 @@ export function testAppendFragReturnValue() {
 
 	// add documentFragment
 	const elToAdd = frag('<div class="rect test-append-frag-return-value">test-append-frag-return-value content</div>');
-	const returnEl = append(testContentEl, elToAdd);
-	equal(returnEl!.classList.contains('test-append-frag-return-value'), true);
+	const [returnEl] = append(testContentEl, elToAdd);
+	equal(returnEl.classList.contains('test-append-frag-return-value'), true);
 
 	// add html string
-	const returnEl2 = append(returnEl!, '<div class="rect test-append-frag-return-value-2">test-append-frag-return-value-2 content</div>', 'before');
-	equal(returnEl2!.classList.contains('test-append-frag-return-value-2'), true);
+	const [returnEl2] = append(returnEl!, '<div class="rect test-append-frag-return-value-2">test-append-frag-return-value-2 content</div>', 'before');
+	equal(returnEl2.classList.contains('test-append-frag-return-value-2'), true);
 
 	// add empty html string
-	const returnEl3 = append(testContentEl, '');
-	equal(returnEl3, null);
+	const [returnEl3] = append(testContentEl, '');
+	equal(returnEl3, undefined);
 
 	// test conditional typing
 	const elToAdd4: DocumentFragment | HTMLElement = createElOrFrag('<div class="rect test-append-frag-return-value-4">test-append-frag-return-value-4 content</div>');

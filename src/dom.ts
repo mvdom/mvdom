@@ -1,20 +1,19 @@
 import { asNodeArray } from './utils';
 
 export type Append = "first" | "last" | "empty" | "before" | "after";
-type HTMLElementOrFragment = HTMLElement | DocumentFragment;
 
 // --------- DOM Query Shortcuts --------- //
 
 // Shortcut for .querySelector
 // return the first element matching the selector from this el (or document if el is not given)
 /** Shortchut to el.querySelector, but allow el to be null (in which case will return null) */
-export function first(el: HTMLElementOrFragment | null | undefined, selector: string): HTMLElement | null;
+export function first(el: HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement | null;
 export function first(selector: string): HTMLElement | null;
-export function first(el: HTMLElementOrFragment | null | undefined): HTMLElement | null;
-export function first(el_or_selector: HTMLElementOrFragment | string | null | undefined, selector?: string) {
+export function first(el: HTMLElement | DocumentFragment | null | undefined): HTMLElement | null;
+export function first(el_or_selector: HTMLElement | DocumentFragment | string | null | undefined, selector?: string) {
 	// We do not have a selector at all, then, this call is for firstElementChild
 	if (!selector && typeof el_or_selector !== "string") {
-		const el = el_or_selector as HTMLElementOrFragment;
+		const el = el_or_selector as HTMLElement | DocumentFragment;
 		// try to get 
 		const firstElementChild = el.firstElementChild;
 
@@ -43,9 +42,9 @@ export function first(el_or_selector: HTMLElementOrFragment | string | null | un
 
 // TODO: might need to return readonly HTMLElement[] to be consistent with asNodeArray
 /** Convenient and normalized API for .querySelectorAll. Return Array (and not node list) */
-export function all(el: HTMLElementOrFragment | null | undefined, selector: string): HTMLElement[];
+export function all(el: HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement[];
 export function all(selector: string): HTMLElement[];
-export function all(el: HTMLElementOrFragment | null | undefined | string, selector?: string) {
+export function all(el: HTMLElement | DocumentFragment | null | undefined | string, selector?: string) {
 	const nodeList = _execQuerySelector(true, el, selector);
 	return (nodeList != null) ? asNodeArray(nodeList) : [];
 }
@@ -73,25 +72,33 @@ export function closest(el: HTMLElement | null | undefined, selector: string): H
 
 
 //#region    ---------- DOM Manipulation ---------- 
-export function append<T extends HTMLElement | DocumentFragment | string>(this: any, refEl: HTMLElementOrFragment, newEl: T, position?: Append): T extends HTMLElement ? HTMLElement : HTMLElement | null;
+export function append<T extends HTMLElement | HTMLElement[] | DocumentFragment | string>(this: any, refEl: HTMLElement | DocumentFragment, newEl: T, position?: Append): T extends HTMLElement ? HTMLElement : HTMLElement[];
 
-export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLElementOrFragment | string, position?: Append): HTMLElement | null {
-	let parentEl: HTMLElementOrFragment;
+export function append(this: any, refEl: HTMLElement | DocumentFragment, newEl: HTMLElement | HTMLElement[] | DocumentFragment | string, position?: Append): HTMLElement | HTMLElement[] {
+	let parentEl: HTMLElement | DocumentFragment;
 	let nextSibling: HTMLElement | null = null;
+
+	let result: HTMLElement | HTMLElement[];
 
 	// make newEl a document fragment if string passed
 	if (typeof newEl === 'string') {
 		newEl = frag(newEl);
 	}
 
-	// firstEl to be returned
 	// NOTE: need to do it before we append in the case for DocumentFragment case.
 	// NOTE: we assume HTML element as per MVDOM current approach.
-	let firstEl: HTMLElement | null;
-	if (newEl instanceof DocumentFragment) {
-		firstEl = newEl.firstElementChild as HTMLElement | null;
+	if (newEl instanceof Array) {
+		result = newEl;
+		// Create a document frag
+		const fragment = document.createDocumentFragment();
+		for (const elItem of newEl) {
+			fragment.appendChild(elItem);
+		}
+		newEl = fragment;
+	} else if (newEl instanceof DocumentFragment) {
+		result = [...newEl.children] as HTMLElement[]; // take the liberty to assume HTMLElememt
 	} else {
-		firstEl = newEl;
+		result = newEl;
 	}
 
 	// default is "last"
@@ -142,7 +149,7 @@ export function append(this: any, refEl: HTMLElementOrFragment, newEl: HTMLEleme
 		parentEl!.appendChild(newEl);
 	}
 
-	return firstEl as HTMLElement;
+	return result;
 }
 
 
@@ -214,9 +221,9 @@ type NameValMap = { [name: string]: string | null | boolean };
  *     - `attr(els,['name', 'label'])` returns `[name,label][]` for each element.
  *
  *   Setters:
- *     - `attr(el, 'name', 'username')` Set attribute name. If value is null, then, remove will be applied. TODO: Might deprecate. But ok shorthand, and handle the null/remove case.
- *     - `attr(el, {name: 'username', placeholder: 'Enter username'})` Will set the attributes specified in the object to this element.
- *     - `attr(els, {checked: true, readonly: ''})` Will set the attributes specified in the object for all of the elements.
+ *     - `attr(el, 'name', 'username')` Set attribute name. If value is null, then, remove will be applied. TODO: Might deprecate. But ok shorthand, and handle the null/remove case, and return el.
+ *     - `attr(el, {name: 'username', placeholder: 'Enter username'})` Will set the attributes specified in the object to this element, and returl el,
+ *     - `attr(els, {checked: true, readonly: ''})` Will set the attributes specified in the object for all of the elements, and return els.
  *
  */
 
@@ -314,8 +321,6 @@ export function _getAttrEl(el: HTMLElement, names: string | string[]): any | (st
 
 }
 //#endregion ---------- /attr ----------
-
-
 
 /**
  * Return the next or previous Element sibling

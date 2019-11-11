@@ -4,7 +4,7 @@ export { on, off, trigger, OnEvent, OnEventListener, bindOnEvents, OnListenerByS
 
 export { push, pull, pusher, puller } from './dx';
 
-export { first, all, closest, next, prev, append, frag, attr, style } from './dom';
+export { first, all, closest, next, prev, append, frag, attr, style, elem } from './dom';
 
 export { hub, Hub, bindHubEvents, unbindHubEvents, addHubEvents, HubBindings } from './hub';
 
