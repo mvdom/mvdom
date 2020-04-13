@@ -1,6 +1,6 @@
 import { asNodeArray } from './utils';
 
-export type Append = "first" | "last" | "empty" | "before" | "after";
+export type AppendPosition = "first" | "last" | "empty" | "before" | "after";
 
 // --------- DOM Query Shortcuts --------- //
 
@@ -72,9 +72,9 @@ export function closest(el: HTMLElement | null | undefined, selector: string): H
 
 
 //#region    ---------- DOM Manipulation ---------- 
-export function append<T extends HTMLElement | HTMLElement[] | DocumentFragment | string>(this: any, refEl: HTMLElement | DocumentFragment, newEl: T, position?: Append): T extends HTMLElement ? HTMLElement : HTMLElement[];
+export function append<T extends HTMLElement | HTMLElement[] | DocumentFragment | string>(this: any, refEl: HTMLElement | DocumentFragment, newEl: T, position?: AppendPosition): T extends HTMLElement ? HTMLElement : HTMLElement[];
 
-export function append(this: any, refEl: HTMLElement | DocumentFragment, newEl: HTMLElement | HTMLElement[] | DocumentFragment | string, position?: Append): HTMLElement | HTMLElement[] {
+export function append(this: any, refEl: HTMLElement | DocumentFragment, newEl: HTMLElement | HTMLElement[] | DocumentFragment | string, position?: AppendPosition): HTMLElement | HTMLElement[] {
 	let parentEl: HTMLElement | DocumentFragment;
 	let nextSibling: HTMLElement | null = null;
 
