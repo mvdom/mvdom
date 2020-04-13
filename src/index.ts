@@ -1,4 +1,4 @@
-export const version = '0.9.6';
+export const version = '0.9.7';
 
 export { BaseHTMLElement } from './c-base';
 export { all, append, AppendPosition, attr, closest, elem, first, frag, next, prev, style } from './dom';
