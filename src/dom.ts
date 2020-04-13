@@ -356,7 +356,7 @@ function _sibling(next: boolean, el: Node | undefined | null, selector?: string)
 	let tmpEl = (el) ? el[sibling] : null;
 
 	// use "!=" for null and undefined
-	while (tmpEl != null && tmpEl !== document) {
+	while (tmpEl != null && (<any>tmpEl) != document) {
 		// only if node type is of Element, otherwise, 
 		if (tmpEl.nodeType === 1 && (!selector || (<Element>tmpEl).matches(selector))) {
 			return tmpEl as Element;

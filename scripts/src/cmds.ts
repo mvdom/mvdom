@@ -1,12 +1,12 @@
-import { saferRemove, writeFile, readFile, stat } from 'fs-extra-plus';
+import { router } from 'cmdrouter';
+import { readFile, saferRemove, stat, writeFile } from 'fs-extra-plus';
+import * as Path from 'path';
 import * as rollup from 'rollup';
+import * as Terser from 'terser';
+import { now } from './utils';
 import rollup_cjs = require('rollup-plugin-commonjs');
 import rollup_re = require('rollup-plugin-node-resolve');
 import rollup_ts = require('rollup-plugin-typescript2');
-import { router } from 'cmdrouter';
-import * as Path from 'path';
-import { now } from './utils';
-import * as Terser from 'terser';
 
 
 const DIST_FILE = './test/dist/mvdom.js';
@@ -147,9 +147,6 @@ export async function rollupFiles(entries: string[], distFile: string, opts: Rol
 				} else if (evt.code === 'ERROR') {
 					console.log(`ERROR - Rollup/Typescript error when processing: ${distFile}`);
 					console.log("\t" + evt.error);
-				} else if (evt.code === 'FATAL') {
-					console.log(`FATAL ERROR - Rollup/Typescript fatal error when processing ${distFile}\n
-					>>>>>>>> MUST RESTART WATCH SESSION <<<<<<<<\n\n`, evt.error);
 				}
 			});
 		}
