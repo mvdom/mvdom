@@ -1,7 +1,7 @@
 // (c) 2019 BriteSnow, inc - This code is licensed under MIT license (see LICENSE for details)
 
+import { bindOnEvents, off, OnListenerBySelector } from './event';
 import { bindHubEvents, HubBindings, unbindHubEvents } from './hub';
-import { bindOnEvents, OnListenerBySelector, off } from './event';
 import { bindOnEventsDecorators, unbindOnEventsDecorators } from './ts-decorator-on-event';
 import { bindOnHubDecorators, unbindOnHubDecorators } from './ts-decorator-on-hub';
 

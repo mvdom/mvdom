@@ -1,4 +1,4 @@
-import { OnEventListener, on, off } from './event';
+import { off, on, OnEventListener } from './event';
 // import { BaseHTMLElement } from './c-base';
 
 // target === null means the instance object. 

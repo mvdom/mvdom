@@ -1,21 +1,24 @@
 export const version = '0.9.6';
 
-export { on, off, trigger, OnEvent, OnEventListener, bindOnEvents, OnListenerBySelector, addOnEvents } from './event';
-
-export { push, pull, pusher, puller } from './dx';
-
-export { first, all, closest, next, prev, append, frag, attr, style, elem } from './dom';
-
-export { hub, Hub, bindHubEvents, unbindHubEvents, addHubEvents, HubBindings } from './hub';
-
+export { BaseHTMLElement } from './c-base';
+export { all, append, Append, attr, closest, elem, first, frag, next, prev, style } from './dom';
+export { pull, puller, push, pusher } from './dx';
+export { addOnEvents, bindOnEvent, bindOnEvents, off, on, OnEvent, OnEventListener, OnListenerBySelector, trigger } from './event';
+export { addHubEvents, bindHubEvents, hub, Hub, HubBindings, unbindHubEvents } from './hub';
+export { customElement } from './ts-decorator-custom-element';
+export { onDoc, onEvent, onWin } from './ts-decorator-on-event';
+export { onHub } from './ts-decorator-on-hub';
 export { val } from './utils';
 
-export { BaseHTMLElement } from './c-base';
 
-export { onEvent, onDoc, onWin } from './ts-decorator-on-event';
 
-export { onHub } from './ts-decorator-on-hub';
 
-export { customElement } from './ts-decorator-custom-element';
+
+
+
+
+
+
+
 
 
