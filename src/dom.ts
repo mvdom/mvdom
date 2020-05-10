@@ -172,15 +172,12 @@ export function frag(html: string | null | undefined) {
 
 //#region    ---------- style ---------- 
 /** Conditional typing override for  */
-export function style<T extends HTMLElement | HTMLElement[] | null>(el: T, style: Partial<CSSStyleDeclaration>): T;
+export function style<T extends HTMLElement | HTMLElement[] | null | undefined>(el: T, style: Partial<CSSStyleDeclaration>): T;
 
 // NOTE: If the implementation style... does not return 'T | null' then, the `return null;` says that does not match T (the guard seems to not work).
 //       The trick is to override the definition with above, and it work. 
-export function style<T extends HTMLElement | HTMLElement[] | null>(el: T, style: Partial<CSSStyleDeclaration>): T | null {
-
-	if (el == null) {
-		return null;
-	}
+export function style<T extends HTMLElement | HTMLElement[] | null>(el: T, style: Partial<CSSStyleDeclaration>): T {
+	if (el == null) return el;
 
 	// TODO: Would be nice to make this more typed, however function constraints and assignment below matches.
 
@@ -200,6 +197,7 @@ function _styleEl(el: HTMLElement, style: Partial<CSSStyleDeclaration>) {
 	}
 }
 //#endregion ---------- /style ----------
+
 
 //#region    ---------- attr ---------- 
 // conditional typing
