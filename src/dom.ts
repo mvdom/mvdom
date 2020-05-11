@@ -199,6 +199,52 @@ function _styleEl(el: HTMLElement, style: Partial<CSSStyleDeclaration>) {
 //#endregion ---------- /style ----------
 
 
+//#region    ---------- className ---------- 
+/**
+ * Minimilist DOM css class name helper. Add or Remove class name based on object property value. 
+ * 
+ * e.g., `className(el, {prime: true, 'dark-mode': false} )`
+ * 
+ * - false | null means remove class name
+ * - true | any defined object add class name
+ * - undefined values will ignore the property name
+ * 
+ * @returns pathrough return
+ * 
+ * Examples: 
+ *   - `className(el, {prime: true, 'dark-mode': false} )` add css class 'prime' and remove 'dark-mode'
+ *   - `className(el, {prime: someNonNullObject, 'dark-mode': false})` same as above.
+ *   - `className(els, {prime: someNonNullObject, 'dark-mode': false})` Will add/remove class for all of the elements.
+ * 
+ * @param el 
+ * @param keyValues e.g. `{prime: true, 'dark-mode': fase, 'compact-view': someObj}`
+ */
+export function className<E extends HTMLElement | HTMLElement[] | null | undefined>(els: E, keyValues: { [name: string]: boolean | object | null | undefined }): E {
+
+	if (els instanceof Array) {
+		for (const el of els) {
+			_setClassName(el, keyValues);
+		}
+	}
+	else {
+		_setClassName(els as HTMLElement, keyValues);
+	}
+	return els;
+}
+
+function _setClassName(el: HTMLElement, keyValues: { [name: string]: boolean | object | null | undefined }) {
+	for (const name of Object.keys(keyValues)) {
+		const val = keyValues[name];
+		if (val === null || val === false) {
+			el.classList.remove(name);
+		} else if (val !== undefined) { // for now, do nothing if undefined
+			el.classList.add(name);
+		}
+	}
+}
+//#endregion ---------- /className ----------
+
+
 //#region    ---------- attr ---------- 
 // conditional typing
 
@@ -223,6 +269,7 @@ type NameValMap = { [name: string]: string | null | boolean };
  *     - `attr(el, {name: 'username', placeholder: 'Enter username'})` Will set the attributes specified in the object to this element, and returl el,
  *     - `attr(els, {checked: true, readonly: ''})` Will set the attributes specified in the object for all of the elements, and return els.
  *
+ * TODO: On 'set' should be a passtrough return (return null | undefined as well)
  */
 
 export function attr(el: HTMLElement, name: string): string | null;

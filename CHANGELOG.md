@@ -1,5 +1,23 @@
+# CHANGELOG
+
+> Legend: `.` minor; `!` change; `+` enhancement; `-` fix
 
 ## Releases 0.9.x - Native Web Components
+
+
+### [v0.9.8](https://github.com/mvdom/mvdom/compare/v0.9.7...v0.9.8) May 10th 2020
+
+- `+` className() - add className to convenient set/toggle multiple css class names.
+- `.!` style() - made it null-passthrough (i.e., return el as is if null or undefined)
+
+### [v0.9.7](https://github.com/mvdom/mvdom/compare/v0.9.6...v0.9.7) Apr 13th 2020
+
+- `+` append() - export AppendPosition
+
+### [v0.9.6](https://github.com/mvdom/mvdom/compare/v0.9.5...v0.9.6) Nov 10th 2019
+
+- `+` elem() - added the document.createElement shortcut `elem(...tagNames): HTMLElement | HTMLElement[]`
+- `.!` append() - changed append(el,string | fragment) to return HTMLElement[] children (rather than first children or null)
 
 ### [v0.9.5](https://github.com/mvdom/mvdom/compare/v0.9.4...v0.9.5) Oct 20th 2019
 
