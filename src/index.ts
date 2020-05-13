@@ -9,16 +9,3 @@ export { customElement } from './ts-decorator-custom-element';
 export { onDoc, onEvent, onWin } from './ts-decorator-on-event';
 export { onHub } from './ts-decorator-on-hub';
 export { val } from './utils';
-
-
-
-
-
-
-
-
-
-
-
-
-

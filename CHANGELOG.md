@@ -1,9 +1,17 @@
 # CHANGELOG
 
-> Legend: `.` minor; `!` change; `+` enhancement; `-` fix
+> Legend: `.` minor; `-` fix; `!` change; `+` enhancement; 
 
 ## Releases 0.9.x - Native Web Components
 
+### [v0.9.9](https://github.com/mvdom/mvdom/compare/v0.9.8...v0.9.9) May 13th 2020
+
+- `-` type - added `Document` type to `first` and `all` to match `@types/node` 14.x and above
+
+### [v0.9.8](https://github.com/mvdom/mvdom/compare/v0.9.7...v0.9.8) May 10th 2020
+
+- `-` className() - add className to convenient set/toggle multiple css class names.
+- `.!` style() - made it null-passthrough (i.e., return el as is if null or undefined)
 
 ### [v0.9.8](https://github.com/mvdom/mvdom/compare/v0.9.7...v0.9.8) May 10th 2020
 

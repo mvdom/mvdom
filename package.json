@@ -23,13 +23,13 @@
     "chokidar": "^3.4.0",
     "cmdrouter": "^0.3.1",
     "fs-extra-plus": "^0.5.11",
-    "rollup": "^2.9.0",
+    "rollup": "^2.10.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript2": "^0.27.0",
+    "rollup-plugin-typescript2": "^0.27.1",
     "terser": "^4.6.13",
     "ts-node": "^8.10.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.9.2"
   },
   "files": [
     "src/",

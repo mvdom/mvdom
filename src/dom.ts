@@ -7,10 +7,10 @@ export type AppendPosition = "first" | "last" | "empty" | "before" | "after";
 // Shortcut for .querySelector
 // return the first element matching the selector from this el (or document if el is not given)
 /** Shortchut to el.querySelector, but allow el to be null (in which case will return null) */
-export function first(el: HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement | null;
+export function first(el: Document | HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement | null;
 export function first(selector: string): HTMLElement | null;
-export function first(el: HTMLElement | DocumentFragment | null | undefined): HTMLElement | null;
-export function first(el_or_selector: HTMLElement | DocumentFragment | string | null | undefined, selector?: string) {
+export function first(el: Document | HTMLElement | DocumentFragment | null | undefined): HTMLElement | null;
+export function first(el_or_selector: Document | HTMLElement | DocumentFragment | string | null | undefined, selector?: string) {
 	// We do not have a selector at all, then, this call is for firstElementChild
 	if (!selector && typeof el_or_selector !== "string") {
 		const el = el_or_selector as HTMLElement | DocumentFragment;
@@ -42,9 +42,9 @@ export function first(el_or_selector: HTMLElement | DocumentFragment | string | 
 
 // TODO: might need to return readonly HTMLElement[] to be consistent with asNodeArray
 /** Convenient and normalized API for .querySelectorAll. Return Array (and not node list) */
-export function all(el: HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement[];
+export function all(el: Document | HTMLElement | DocumentFragment | null | undefined, selector: string): HTMLElement[];
 export function all(selector: string): HTMLElement[];
-export function all(el: HTMLElement | DocumentFragment | null | undefined | string, selector?: string) {
+export function all(el: Document | HTMLElement | DocumentFragment | null | undefined | string, selector?: string) {
 	const nodeList = _execQuerySelector(true, el, selector);
 	return (nodeList != null) ? asNodeArray(nodeList) : [];
 }
@@ -413,7 +413,7 @@ function _sibling(next: boolean, el: Node | undefined | null, selector?: string)
 
 
 // util: querySelector[All] wrapper
-function _execQuerySelector(all: boolean, elOrSelector?: HTMLElement | DocumentFragment | null | string, selector?: string) {
+function _execQuerySelector(all: boolean, elOrSelector?: Document | HTMLElement | DocumentFragment | null | string, selector?: string) {
 	let el: HTMLElement | Document | DocumentFragment | null = null;
 	// if el is null or undefined, means we return nothing. 
 	if (elOrSelector == null) {
