@@ -1,4 +1,4 @@
-export const version = '0.9.8';
+export const version = '0.9.9';
 
 export { BaseHTMLElement } from './c-base';
 export { all, append, AppendPosition, attr, className, closest, elem, first, frag, next, prev, style } from './dom';
@@ -9,3 +9,4 @@ export { customElement } from './ts-decorator-custom-element';
 export { onDoc, onEvent, onWin } from './ts-decorator-on-event';
 export { onHub } from './ts-decorator-on-hub';
 export { val } from './utils';
+
