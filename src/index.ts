@@ -1,4 +1,4 @@
-export const version = '0.9.9';
+export const version = '0.9.10-DEPRECATED';
 
 export { BaseHTMLElement } from './c-base';
 export { all, append, AppendPosition, attr, className, closest, elem, first, frag, next, prev, style } from './dom';

@@ -4,6 +4,10 @@
 
 ## Releases 0.9.x - Native Web Components
 
+### [v0.9.10](https://github.com/mvdom/mvdom/compare/v0.9.9...v0.9.10) Sept 6, 2020
+
+- `!!!` DEPRECATION NOTICE - NEW NAME - Please upgrade to [dom-native](https://www.npmjs.com/package/dom-native) - drop-in replacement
+
 ### [v0.9.9](https://github.com/mvdom/mvdom/compare/v0.9.8...v0.9.9) May 13th 2020
 
 - `-` type - added `Document` type to `first` and `all` to match `@types/node` 14.x and above

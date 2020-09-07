@@ -1,7 +1,7 @@
 {
   "name": "mvdom",
-  "version": "0.9.9",
-  "description": "DOM Native MVC micro library (zero dependency, < 12kb min, < 5kb gzip)",
+  "version": "0.9.10",
+  "description": "deprecated - Moved to dom-native package",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
